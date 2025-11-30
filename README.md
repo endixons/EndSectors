@@ -12,13 +12,17 @@ Players can move seamlessly between sectors, chat globally, and have their data 
 ---
 ## 🔹 What is this?
 
-- EndSectors is a **fork of PocketSectors (Nukkit)**, rewritten in Java for Paper with many changes and improvements.  
+- EndSectors is a **fork of PocketSectors (Nukkit)**, rewritten in Java for Paper/Spigot with many changes and improvements.  
+- This is **not a 1:1 copy** of PocketSectors – many parts were modified to fit Paper/Spigot, architecture changed, and new features added.  
 - Some ideas were inspired by other public projects (concepts only, **no code copied**).  
-- **Redis integration** is directly inspired by PocketSectors (2019) and slightly modified for Paper (Java) to fit EndSectors' architecture.  
-- OpenSectors (2025) also implements Redis in a very similar way, but EndSectors predates it.  
-- No code or classes from OpenSectors were used; all modifications are based on PocketSectors concepts.  
+- **Redis integration** is directly inspired by PocketSectors (2019) and slightly modified for Paper (Java) to fit EndSectors’ architecture.  
+- No code, classes, or implementation from OpenSectors, OpenSourceSectors, or OpenSectors original were used; all modifications are based solely on PocketSectors concepts.  
 
-Basically: this is a **learning/testing framework**. It’s not meant for serious production servers.
+Basically: this is a **learning/testing framework**, done for fun. Not meant for serious production servers.
+
+
+
+
 
 ---
 

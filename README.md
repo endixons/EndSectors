@@ -2,28 +2,43 @@
 
 **EndSectors** — experimental Minecraft sector framework for **Paper 1.24.1** with **MongoDB & Redis** 🗄️
 
-One large Minecraft world, divided into multiple sectors on a single Paper server,  
-with automatic player synchronization, seamless border teleportation, and global chat.
+EndSectors allows you to split a single large Minecraft world into multiple **sectors** on one Paper server.  
+Players can move seamlessly between sectors, chat globally, and have their data synced in real-time.  
 
-> ⚠️ WARNING: This project is **4fun** and **not suitable for production**.  
-> Do not take it seriously – it is mainly developed for testing and experimentation.
+> [!WARNING]
+> This project is **4fun** and **not suitable for production**.  
+> Don’t take it seriously – it’s mainly for testing, learning, and experimenting with sector-based worlds.
+
+---
+## 🔹 What is this?
+
+- EndSectors is a **fork of PocketSectors (Nukkit)**, rewritten in Java for Paper with many changes and improvements.  
+- Some ideas were inspired by other public projects (concepts only, **no code copied**).  
+- **Redis integration** is directly inspired by PocketSectors (2019) and slightly modified for Paper (Java) to fit EndSectors' architecture.  
+- OpenSectors (2025) also implements Redis in a very similar way, but EndSectors predates it.  
+- No code or classes from OpenSectors were used; all modifications are based on PocketSectors concepts.  
+
+Basically: this is a **learning/testing framework**. It’s not meant for serious production servers.
 
 ---
 
 ## 🔹 Inspirations
 
-The project is based on **PocketSectors** (Nukkit), rewritten in Java for Paper:  
-- 🔗 [PocketSectors repo](https://github.com/ProjectCode-PL/PocketSectors/blob/master/nukkit/src/main/java/pl/projectcode/pocketsectors/nukkit/command/SectorCommand.java)
+- **PocketSectors (Nukkit)** — base project to understand sector mechanics:  
+  - 🔗 [PocketSectors repo](https://github.com/ProjectCode-PL/PocketSectors/blob/master/nukkit/src/main/java/pl/projectcode/pocketsectors/nukkit/command/SectorCommand.java)
 
-Some ideas are inspired by other public projects (just inspiration, **no code copying**):  
-- 🔗 [OpenSectors](https://github.com/fajzu1/OpenSectors/tree/main/spigot/src/main/java/io/github/fajzu/sectors/bukkit)
+- Other public projects (concept inspiration, no code copying):  
+  - 🔗 [OpenSectors](https://github.com/fajzu1/OpenSectors/tree/main/spigot/src/main/java/io/github/fajzu/sectors/bukkit)  
+  - 🔗 [OpenSectors original](https://github.com/SocketByte/OpenSectors)  
+  - 🔗 [OpenSourceSectors](https://github.com/Inder00/OpenSourceSectors/tree/main/Spigot)
+
 
 ---
 
 ## ⚙️ Requirements
 
 - PaperMC 1.24.1  
-- Redis  
+- Redis (for sector sync)  
 - MongoDB  
 
 ---
@@ -31,18 +46,18 @@ Some ideas are inspired by other public projects (just inspiration, **no code co
 ## ✨ Features
 
 - 🚪 **Smooth teleportation** between sectors on border crossing  
-- 🔄 **Real-time player data synchronization** (inventory, enderchest, gamemode, fly status, etc.)  
+- 🔄 **Real-time player data sync** (inventory, enderchest, gamemode, fly status, etc.)  
 - 💬 **Global chat** synchronized across all sectors  
 - 🎯 **Advanced sector queue system** – players go to their last sector or a random one for load balancing  
-- ⚡ **Plug-and-play** – configure YAML and teleportation/sync works out of the box
+- ⚡ **Plug-and-play** – configure JSON, and teleportation/sync works automatically
 
 ---
 
 ## 🛠️ Quick Start
 
 1. Install **Paper 1.24.1**  
-2. Configure **MongoDB** and **Redis** connection in `config.yml`  
-3. Define your sectors in YAML  
+2. Configure **MongoDB** and **Redis** in `config.json`  
+3. Define your sectors in JSON  
 4. Start the server and watch **EndSectors** handle teleportation, syncing, and queues automatically
 
 ---
@@ -55,16 +70,16 @@ Some ideas are inspired by other public projects (just inspiration, **no code co
 
 ## ⚠️ Warnings
 
-- YAML sector coordinates may cause slight teleporting **before the border**  
+- JSON sector coordinates may cause slight teleporting **before the border**  
 - Correct setup (matching frontend `sectors` array):  
   - Spawn sectors: `-250 / 250`  
   - Other sectors: `251 / 751` (or `-751 / -251` for negative axes)  
-- Using old YAML (`250 / -250`) may produce weird border behavior  
+- Using old coordinates (`250 / -250`) may produce weird border behavior  
 
 ---
 
 ## 📌 TODO
 
-- Expand queue system  
+- Expand/improve the queue system  
 - Sync optimization and bug fixes  
-- Add new 4fun features
+- Add more 4fun features

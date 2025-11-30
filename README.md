@@ -98,7 +98,7 @@ sectors:
     z2: 50
     type: "QUEUE"
     world: world
-    address: "localhost:19133"
+
   spawn01:
     x1: -250
     z1: -250
@@ -106,7 +106,7 @@ sectors:
     z2: 250
     type: "SPAWN"
     world: world
-    address: "localhost:19133"
+
   spawn02:
     x1: -250
     z1: -250
@@ -114,68 +114,67 @@ sectors:
     z2: 250
     type: "SPAWN"
     world: world
-    address: "localhost:19144"
+
   north:
-    x1: 250
+    x1: 251
     z1: -250
-    x2: 750
+    x2: 751
     z2: 250
     type: "SECTOR"
     world: world
-    address: "localhost:19134"
+
   south:
-    x1: -750
+    x1: -751
     z1: -250
-    x2: -250
+    x2: -251
     z2: 250
     type: "SECTOR"
     world: world
-    address: "localhost:19135"
+
   east:
     x1: -250
-    z1: 250
+    z1: 251
     x2: 250
-    z2: 750
+    z2: 751
     type: "SECTOR"
     world: world
-    address: "localhost:19136"
+
   west:
     x1: -250
-    z1: -750
+    z1: -751
     x2: 250
-    z2: -250
+    z2: -251
     type: "SECTOR"
     world: world
-    address: "localhost:19137"
+
   northEast:
-    x1: 250
-    z1: 250
-    x2: 750
-    z2: 750
+    x1: 251
+    z1: 251
+    x2: 751
+    z2: 751
     type: "SECTOR"
     world: world
-    address: "localhost:19138"
+
   northWest:
-    x1: -750
-    z1: 250
-    x2: -250
-    z2: 750
+    x1: -751
+    z1: 251
+    x2: -251
+    z2: 751
     type: "SECTOR"
     world: world
-    address: "localhost:19139"
+
   southEast:
-    x1: 250
-    z1: -750
-    x2: 750
-    z2: -250
+    x1: 251
+    z1: -751
+    x2: 751
+    z2: -251
     type: "SECTOR"
     world: world
-    address: "localhost:19140"
   southWest:
-    x1: -750
-    z1: -750
-    x2: -250
-    z2: -250
+    x1: -751
+    z1: -751
+    x2: -251
+    z2: -251
     type: "SECTOR"
     world: world
-    address: "localhost:19141"
+

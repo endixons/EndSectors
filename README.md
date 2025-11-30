@@ -17,9 +17,12 @@ and an advanced queue system, making large map management effortless
 > [!WARNING]
 > **This branch is currently under active development**
 >
-> ⚠️ Features may be incomplete or unstable.  
-> ❌ This branch is **unstable** and should not be used on the main/production server.  
-> ✅ Use it only for testing or development purposes.
+>⚠️ Features may be incomplete or unstable.  
+>❌ This branch is **unstable** and should **not** be used on a main/production server.  
+>✅ Use it only for testing or development purposes.
+> 
+> 💡 Don’t expect miracles – this is just a beta, a lightweight framework for now.  
+> It will be expanded and improved over time.
 
 ---
 

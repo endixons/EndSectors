@@ -1,27 +1,37 @@
-EndSectors Proxy – Non-Commercial License (2025)
-------------------------------------------------
-
-Copyright (c) 2025 YourName
-All rights reserved.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to use,
-copy, and modify the Software **for personal, educational, or non-commercial projects only**.
-
-You may NOT:
-  - Use, sell, sublicense, or distribute the Software for commercial purposes
-  - Incorporate the Software or derivative works into commercial products or services
-  - Claim ownership or authorship of the original Software
-
-You may:
-  - Use this software for learning, personal servers, or open-source non-commercial projects
-  - Modify the code for personal or educational purposes
-  - Share modifications under the same terms (non-commercial)
-
-Disclaimer:
-The Software is provided "as-is", without warranty of any kind, express or implied.
-In no event shall the author be liable for any claims, damages, or other liability,
-whether in an action of contract, tort, or otherwise, arising from, out of, or in
-connection with the Software or its use.
-
-Full license text for reference and legal clarity.
+/*
+ * ┌─────────────────────────────────────────────┐
+ * │ EndSectors Proxy – Non-Commercial License  │
+ * │ (c) 2025 Endixon                             │
+ * │ Based on Creative Commons BY-NC 4.0         │
+ * │ All rights reserved.                         │
+ * │                                             │
+ * │ Permission is granted to use, copy, and    │
+ * │ modify this software for personal,         │
+ * │ educational, or non-commercial projects    │
+ * │ only.                                       │
+ * │                                             │
+ * │ YOU MAY NOT:                                │
+ * │  - Use, sell, sublicense, or distribute    │
+ * │    the Software for commercial purposes    │
+ * │  - Incorporate the Software or derivative  │
+ * │    works into commercial products/services │
+ * │  - Claim ownership or authorship of the    │
+ * │    original Software                        │
+ * │                                             │
+ * │ YOU MAY:                                    │
+ * │  - Use this software for learning, personal│
+ * │    servers, or open-source non-commercial │
+ * │    projects                                 │
+ * │  - Modify the code for personal/educational│
+ * │    purposes                                 │
+ * │  - Share modifications under the same terms│
+ * │    (non-commercial)                         │
+ * │                                             │
+ * │ DISCLAIMER:                                 │
+ * │ The Software is provided "as-is", without  │
+ * │ warranty of any kind. The author is not    │
+ * │ liable for any claims, damages, or other   │
+ * │ liability arising from the use of the      │
+ * │ Software.                                   │
+ * └─────────────────────────────────────────────┘
+ */

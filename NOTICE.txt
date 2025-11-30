@@ -1,0 +1,10 @@
+NOTICE
+------
+
+This software and all its derivative works are protected under the
+EndSectors Proxy Non-Commercial License (2025).
+
+Commercial use is strictly forbidden.
+
+Personal, educational, or non-commercial open-source projects are allowed.
+All other rights are reserved by the author.

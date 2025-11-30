@@ -17,14 +17,24 @@ and an advanced queue system, making large map management effortless
 > [!WARNING]
 > **This branch is currently under active development**
 >
->⚠️ Features may be incomplete or unstable.  
->❌ This branch is **unstable** and should **not** be used on a main/production server.  
->✅ Use it only for testing or development purposes.
-> 
+> ⚠️ Features may be incomplete or unstable.  
+> ❌ This branch is **unstable** and should **not** be used on a main/production server.  
+> ✅ Use it only for testing or development purposes.
+>
 > 💡 Don’t expect miracles – this is just a beta, a lightweight framework for now.  
 > It will be expanded and improved over time.
+>
+> **💥 Sector configuration warning 💥**
+>
+> ⚠️ In this beta, sector coordinates in YAML may cause players to teleport **slightly before the border**.  
+> 🛑 Correct setup (matching the frontend `sectors` array) should be:
+>   - Spawn sectors: **-250 / 250**  
+>   - Other sectors: **251 / 751** (or **-751 / -251** for negative axes)  
+> 🚨 Using the old YAML coordinates (e.g., `250 / -250`) may cause borders to behave weirdly.  
+> 🛠️ Will be fixed in **Beta 1.1**.
 
 ---
+
 
 🔹 Default Setup
 

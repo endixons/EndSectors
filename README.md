@@ -13,10 +13,11 @@ Players can move seamlessly between sectors, chat globally, and have their data 
 
 ## 🔹 About
 
-- EndSectors is a **learning/educational project**, created to experiment with sector-based worlds in Paper.  
+- EndSectors is a **fork of PocketSectors (Nukkit)**, rewritten from scratch for Paper/Spigot in Java.  
 - It is **not intended for serious production servers**.  
-- Built from scratch for Paper/Spigot in Java, using **MongoDB** and **Redis** for player data synchronization.  
-- Some ideas were inspired by other public/open projects, but all code is original.
+- Built using **MongoDB** and **Redis** for player data synchronization.  
+- Some ideas were inspired by other public projects on GitHub, but all code is original.  
+- The project is **educational/experimental**, created to explore sector-based world mechanics.
 
 ---
 

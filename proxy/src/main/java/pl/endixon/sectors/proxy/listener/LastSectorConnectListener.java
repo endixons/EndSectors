@@ -1,22 +1,3 @@
-/*
- *
- *  EndSectors  Non-Commercial License
- *  (c) 2025 Endixon
- *
- *  Permission is granted to use, copy, and
- *  modify this software **only** for personal
- *  or educational purposes.
- *
- *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code
- *  without explicit permission is strictly
- *  prohibited.
- *
- *  Visit https://github.com/Endixon/EndSectors
- *  for more info.
- *
- */
-
 package pl.endixon.sectors.proxy.listener;
 
 import com.google.inject.Inject;
@@ -32,8 +13,6 @@ import pl.endixon.sectors.proxy.queue.Queue;
 import pl.endixon.sectors.proxy.queue.QueueManager;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class LastSectorConnectListener {
@@ -41,13 +20,14 @@ public class LastSectorConnectListener {
     private final VelocitySectorPlugin plugin;
     private final MongoManager mongo;
     private final TeleportationManager teleportManager;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
+    private final QueueManager queueService;
 
     @Inject
     public LastSectorConnectListener(VelocitySectorPlugin plugin, TeleportationManager teleportManager) {
         this.plugin = plugin;
         this.mongo = plugin.getMongoManager();
         this.teleportManager = teleportManager;
+        this.queueService = plugin.getQueueManager();
     }
 
     @Subscribe
@@ -57,26 +37,29 @@ public class LastSectorConnectListener {
 
         if (!connectedServer.equalsIgnoreCase("queue")) return;
 
-        QueueManager queueService = plugin.getQueueManager();
         queueService.findQueueByPlayer(player).ifPresent(queue -> queue.removePlayer(player));
-        pollForUser(player, queueService);
+        fetchPlayerDocumentWithRetry(player, 0);
     }
 
-    private void pollForUser(Player player, QueueManager queueService) {
-        CompletableFuture.runAsync(() -> {
-            Document doc = mongo.getUsersCollection()
-                    .find(new Document("Name", player.getUsername()))
-                    .first();
-
+    private void fetchPlayerDocumentWithRetry(Player player, int attempt) {
+        CompletableFuture.supplyAsync(() ->
+                mongo.getUsersCollection().find(new Document("Name", player.getUsername())).first(),
+                MongoExecutor.EXECUTOR
+        ).thenAccept(doc -> {
             if (doc == null) {
-                scheduler.schedule(() -> pollForUser(player, queueService), 100, TimeUnit.MILLISECONDS);
+                long delay = Math.min(100 * (attempt + 1), 1000); 
+                plugin.getProxy().getScheduler().buildTask(plugin,
+                        () -> fetchPlayerDocumentWithRetry(player, attempt + 1))
+                        .delay(delay, TimeUnit.MILLISECONDS)
+                        .schedule();
                 return;
             }
 
             String lastSector = doc.getString("sectorName");
             if (lastSector == null) return;
+
             Queue queue = queueService.getMap().computeIfAbsent(lastSector, Queue::new);
             queue.addPlayer(player);
-        }, MongoExecutor.EXECUTOR);
+        });
     }
 }

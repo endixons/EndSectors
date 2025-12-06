@@ -18,8 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class LastSectorConnectListener {
 
-    private static final int MAX_RETRIES = 10;
-    private static final long BASE_DELAY_MS = 500;
 
     private final VelocitySectorPlugin plugin;
     private final MongoManager mongo;

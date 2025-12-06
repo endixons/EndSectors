@@ -21,6 +21,7 @@
 package pl.endixon.sectors.paper.listener.player;
 
 import lombok.AllArgsConstructor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -42,7 +43,7 @@ public class PlayerLocallyJoinListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        event.setJoinMessage(null);
+        event.joinMessage(Component.empty());
         player.setCollidable(false);
 
         UserManager.getUser(player.getName()).thenAccept(user -> {

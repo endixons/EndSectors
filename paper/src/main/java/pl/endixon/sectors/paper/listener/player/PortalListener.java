@@ -1,4 +1,4 @@
-    package pl.endixon.sectors.paper.listener.other;
+    package pl.endixon.sectors.paper.listener.player;
 
     import lombok.RequiredArgsConstructor;
     import net.kyori.adventure.text.Component;

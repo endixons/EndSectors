@@ -6,12 +6,10 @@ import java.util.Locale;
 
 @UtilityClass
 public class ChatUtil {
-    private static final String COLOR = "§7"; // szary
-    private static final String COLOR_MARK = "§c"; // czerwony
-    private static final String COLOR_LOGGER = "§6"; // złoty
-    private static final String COLOR_LOGGER_MARK = "§c"; // czerwony
-
-    // Kolory TPS
+    private static final String COLOR = "§7";
+    private static final String COLOR_MARK = "§c";
+    private static final String COLOR_LOGGER = "§6";
+    private static final String COLOR_LOGGER_MARK = "§c";
     private static final String COLOR_TPS_GREEN = "§a";
     private static final String COLOR_TPS_YELLOW = "§e";
     private static final String COLOR_TPS_RED = "§c";

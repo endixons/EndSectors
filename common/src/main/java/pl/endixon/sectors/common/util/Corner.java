@@ -26,7 +26,6 @@ public class Corner implements Serializable {
     }
 
     public Corner() {
-        // pusty konstruktor dla Jacksona
     }
 
     public int getPosX() {

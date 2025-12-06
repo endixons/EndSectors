@@ -1,180 +1,64 @@
 # EndSectors
 
-**EndSectors** — advanced Minecraft sector framework for **Paper 1.24.1** with **Mongo & Redis** 🗄️
+**EndSectors** — experimental Minecraft sector framework for **Paper 1.24.1** with **MongoDB & Redis** 🗄️
 
-One large Minecraft world, divided into multiple sectors on a single Spigot/Paper server,
-fully synchronized across all players.
-Provides seamless border teleportation, global chat, real-time player data sync,
-and an advanced queue system, making large map management effortless
-
-🗺️ Example Map
-
-> Here’s a visual representation of how sectors are divided in a single world:
-- 🔗 EndSectors Map [Click](https://oski646.github.io/sectors-generator)
-
----
+EndSectors allows you to split a single large Minecraft world into multiple **sectors** on one Paper server.  
+Players can move seamlessly between sectors, chat globally, and have their data synced in real-time.
 
 > [!WARNING]
-> **This branch is currently under active development**
->
-> ⚠️ Features may be incomplete or unstable.  
-> ❌ This branch is **unstable** and should **not** be used on a main/production server.  
-> ✅ Use it only for testing or development purposes.
->
-> 💡 Don’t expect miracles – this is just a beta, a lightweight framework for now.  
-> It will be expanded and improved over time.
->
-> **💥 Sector configuration warning 💥**
->
-> ⚠️ In this beta, sector coordinates in YAML may cause players to teleport **slightly before the border**.  
-> 🛑 Correct setup (matching the frontend `sectors` array) should be:
->   - Spawn sectors: **-250 / 250**
->   - Other sectors: **251 / 751** (or **-751 / -251** for negative axes)  
-      > 🚨 Using the old YAML coordinates (e.g., `250 / -250`) may cause borders to behave weirdly.  
-      > 🛠️ Will be fixed in **Beta 1.1**.
+> This project is **experimental** and **not intended for production use**.  
+> It serves as a learning and testing framework for sector-based world mechanics.
 
 ---
 
+## 🔹 About
 
-🔹 Default Setup
-
-- Default setup includes **11 sectors**:
-- Each sector comes with its **assigned world** and **address**, fully configurable via YAML.
+- EndSectors is a **fork of PocketSectors (Nukkit)**, rewritten from scratch for Paper/Spigot in Java.
+- Built using **MongoDB** and **Redis** for real-time player data synchronization.
+- The project is **educational and experimental**, created to explore sector-based world mechanics.
+- While some ideas were inspired by other public GitHub projects, **all code is original**.
 
 ---
 
-⚙️ Requirements
+## ⚙️ Requirements
 
 - PaperMC 1.24.1
-- Redis
+- Redis (for sector synchronization)
 - MongoDB
 
 ---
 
-✨ Features
+## ✨ Features
 
-- 🚪 **Smooth teleportation**  
-  Players can seamlessly move between sectors when crossing borders, with no lag or delay. The system handles sector transitions automatically, making the world feel continuous.
-
-- 🔄 **Real-time player data synchronization**  
-  All player data is synced across sectors in real-time, including potions, enderchest contents, gamemode, fly status, inventory, and more. Nothing is lost when switching sectors.
-
-- 🧭 **Shared and synced sector information**  
-  Sector-wide information is shared and synchronized across all sectors. Admins can rely on consistent world data and stats at any time.
-
-- 💬 **Global player chat**  
-  Players can chat globally, with messages synchronized across all sectors. No matter which sector they are in, everyone stays connected.
-
-- 🧩 **Synced player information**  
-  Each player keeps their personal data consistent across all sectors. This includes inventory, stats, positions, and custom attributes.
-
-- 🎯 **Advanced sector queue system**  
-  When connecting to the server, the framework intelligently decides which sector to send the player to:
-    - **Last sector (`lastSector`)** – if the player has a recorded last sector, they will return there.
-    - **Random sector** – if no last sector exists, the player is sent to a random sector to balance load.
-
-- ⚡ **Plug-and-play**  
-  Simply configure your servers in the YAML file and everything works out of the box. No additional setup is required; teleportation, syncing, and queues are handled automatically.
+- 🚪 **Smooth teleportation** between sectors on border crossing
+- 🔄 **Real-time player data synchronization** (inventory, enderchest, gamemode, fly status, etc.)
+- 💬 **Global chat** synchronized across all sectors
+- 🎯 **Advanced sector queue system** – players are sent to their last sector or a random one for load balancing
+- ⚡ **Plug-and-play** – configure JSON and sector management works automatically
 
 ---
 
-🛠️ Quick Start
+## 🛠️ Quick Start
 
-- > Install **Paper 1.24.1** server
-- > Configure **MongoDB** and **Redis** connection in `config.yml`
-- >  Define your sectors in the YAML configuration
-- >  Start the server and watch **EndSectors** handle teleportation, syncing, and queues automatically
+1. Install **Paper 1.24.1**
+2. Configure **MongoDB** and **Redis** in `config.json`
+3. Define your sectors in JSON
+4. Start the server and let **EndSectors** handle teleportation, syncing, and queues automatically
 
 ---
 
-📦 Default YAML Example
+## ⚠️ Notes
 
-```yaml
-sectors:
-  queue:
-    x1: -50
-    z1: -50
-    x2: 50
-    z2: 50
-    type: "QUEUE"
-    world: world
+- JSON sector coordinates may cause minor teleporting **before the border**
+- Correct setup (matching frontend `sectors` array) is recommended:
+    - Spawn sectors: `-250 / 250`
+    - Other sectors: `251 / 751` (or `-751 / -251` for negative axes)
+- Using outdated coordinates may produce unexpected border behavior
 
-  spawn01:
-    x1: -250
-    z1: -250
-    x2: 250
-    z2: 250
-    type: "SPAWN"
-    world: world
+---
 
-  spawn02:
-    x1: -250
-    z1: -250
-    x2: 250
-    z2: 250
-    type: "SPAWN"
-    world: world
+## 📌 TODO
 
-  north:
-    x1: 251
-    z1: -250
-    x2: 751
-    z2: 250
-    type: "SECTOR"
-    world: world
-
-  south:
-    x1: -751
-    z1: -250
-    x2: -251
-    z2: 250
-    type: "SECTOR"
-    world: world
-
-  east:
-    x1: -250
-    z1: 251
-    x2: 250
-    z2: 751
-    type: "SECTOR"
-    world: world
-
-  west:
-    x1: -250
-    z1: -751
-    x2: 250
-    z2: -251
-    type: "SECTOR"
-    world: world
-
-  northEast:
-    x1: 251
-    z1: 251
-    x2: 751
-    z2: 751
-    type: "SECTOR"
-    world: world
-
-  northWest:
-    x1: -751
-    z1: 251
-    x2: -251
-    z2: 751
-    type: "SECTOR"
-    world: world
-
-  southEast:
-    x1: 251
-    z1: -751
-    x2: 751
-    z2: -251
-    type: "SECTOR"
-    world: world
-  southWest:
-    x1: -751
-    z1: -751
-    x2: -251
-    z2: -251
-    type: "SECTOR"
-    world: world
-
+- Improve queue system for handling larger player counts
+- Optimize synchronization and fix potential bugs with multiple players interacting simultaneously
+- Add optional experimental features

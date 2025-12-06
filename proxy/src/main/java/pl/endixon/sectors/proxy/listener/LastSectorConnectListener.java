@@ -14,10 +14,8 @@ import pl.endixon.sectors.proxy.queue.QueueManager;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class LastSectorConnectListener {
-
 
     private final VelocitySectorPlugin plugin;
     private final MongoManager mongo;
@@ -37,21 +35,23 @@ public class LastSectorConnectListener {
         Player player = event.getPlayer();
         String connectedServer = event.getServer().getServerInfo().getName();
 
-        if (!connectedServer.equalsIgnoreCase("queue")) return;
+        if (!"queue".equalsIgnoreCase(connectedServer)) return;
 
         queueService.findQueueByPlayer(player).ifPresent(queue -> queue.removePlayer(player));
         pollForUser(player);
     }
-    
-    private void pollForUser(Player player, QueueManager queueService) {
+
+    private void pollForUser(Player player) {
         plugin.getProxy().getScheduler().buildTask(plugin, () -> {
             CompletableFuture.supplyAsync(() ->
-                    mongo.getUsersCollection().find(new Document("Name", player.getUsername())) .first(),
+                    mongo.getUsersCollection().find(new Document("Name", player.getUsername())).first(),
                     MongoExecutor.EXECUTOR
             ).thenAccept(doc -> {
-                if (doc == null) return; 
+                if (doc == null) return;
+
                 String lastSector = doc.getString("sectorName");
                 if (lastSector == null) return;
+
                 Queue queue = queueService.getMap().computeIfAbsent(lastSector, Queue::new);
                 queue.addPlayer(player);
             });

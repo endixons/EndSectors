@@ -1,5 +1,7 @@
 package pl.endixon.sectors.paper.listener.player;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +14,8 @@ import pl.endixon.sectors.paper.sector.SectorManager;
 import pl.endixon.sectors.paper.user.UserManager;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.util.Configuration;
+
+import java.time.Duration;
 
 public class PlayerTeleportListener implements Listener {
 
@@ -46,11 +50,15 @@ public class PlayerTeleportListener implements Listener {
             }
 
             if (!targetSector.isOnline()) {
-                player.sendTitle(
-                        ChatUtil.fixColors(Configuration.SECTOR_DISABLED_TITLE),
-                        ChatUtil.fixColors(Configuration.SECTOR_DISABLED_SUBTITLE),
-                        10, 40, 10
-                );
+                player.showTitle(Title.title(
+                        Component.text(ChatUtil.fixColors(Configuration.SECTOR_DISABLED_TITLE)),
+                        Component.text(ChatUtil.fixColors(Configuration.SECTOR_DISABLED_SUBTITLE)),
+                        Title.Times.times(
+                                Duration.ofMillis(500),
+                                Duration.ofMillis(2000),
+                                Duration.ofMillis(500)
+                        )
+                ));
                 currentSector.knockBorder(player, 1.5);
                 return;
             }

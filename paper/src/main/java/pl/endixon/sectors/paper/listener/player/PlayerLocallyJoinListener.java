@@ -22,6 +22,7 @@ package pl.endixon.sectors.paper.listener.player;
 
 import lombok.AllArgsConstructor;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,6 +35,8 @@ import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.UserMongo;
 import pl.endixon.sectors.paper.user.UserManager;
 import pl.endixon.sectors.paper.util.Logger;
+
+import java.time.Duration;
 
 @AllArgsConstructor
 public class PlayerLocallyJoinListener implements Listener {
@@ -84,11 +87,15 @@ public class PlayerLocallyJoinListener implements Listener {
 
 
     private void sendSectorTitle(Player player, Sector sector) {
-        player.sendTitle(
-                ChatUtil.fixColors(""),
-                ChatUtil.fixColors("&cPolaczono sie na sektor " + sector.getName()),
-                10, 40, 10
-        );
+        player.showTitle(Title.title(
+                Component.text(ChatUtil.fixColors("")),
+                Component.text(ChatUtil.fixColors("&cPołączono się na sektor " + sector.getName())),
+                Title.Times.times(
+                        Duration.ofMillis(500),
+                        Duration.ofMillis(2000),
+                        Duration.ofMillis(500)
+                )
+        ));
     }
 }
 

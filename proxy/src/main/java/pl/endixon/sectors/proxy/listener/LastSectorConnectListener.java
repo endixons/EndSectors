@@ -17,7 +17,6 @@
  *
  */
 
-
 package pl.endixon.sectors.proxy.listener;
 
 import com.google.inject.Inject;
@@ -32,15 +31,17 @@ import pl.endixon.sectors.proxy.manager.TeleportationManager;
 import pl.endixon.sectors.proxy.queue.Queue;
 import pl.endixon.sectors.proxy.queue.QueueManager;
 
-
-import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class LastSectorConnectListener {
 
     private final VelocitySectorPlugin plugin;
     private final MongoManager mongo;
     private final TeleportationManager teleportManager;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
 
     @Inject
     public LastSectorConnectListener(VelocitySectorPlugin plugin, TeleportationManager teleportManager) {
@@ -55,6 +56,7 @@ public class LastSectorConnectListener {
         String connectedServer = event.getServer().getServerInfo().getName();
 
         if (!connectedServer.equalsIgnoreCase("queue")) return;
+
         QueueManager queueService = plugin.getQueueManager();
         queueService.findQueueByPlayer(player).ifPresent(queue -> queue.removePlayer(player));
         pollForUser(player, queueService);
@@ -67,20 +69,14 @@ public class LastSectorConnectListener {
                     .first();
 
             if (doc == null) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ignored) {
-                }
-                pollForUser(player, queueService);
+                scheduler.schedule(() -> pollForUser(player, queueService), 100, TimeUnit.MILLISECONDS);
                 return;
             }
 
             String lastSector = doc.getString("sectorName");
             if (lastSector == null) return;
-
             Queue queue = queueService.getMap().computeIfAbsent(lastSector, Queue::new);
             queue.addPlayer(player);
-
         }, MongoExecutor.EXECUTOR);
     }
 }

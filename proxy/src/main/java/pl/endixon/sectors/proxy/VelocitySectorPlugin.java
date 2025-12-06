@@ -17,7 +17,6 @@
  * 
  */
 
-
 package pl.endixon.sectors.proxy;
 
 import com.fasterxml.jackson.core.type.TypeReference;

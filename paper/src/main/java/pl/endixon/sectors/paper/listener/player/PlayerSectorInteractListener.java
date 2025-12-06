@@ -126,16 +126,18 @@ public class PlayerSectorInteractListener implements Listener {
     public void onBucketFill(PlayerBucketFillEvent event) {
         Sector current = PaperSector.getSectorManager().getCurrentSector();
         Player player = event.getPlayer();
+
         if (current.getType() == SectorType.QUEUE) {
             event.setCancelled(true);
             return;
         }
-        if (event.getBlockClicked() == null) return;
+
         Location loc = event.getBlockClicked().getLocation();
-        if (sectorManager.getCurrentSector().getBorderDistance(loc) <= Configuration.BUCKET_BORDER_DISTANCE) {
+        if (PaperSector.getSectorManager().getCurrentSector().getBorderDistance(loc) <= Configuration.BUCKET_BORDER_DISTANCE) {
             event.setCancelled(true);
             return;
         }
+
         cancelIfRedirecting(player, event);
     }
 
@@ -144,18 +146,21 @@ public class PlayerSectorInteractListener implements Listener {
     public void onBucketEmpty(PlayerBucketEmptyEvent event) {
         Sector current = PaperSector.getSectorManager().getCurrentSector();
         Player player = event.getPlayer();
+
         if (current.getType() == SectorType.QUEUE) {
             event.setCancelled(true);
             return;
         }
-        if (event.getBlockClicked() == null) return;
+
         Location loc = event.getBlockClicked().getLocation();
-        if (sectorManager.getCurrentSector().getBorderDistance(loc) <= Configuration.BUCKET_BORDER_DISTANCE) {
+        if (PaperSector.getSectorManager().getCurrentSector().getBorderDistance(loc) <= Configuration.BUCKET_BORDER_DISTANCE) {
             event.setCancelled(true);
             return;
         }
+
         cancelIfRedirecting(player, event);
     }
+
 
 
     @EventHandler

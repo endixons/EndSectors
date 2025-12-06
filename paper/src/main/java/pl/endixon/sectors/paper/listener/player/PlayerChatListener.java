@@ -20,10 +20,14 @@
 
 package pl.endixon.sectors.paper.listener.player;
 
+import io.papermc.paper.event.player.AsyncChatEvent;
 import lombok.AllArgsConstructor;
+import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import pl.endixon.sectors.common.packet.object.PacketSectorChatBroadcast;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
@@ -38,17 +42,19 @@ public class PlayerChatListener implements Listener {
     private final PaperSector paperSector;
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent event) {
+    public void onChat(AsyncChatEvent event) {
         SectorManager sectorManager = this.paperSector.getSectorManager();
         Sector currentSector = sectorManager.getCurrentSector();
+
         if (currentSector != null && currentSector.getType() == SectorType.QUEUE) {
             event.setCancelled(true);
             return;
         }
-        String sender = event.getPlayer().getName();
-        String message = event.getMessage();
+        Player player = event.getPlayer();
+        Component message = event.message();
         event.setCancelled(true);
-        currentSector.sendPacketSectors(new PacketSectorChatBroadcast(sender, message));
+        currentSector.sendPacketSectors(new PacketSectorChatBroadcast(player.getName(), message.toString()));
+
     }
 }
 

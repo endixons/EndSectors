@@ -18,6 +18,7 @@
     import pl.endixon.sectors.paper.user.UserMongo;
     import pl.endixon.sectors.common.sector.SectorType;
     import pl.endixon.sectors.paper.util.Configuration;
+    import pl.endixon.sectors.paper.util.Logger;
 
     import java.time.Duration;
 
@@ -55,7 +56,8 @@
                                 return;
                             }
                         } catch (IllegalStateException e) {
-                            player.sendMessage("Nie można znaleźć odpowiedniego sektora do transferu!");
+                            Logger.info("Could not find a valid sector to transfer the player!");
+
                             return;
                         }
 

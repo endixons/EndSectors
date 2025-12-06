@@ -25,6 +25,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import pl.endixon.sectors.paper.inventory.api.builder.WindowHolder;
 
 public class InventoryInternactListener implements Listener {
@@ -34,10 +35,13 @@ public class InventoryInternactListener implements Listener {
         Inventory inv = event.getClickedInventory();
         if (!isWindowInventory(inv) && !isWindowInventory(event.getInventory())) return;
 
-        WindowHolder holder = (WindowHolder) event.getInventory().getHolder();
+        InventoryHolder rawHolder = event.getInventory().getHolder();
+        if (!(rawHolder instanceof WindowHolder holder)) return;
+
         event.setCancelled(true);
         holder.processClick(event);
     }
+
 
     @EventHandler
     public void onInteract(InventoryInteractEvent event) {
@@ -46,9 +50,9 @@ public class InventoryInternactListener implements Listener {
     }
 
     private boolean isWindowInventory(Inventory inventory) {
-        return inventory != null
-                && inventory.getType() == InventoryType.CHEST
-                && inventory.getHolder() instanceof WindowHolder
-                && inventory.getHolder().getClass() == WindowHolder.class;
+        if (inventory == null || inventory.getType() != InventoryType.CHEST) return false;
+
+        InventoryHolder holder = inventory.getHolder();
+        return holder instanceof WindowHolder && holder.getClass() == WindowHolder.class;
     }
 }

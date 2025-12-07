@@ -55,7 +55,7 @@ public class PlayerLocallyJoinListener implements Listener {
             if (user == null) {
                 UserMongo newUser = new UserMongo(player);
                 newUser.insert().thenRun(() -> {
-                    Logger.info("Inserted new player into Mongo and cache: " + player.getName());
+                    newUser.handleQueueSector(player);
                 });
                 user = newUser;
             }

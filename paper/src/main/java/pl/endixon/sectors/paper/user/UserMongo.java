@@ -47,7 +47,6 @@ public class UserMongo {
 
     private final MongoCollection<Document> collection;
 
-
     public UserMongo(@NonNull Player player) {
         this.collection = PaperSector.getInstance().getMongoManager().getUsersCollection();
         Sector current = PaperSector.getInstance().getSectorManager().getCurrentSector();
@@ -58,6 +57,7 @@ public class UserMongo {
         this.teleportingToSector = false;
         updateFromPlayer(player);
     }
+
 
     public UserMongo(@NonNull Document doc) {
         this.collection = PaperSector.getInstance().getMongoManager().getUsersCollection();
@@ -348,7 +348,7 @@ public class UserMongo {
         return def;
     }
 
-    private void handleQueueSector(Player player) {
+    public void handleQueueSector(Player player) {
         Location targetLocation = new Location(player.getWorld(), 0, 70, 0);
         player.teleportAsync(targetLocation).thenAccept(success -> {
             if (success) {

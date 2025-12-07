@@ -24,10 +24,9 @@ public class PacketUserCheckProxyListener extends RedisPacketListener<PacketUser
         String packetSector = packet.getLastSector();
 
         if (exists == null || !exists) {
-            Logger.info("Gracz " + username + " nie istnieje");
+            Logger.info("Gracz " + username + " nie istnieje !");
             return;
         }
-
         UserFlagCache cache = UserFlagCache.getInstance();
         cache.setExists(username, true);
 

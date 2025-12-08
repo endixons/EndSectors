@@ -1,6 +1,6 @@
 allprojects {
     group = "pl.endixon.sectors"
-    version = "1.3-BETA"
+    version = "1.4-BETA"
 
     repositories {
         mavenCentral()

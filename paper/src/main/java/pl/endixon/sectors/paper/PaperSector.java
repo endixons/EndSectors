@@ -137,7 +137,7 @@ public class PaperSector extends JavaPlugin {
 
         Stream.of(new RedisPacketListener<?>[]{
                 new PacketExecuteCommandPacketListener(this),
-                new PacketPlayerInfoRequestPacketListener(),
+                new PacketPlayerInfoRequestPacketListener(this),
                 new PacketPermissionBroadcastMessagePacketListener(),
                 new PacketSectorChatBroadcastPacketListener(this),
                 new PacketSectorInfoPacketListener(this.sectorManager)

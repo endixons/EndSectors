@@ -90,17 +90,14 @@ public class Sector {
         return this.isOnline() ? tps : 0;
     }
 
-    public Component getTPSColored() {
+    public String getTPSColored() {
         double currentTps = getTPS();
-        TextColor color = TextColor.color(0xFF0000);
-        if (currentTps >= 19.0) {
-            color = TextColor.color(0x00FF00);
-        } else if (currentTps >= 16.0) {
-            color = TextColor.color(0xFFFF00);
-        }
+        ChatColor color = ChatColor.RED;
+        if (currentTps >= 19.0) color = ChatColor.GREEN;
+        else if (currentTps >= 16.0) color = ChatColor.YELLOW;
 
         String tpsFormatted = String.format(Locale.US, "%.2f", Math.min(currentTps, 20.0));
-        return Component.text(tpsFormatted, color);
+        return color + tpsFormatted;
     }
 
     public void setTPS(float tps) {

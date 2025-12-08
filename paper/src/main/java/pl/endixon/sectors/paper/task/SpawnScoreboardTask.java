@@ -20,6 +20,8 @@
 
 package pl.endixon.sectors.paper.task;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -60,9 +62,11 @@ public class SpawnScoreboardTask extends BukkitRunnable {
                     obj = board.registerNewObjective("spawnSB", "dummy", ChatColor.GOLD + "SEKTOR INFO");
                     obj.setDisplaySlot(DisplaySlot.SIDEBAR);
                 }
+                String tpsComponent = sector.getTPSColored();
+
                 setScore(obj, 4, ChatColor.GREEN + "SEKTOR: " + ChatColor.WHITE + sector.getName());
                 setScore(obj, 3, ChatColor.YELLOW + "NICK: " + ChatColor.WHITE + player.getName());
-                setScore(obj, 2, ChatColor.AQUA + "TPS: " + sector.getTPSColored());
+                setScore(obj, 2, ChatColor.AQUA + "TPS: " + tpsComponent);
                 setScore(obj, 1, ChatColor.RED + "ONLINE: " + ChatColor.WHITE + sector.getPlayerCount());
                 player.setScoreboard(board);
             } else {

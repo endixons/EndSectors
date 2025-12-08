@@ -24,15 +24,10 @@ import lombok.AllArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import pl.endixon.sectors.common.packet.PacketChannel;
-
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.PaperSector;
@@ -48,7 +43,7 @@ public class PlayerLocallyJoinListener implements Listener {
 
     private final PaperSector paperSector;
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         event.joinMessage(Component.empty());
@@ -77,7 +72,7 @@ public class PlayerLocallyJoinListener implements Listener {
                 finalUser.setLastSectorTransfer(false);
                 finalUser.setLastTransferTimestamp(System.currentTimeMillis());
 
-                if (finalUser.isFirstJoin()) {
+                if (current.getType() != SectorType.QUEUE && finalUser.isFirstJoin()) {
                     finalUser.setFirstJoin(false);
                     finalUser.updatePlayerData(player, current);
 

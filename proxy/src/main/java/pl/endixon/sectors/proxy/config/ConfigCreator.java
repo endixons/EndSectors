@@ -25,32 +25,41 @@ public class ConfigCreator {
 
             Map<String, Object> root = new LinkedHashMap<>();
             Map<String, Object> sectors = new LinkedHashMap<>();
+
+
             Map<String, Object> spawn = new LinkedHashMap<>();
-            spawn.put("spawn01", createSectorMap(-250, -250, 250, 250, "SPAWN", "world"));
-            spawn.put("spawn02", createSectorMap(-250, -250, 250, 250, "SPAWN", "world"));
+            spawn.put("spawn_1", createSectorMap(-100, -100, 100, 100, "SPAWN", "world"));
+            spawn.put("spawn_2", createSectorMap(-100, -100, 100, 100, "SPAWN", "world"));
+            spawn.put("spawn_3", createSectorMap(-100, -100, 100, 100, "SPAWN", "world"));
             sectors.put("SPAWN", spawn);
+
+
             Map<String, Object> queue = new LinkedHashMap<>();
-            queue.put("queue", createSectorMap(-50, -50, 50, 50, "QUEUE", "world"));
+            queue.put("queue", createSectorMap(-100, -100, 100, 100, "QUEUE", "world"));
             sectors.put("QUEUE", queue);
+
+
             Map<String, Object> sector = new LinkedHashMap<>();
-            sector.put("north", createSectorMap(250, -250, 750, 250, "SECTOR", "world"));
-            sector.put("south", createSectorMap(-750, -250, -250, 250, "SECTOR", "world"));
-            sector.put("east", createSectorMap(-250, 250, 250, 750, "SECTOR", "world"));
-            sector.put("west", createSectorMap(-250, -750, 250, -250, "SECTOR", "world"));
-            sector.put("northEast", createSectorMap(250, 250, 750, 750, "SECTOR", "world"));
-            sector.put("northWest", createSectorMap(-750, 250, -250, 750, "SECTOR", "world"));
-            sector.put("southEast", createSectorMap(250, -750, 750, -250, "SECTOR", "world"));
-            sector.put("southWest", createSectorMap(-750, -750, -250, -250, "SECTOR", "world"));
+            sector.put("s1", createSectorMap(-100, 100, 1000, 1000, "SECTOR", "world"));
+            sector.put("w1", createSectorMap(-1000, -100, -100, 1000, "SECTOR", "world"));
+            sector.put("e1", createSectorMap(100, -1000, 1000, 100, "SECTOR", "world"));
+            sector.put("n1", createSectorMap(-1000, -1000, 100, -100, "SECTOR", "world"));
             sectors.put("SECTOR", sector);
+
+
             Map<String, Object> nether = new LinkedHashMap<>();
-            nether.put("nether01", createSectorMap(-128, -128, 128, 128, "NETHER", "world_nether"));
-            nether.put("nether02", createSectorMap(129, -128, 384, 128, "NETHER", "world_nether"));
+            nether.put("nether01", createSectorMap(-100, -100, 100, 100, "NETHER", "world_nether"));
+            nether.put("nether02", createSectorMap(-100, -100, 100, 100, "NETHER", "world_nether"));
             sectors.put("NETHER", nether);
+
+
             Map<String, Object> end = new LinkedHashMap<>();
             end.put("end01", createSectorMap(-100, -100, 100, 100, "END", "world_end"));
-            end.put("end02", createSectorMap(101, -100, 300, 100, "END", "world_end"));
+            end.put("end02", createSectorMap(-100, -100, 100, 100, "END", "world_end"));
             sectors.put("END", end);
+
             root.put("sectors", sectors);
+
             mapper.writerWithDefaultPrettyPrinter().writeValue(configPath.toFile(), root);
             System.out.println("config.json został utworzony!");
 

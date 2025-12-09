@@ -57,21 +57,6 @@ public class MoveListener implements Listener {
                 Sector currentSector = sectorManager.getCurrentSector();
                 if (currentSector == null) return;
 
-                int borderDistance = currentSector.getBorderDistance(to);
-                Sector nearestSector = currentSector.getNearestSector(to);
-
-                if (nearestSector != null && borderDistance <= Configuration.BORDER_MESSAGE_DISTANCE) {
-                    String displayName = nearestSector.getType() == SectorType.SPAWN ? "spawn" : nearestSector.getName();
-                    player.sendActionBar(
-                            Component.text(
-                                    ChatUtil.fixColors(
-                                            Configuration.BORDER_MESSAGE
-                                                    .replace("{SECTOR}", displayName)
-                                                    .replace("{DISTANCE}", Integer.toString(borderDistance))
-                                    )
-                            )
-                    );
-                }
 
                 Sector sector = sectorManager.getSector(to);
                 if (sector == null) return;

@@ -9,8 +9,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import org.bukkit.entity.Player;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.redis.RedisManager;
+import pl.endixon.sectors.paper.inventory.SectorShowWindow;
 import pl.endixon.sectors.paper.redis.packet.PacketExecuteCommand;
 import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.PaperSector;
@@ -68,18 +70,12 @@ public class SectorCommand implements CommandExecutor {
             }
 
             case "show": {
-                for (Sector s : sm.getSectors()) {
-                    sender.sendMessage(ChatUtil.fixColors(String.format(
-                            "&6%s &8(&7Status: %s &7TPS: &6%.1f &7Online: &6%d &7Ping: &6%.1fs&8)",
-                            s.getName(),
-                            s.isOnline() ? "&aOnline" : "&cOffline",
-                            s.isOnline() ? TpsUtil.getTPS() : 0.0,
-                            s.getPlayerCount(),
-                            s.getLastInfoPacket()
-                    )));
-                }
+                if (!(sender instanceof Player player)) return true; // tylko dla graczy
+
+                new SectorShowWindow(player, sm).open(); // GUI pokazujące wszystkie sektory
                 break;
             }
+
 
             case "execute": {
                 if (args.length < 2) {

@@ -54,12 +54,16 @@ public class ProtocolLibWorldBorderTask extends BukkitRunnable {
                 centerPacket.getWorldBorderActions().write(0, EnumWrappers.WorldBorderAction.SET_CENTER);
                 centerPacket.getDoubles().write(0, fixedCorner.getX());
                 centerPacket.getDoubles().write(1, fixedCorner.getZ());
+
                 manager.sendServerPacket(player, centerPacket);
                 PacketContainer sizePacket = new PacketContainer(PacketType.Play.Server.SET_BORDER_LERP_SIZE);
                 sizePacket.getWorldBorderActions().write(0, EnumWrappers.WorldBorderAction.LERP_SIZE);
                 sizePacket.getDoubles().write(0, borderSize);
                 sizePacket.getDoubles().write(1, borderSize);
-                sizePacket.getLongs().write(0, 1L);
+                sizePacket.getLongs().write(0, 5000L); // 5 sekund "warming"
+
+
+                sizePacket.getLongs().write(0, 0L);
                 manager.sendServerPacket(player, sizePacket);
 
             } catch (Exception e) {

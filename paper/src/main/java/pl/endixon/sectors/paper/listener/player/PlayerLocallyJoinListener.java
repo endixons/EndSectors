@@ -72,19 +72,20 @@ public class PlayerLocallyJoinListener implements Listener {
                 finalUser.setLastSectorTransfer(false);
                 finalUser.setLastTransferTimestamp(System.currentTimeMillis());
 
-                if (current.getType() != SectorType.QUEUE && finalUser.isFirstJoin()) {
+                if (finalUser.isFirstJoin()
+                        && current.getType() != SectorType.QUEUE
+                        && current.getType() != SectorType.NETHER
+                        && current.getType() != SectorType.END) {
                     finalUser.setFirstJoin(false);
                     finalUser.updatePlayerData(player, current);
 
-                    player.teleportAsync(paperSector.getSectorManager().randomLocation(current)
-                    ).thenAccept(success -> {
-                        if (success) {
-                            sendSectorTitle(player, current);
-                        } else {
-                            Logger.info(() ->
-                                    "Failed to teleport player " + player.getName());
-                        }
-                    });
+                    boolean success = player.teleport(paperSector.getSectorManager().randomLocation(current));
+                    if (success) {
+                        sendSectorTitle(player, current);
+                    } else {
+                        Logger.info(() -> "Failed to teleport player " + player.getName());
+                    }
+
                 }
             });
         });

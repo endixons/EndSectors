@@ -307,7 +307,7 @@ public class UserMongo {
         Vector direction = loc.getDirection();
         direction.setY(0).normalize().multiply(4);
         loc.add(direction);
-        player.teleportAsync(loc);
+        player.teleport(loc);
     }
 
 
@@ -355,30 +355,29 @@ public class UserMongo {
 
     public void handleQueueSector(Player player) {
         Location targetLocation = new Location(player.getWorld(), 0, 70, 0);
-        player.teleportAsync(targetLocation).thenAccept(success -> {
-            if (success) {
-                player.setGameMode(GameMode.ADVENTURE);
-                Bukkit.getOnlinePlayers().forEach(online -> {
-                    if (!online.equals(player)) online.hidePlayer(PaperSector.getInstance(), player);
-                    if (!online.equals(player)) player.hidePlayer(PaperSector.getInstance(), online);
-                });
+        if (player.teleport(targetLocation)) { // teleport synchroniczny
+            player.setGameMode(GameMode.ADVENTURE);
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (!online.equals(player)) online.hidePlayer(PaperSector.getInstance(), player);
+                if (!online.equals(player)) player.hidePlayer(PaperSector.getInstance(), online);
             }
-        });
+        }
     }
 
     private void handleNetherSector(Player player) {
         Location targetLocation = new Location(player.getWorld(), 0, 70, 0);
-        player.teleportAsync(targetLocation).thenAccept(success -> {
-            if (success) loadPlayerData(player);
-        });
+        if (player.teleport(targetLocation)) {
+            loadPlayerData(player);
+        }
     }
 
     private void handleSpawnSector(Player player) {
         Location targetLocation = new Location(player.getWorld(), 0, 70, 0);
-        player.teleportAsync(targetLocation).thenAccept(success -> {
-            if (success) loadPlayerData(player);
-        });
+        if (player.teleport(targetLocation)) {
+            loadPlayerData(player);
+        }
     }
+
 
 
 

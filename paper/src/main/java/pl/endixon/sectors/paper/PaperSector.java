@@ -20,10 +20,14 @@
 
 package pl.endixon.sectors.paper;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.object.PacketConfigurationRequest;
@@ -40,9 +44,9 @@ import pl.endixon.sectors.paper.listener.player.*;
 import pl.endixon.sectors.paper.command.SectorCommand;
 import pl.endixon.sectors.paper.listener.other.MoveListener;
 import pl.endixon.sectors.paper.redis.listener.*;
+import pl.endixon.sectors.paper.sector.ProtocolLibWorldBorderTask;
 import pl.endixon.sectors.paper.sector.transfer.SectorTeleportService;
 import pl.endixon.sectors.paper.sector.SectorManager;
-import pl.endixon.sectors.paper.task.SectorWorldBorderTask;
 import pl.endixon.sectors.paper.task.SendInfoPlayerTask;
 import pl.endixon.sectors.paper.task.SendSectorInfoTask;
 import pl.endixon.sectors.paper.task.SpawnScoreboardTask;
@@ -57,6 +61,8 @@ public class PaperSector extends JavaPlugin {
 
     @Getter
     private static PaperSector instance;
+    private ProtocolManager protocolManager;
+
     private SectorManager sectorManager;
     private UserManager userManager;
     private RedisManager redisManager;
@@ -67,7 +73,7 @@ public class PaperSector extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-
+        protocolManager = ProtocolLibrary.getProtocolManager();
         this.initManager();
         this.initListeners();
         this.initCommands();
@@ -75,6 +81,9 @@ public class PaperSector extends JavaPlugin {
         this.scheduleTasks();
 
         Logger.info("Włączono EndSectors!");
+
+
+
     }
 
 
@@ -179,10 +188,14 @@ public class PaperSector extends JavaPlugin {
     }
 
     private void scheduleTasks() {
-        new SectorWorldBorderTask(sectorManager).runTaskTimer(this, 65L, 65L);
+        new ProtocolLibWorldBorderTask(sectorManager).runTaskTimer(this, 20L, 20L);
         new SpawnScoreboardTask(sectorManager).runTaskTimer(this, 20L, 20L);
         new SendInfoPlayerTask(this).runTaskTimer(this, 12000L, 12000L);
 
     }
+    public static PaperSector getInstance() {
+        return instance;
+    }
+
 }
 

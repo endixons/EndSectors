@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     java
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.github.goooler.shadow") version "8.1.8"
 }
 
 repositories {
@@ -12,7 +12,7 @@ repositories {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
     withSourcesJar()
     withJavadocJar()
@@ -26,6 +26,7 @@ dependencies {
     implementation("org.redisson:redisson:3.52.0")
     implementation("org.mongodb:mongo-java-driver:3.12.14")
     compileOnly("com.mojang:authlib:1.5.21")
+    compileOnly("net.dmulloy2:ProtocolLib:5.4.0")
 }
 
 tasks.named<ShadowJar>("shadowJar") {

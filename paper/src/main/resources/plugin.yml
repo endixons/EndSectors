@@ -2,6 +2,7 @@ name: EndSectors
 main: pl.endixon.sectors.paper.PaperSector
 version: 1.0
 api-version: '1.20'
+depend: [ ProtocolLib ]
 commands:
   sector:
     description: Glowna komenda sektorow

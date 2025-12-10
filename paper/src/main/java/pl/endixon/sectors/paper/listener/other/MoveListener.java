@@ -116,7 +116,7 @@ public class MoveListener implements Listener {
                     } else {
                         Bukkit.getScheduler().runTaskLater(paperSector,
                                 () -> paperSector.getSectorTeleportService().teleportToSector(player, userMongo, spawnToTeleport, false),
-                                1L);
+                                0L);
                     }
                     return;
                 }
@@ -138,7 +138,16 @@ public class MoveListener implements Listener {
                     }
 
                     if (System.currentTimeMillis() - userMongo.getLastTransferTimestamp() < 5000L) {
-                        player.sendMessage(Component.text("Nie możesz połączyć się z tym sektorem teraz! Odczekaj kilka sekund i spróbuj ponownie.").color(NamedTextColor.RED));
+                        long remaining = 5000L - (System.currentTimeMillis() - userMongo.getLastTransferTimestamp());
+                        player.showTitle(Title.title(
+                                Component.text(ChatUtil.fixColors("&cNie możesz połączyć się z tym sektorem teraz!")).color(NamedTextColor.RED),
+                                Component.text(ChatUtil.fixColors("&7Odczekaj " + (remaining / 1000 + 1) + " sekund i spróbuj ponownie")).color(NamedTextColor.GRAY),
+                                Title.Times.times(
+                                        java.time.Duration.ofMillis(500),
+                                        java.time.Duration.ofMillis(2000),
+                                        java.time.Duration.ofMillis(500)
+                                )
+                        ));
                         return;
                     }
 
@@ -154,7 +163,7 @@ public class MoveListener implements Listener {
                     } else {
                         Bukkit.getScheduler().runTaskLater(paperSector,
                                 () -> paperSector.getSectorTeleportService().teleportToSector(player, userMongo, sector, false),
-                                1L);
+                                0L);
                     }
                 }
     }

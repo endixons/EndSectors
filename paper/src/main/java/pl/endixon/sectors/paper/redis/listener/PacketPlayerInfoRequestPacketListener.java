@@ -28,12 +28,6 @@ public class PacketPlayerInfoRequestPacketListener
 
         Player player = user.getPlayer();
         if (player != null) {
-            System.out.println("[PacketListener] Odbieram pakiet dla gracza: " + dto.getName());
-            System.out.println("[PacketListener] GameMode: " + dto.getPlayerGameMode() +
-                    ", Food: " + dto.getFoodLevel() +
-                    ", XP: " + dto.getExperience() +
-                    ", Level: " + dto.getExperienceLevel());
-
             Bukkit.getScheduler().runTask(paperSector, () -> {
                 player.setGameMode(GameMode.valueOf(dto.getPlayerGameMode()));
                 player.setFoodLevel(dto.getFoodLevel());
@@ -48,8 +42,6 @@ public class PacketPlayerInfoRequestPacketListener
                 PlayerDataSerializer.deserializeEffects(dto.getPlayerEffectsData()).forEach(player::addPotionEffect);
                 Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
                 user.updatePlayerData(player, currentSector);
-                System.out.println("[PacketListener] Zaktualizowano dane gracza: " + player.getName() +
-                        " w sektorze: " + currentSector.getName());
             });
         }
     }

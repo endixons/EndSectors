@@ -6,3 +6,5 @@ depend: [EndSectors]
 commands:
   randomtp:
     usage: /randomtp
+  spawn:
+      usage: /spawn

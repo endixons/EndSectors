@@ -27,16 +27,12 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import pl.endixon.sectors.common.packet.PacketChannel;
-import pl.endixon.sectors.common.packet.object.PacketConfigurationRequest;
-import pl.endixon.sectors.common.packet.object.PacketSectorConnected;
-import pl.endixon.sectors.common.packet.object.PacketSectorDisconnected;
+import pl.endixon.sectors.common.packet.object.*;
 
 import pl.endixon.sectors.common.redis.MongoManager;
-import pl.endixon.sectors.common.redis.RedisPacketListener;
 import pl.endixon.sectors.common.redis.RedisManager;
 import pl.endixon.sectors.paper.command.ChannelCommand;
 import pl.endixon.sectors.paper.config.ConfigLoader;
@@ -45,6 +41,9 @@ import pl.endixon.sectors.paper.listener.player.*;
 import pl.endixon.sectors.paper.command.SectorCommand;
 import pl.endixon.sectors.paper.listener.other.MoveListener;
 import pl.endixon.sectors.paper.redis.listener.*;
+import pl.endixon.sectors.paper.redis.packet.PacketExecuteCommand;
+import pl.endixon.sectors.paper.redis.packet.PacketPlayerInfoRequest;
+import pl.endixon.sectors.paper.redis.packet.PacketSectorInfo;
 import pl.endixon.sectors.paper.sector.ProtocolLibWorldBorderTask;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.transfer.SectorTeleportService;
@@ -54,7 +53,6 @@ import pl.endixon.sectors.paper.user.UserManager;
 import pl.endixon.sectors.paper.util.Logger;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @Getter
 public class PaperSector extends JavaPlugin {
@@ -65,25 +63,31 @@ public class PaperSector extends JavaPlugin {
 
     private SectorManager sectorManager;
     private UserManager userManager;
-    private RedisManager redisManager;
+
+    public final RedisManager redisManager = new RedisManager();
     private MongoManager mongoManager;
     private boolean inited = false;
     private final SectorTeleportService sectorTeleportService = new SectorTeleportService(this);
     private final SendSectorInfoTask sectorInfoTask = new SendSectorInfoTask(this);
 
+    public RedisManager getRedisService() {
+        return redisManager;
+    }
+
+
 
     @Override
     public void onEnable() {
         instance = this;
-
         protocolManager = ProtocolLibrary.getProtocolManager();
-
         this.initManager();
-        this.redisManager.publish(PacketChannel.PROXY, new PacketConfigurationRequest());
+        this.redisManager.publish(
+                PacketChannel.PACKET_CONFIGURATION_REQUEST,
+                new PacketConfigurationRequest(this.getSectorManager().getCurrentSectorName())
+        );
         this.initListeners();
         this.initCommands();
         this.scheduleTasks();
-
         Logger.info("Włączono EndSectors!");
     }
 
@@ -92,13 +96,10 @@ public class PaperSector extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (this.redisManager != null) {
-            try {
-                PacketSectorDisconnected packet = new PacketSectorDisconnected();
-                this.redisManager.publish(PacketChannel.GLOBAL, packet);
+                PacketSectorDisconnected packet = new PacketSectorDisconnected(this.getSectorManager().getCurrentSectorName());
+                this.redisManager.publish(PacketChannel.PACKET_SECTOR_DISCONNECTED, packet);
                 this.redisManager.shutdown();
-            } catch (Exception ignored) {}
-        }
+                this.mongoManager.shutdown();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.kickPlayer("§cSektor " + sectorManager.getCurrentSectorName() + " §czostał zamknięty i jest niedostępny!");
@@ -117,7 +118,7 @@ public class PaperSector extends JavaPlugin {
         }
 
         Logger.info("Załadowano " + sectorManager.getSectors().size() + " sektorów!");
-        Logger.info("Aktualny sektor: " + currentSector.getName());
+        Logger.info("Aktualny sektor: " + currentSectorName);
 
         if (!inited) {
             inited = true;
@@ -129,7 +130,8 @@ public class PaperSector extends JavaPlugin {
             );
         }
 
-        redisManager.publish(PacketChannel.GLOBAL, new PacketSectorConnected());
+        redisManager.publish(PacketChannel.PACKET_SECTOR_CONNECTED, new PacketSectorConnected(currentSectorName));
+
 
     }
 
@@ -141,41 +143,24 @@ public class PaperSector extends JavaPlugin {
 
         this.sectorManager = new SectorManager(this, config.currentSector);
         this.userManager = new UserManager();
-        this.redisManager = new RedisManager();
-        mongoManager = new MongoManager();
-        this.redisManager.setPacketSender(sectorManager.getCurrentSectorName());
-
-        Stream.of(new RedisPacketListener<?>[]{
-                new PacketConfigurationPacketListener(this),
-        }).forEach(redisManager::subscribe);
+        mongoManager = MongoManager.getInstance();
+        this.redisManager.initialize("127.0.0.1", 6379, "");
 
 
-        Stream.of(new RedisPacketListener<?>[]{
-                new PacketSpawnTeleportListener(sectorManager, this),
-        }).forEach(listener -> this.redisManager.subscribe(PacketChannel.SPAWN, listener));
+        this.redisManager.subscribe(config.currentSector, new PacketConfigurationPacketListener(), PacketConfiguration.class);
 
-        Stream.of(new RedisPacketListener<?>[]{
-                new PacketSectorInfoPacketListener(sectorManager),
-        }).forEach(listener -> this.redisManager.subscribe(PacketChannel.QUEUE, listener));
+        this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_INFO_QUEUE, new PacketSectorInfoPacketListener(), PacketSectorInfo.class);
+        this.redisManager.subscribe(PacketChannel.PACKET_EXECUTE_COMMAND, new PacketExecuteCommandPacketListener(), PacketExecuteCommand.class);
+        this.redisManager.subscribe(PacketChannel.PACKET_PLAYER_INFO_REQUEST, new PacketPlayerInfoRequestPacketListener(), PacketPlayerInfoRequest.class);
+        this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_CHAT_BROADCAST, new PacketSectorChatBroadcastPacketListener(), PacketSectorChatBroadcast.class);
+        this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_INFO, new PacketSectorInfoPacketListener(), PacketSectorInfo.class);
+        this.redisManager.subscribe(PacketChannel.USER_CHECK_REQUEST, new PacketUserCheckListener(), PacketUserCheck.class);
+        this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_CONNECTED, new PacketSectorConnectedPacketListener(), PacketSectorConnected.class);
+        this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_DISCONNECTED, new PacketSectorDisconnectedPacketListener(), PacketSectorDisconnected.class);
 
-        Stream.of(new RedisPacketListener<?>[]{
-                new PacketExecuteCommandPacketListener(this),
-                new PacketPlayerInfoRequestPacketListener(this),
-                new PacketPermissionBroadcastMessagePacketListener(),
-                new PacketSectorChatBroadcastPacketListener(this),
-                new PacketSectorInfoPacketListener(this.sectorManager)
-        }).forEach(listener -> this.redisManager.subscribe(PacketChannel.SECTORS, listener));
-
-        Stream.of(new RedisPacketListener<?>[]{
-                new PacketUserCheckListener(this)
-        }).forEach(listener -> this.redisManager.subscribe(PacketChannel.PROXY_TO_PAPER, listener));
-
-        Stream.of(new RedisPacketListener<?>[]{
-                new PacketSectorConnectedPacketListener(sectorManager),
-                new PacketSectorDisconnectedPacketListener(sectorManager)
-        }).forEach(listener -> this.redisManager.subscribe(PacketChannel.GLOBAL, listener));
         Logger.info("Zainicjalizowano managery");
     }
+
 
 
     private void initListeners() {

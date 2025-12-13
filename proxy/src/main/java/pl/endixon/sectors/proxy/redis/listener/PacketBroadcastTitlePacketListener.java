@@ -24,16 +24,13 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.packet.object.PacketBroadcastTitle;
-import pl.endixon.sectors.common.redis.RedisPacketListener;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 
 
-public class PacketBroadcastTitlePacketListener extends RedisPacketListener<PacketBroadcastTitle> {
+public class PacketBroadcastTitlePacketListener implements PacketListener<PacketBroadcastTitle> {
 
-    public PacketBroadcastTitlePacketListener() {
-        super(PacketBroadcastTitle.class);
-    }
 
     @Override
     public void handle(PacketBroadcastTitle packet) {

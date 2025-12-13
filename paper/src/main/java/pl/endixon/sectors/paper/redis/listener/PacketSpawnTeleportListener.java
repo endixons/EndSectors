@@ -23,24 +23,17 @@ package pl.endixon.sectors.paper.redis.listener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.packet.object.PacketSpawnTeleport;
-import pl.endixon.sectors.common.redis.RedisPacketListener;
 import pl.endixon.sectors.paper.sector.SectorManager;
 import pl.endixon.sectors.paper.user.UserManager;
 import pl.endixon.sectors.paper.user.UserMongo;
 import pl.endixon.sectors.paper.util.Logger;
 import pl.endixon.sectors.paper.PaperSector;
 
-public class PacketSpawnTeleportListener extends RedisPacketListener<PacketSpawnTeleport> {
+public class PacketSpawnTeleportListener implements PacketListener<PacketSpawnTeleport> {
 
-    private final SectorManager sectorManager;
-    private final PaperSector paperSector;
 
-    public PacketSpawnTeleportListener(SectorManager sectorManager, PaperSector paperSector) {
-        super(PacketSpawnTeleport.class);
-        this.sectorManager = sectorManager;
-        this.paperSector = paperSector;
-    }
 
     @Override
     public void handle(PacketSpawnTeleport packet) {
@@ -50,7 +43,7 @@ public class PacketSpawnTeleportListener extends RedisPacketListener<PacketSpawn
         UserMongo user = UserManager.getUser(player);
         if (user == null) return;
 
-        Bukkit.getScheduler().runTask(paperSector, () -> {
+        Bukkit.getScheduler().runTask(PaperSector.getInstance(), () -> {
             if (Bukkit.getWorld("world") == null) {
                 Logger.info("Nie znaleziono świata 'world' dla gracza " + player.getName());
                 return;

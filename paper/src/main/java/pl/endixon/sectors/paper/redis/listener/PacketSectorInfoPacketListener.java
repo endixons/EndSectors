@@ -20,24 +20,20 @@
 
 package pl.endixon.sectors.paper.redis.listener;
 
-import pl.endixon.sectors.common.redis.RedisPacketListener;
+import pl.endixon.sectors.common.packet.PacketListener;
+import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.redis.packet.PacketSectorInfo;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
 
-public class PacketSectorInfoPacketListener extends RedisPacketListener<PacketSectorInfo> {
+public class PacketSectorInfoPacketListener implements PacketListener<PacketSectorInfo> {
 
-    private final SectorManager sectorManager;
 
-    public PacketSectorInfoPacketListener(SectorManager sectorManager) {
-        super(PacketSectorInfo.class);
-
-        this.sectorManager = sectorManager;
-    }
 
     @Override
     public void handle(PacketSectorInfo packet) {
-        Sector sector = this.sectorManager.getSector(packet.getSender());
+
+        Sector sector = PaperSector.getInstance().getSectorManager().getSector(packet.getSector());
 
         if (sector != null) {
             sector.setLastInfoPacket();

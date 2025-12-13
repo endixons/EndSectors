@@ -20,23 +20,18 @@
 
 package pl.endixon.sectors.proxy.redis.listener;
 
+import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.packet.object.PacketSectorConnected;
-import pl.endixon.sectors.common.redis.RedisPacketListener;
+import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.manager.SectorManager;
 
-public class PacketSectorConnectedPacketListener extends RedisPacketListener<PacketSectorConnected> {
+public class PacketSectorConnectedPacketListener implements PacketListener<PacketSectorConnected> {
 
-    private final SectorManager sectorManager;
 
-    public PacketSectorConnectedPacketListener(SectorManager sectorManager) {
-        super(PacketSectorConnected.class);
-
-        this.sectorManager = sectorManager;
-    }
 
     @Override
     public void handle(PacketSectorConnected packet) {
-        this.sectorManager.getSectorData(packet.getSender()).setOnline(true);
+        VelocitySectorPlugin.getInstance().getSectorManager().getSectorData(packet.getSector()).setOnline(true);
     }
 }
 

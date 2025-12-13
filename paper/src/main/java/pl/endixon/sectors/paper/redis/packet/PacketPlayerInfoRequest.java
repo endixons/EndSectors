@@ -1,13 +1,11 @@
 package pl.endixon.sectors.paper.redis.packet;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import pl.endixon.sectors.common.packet.Packet;
 import pl.endixon.sectors.paper.user.UserMongo;
 
 @Getter
-public class PacketPlayerInfoRequest extends Packet {
+public class PacketPlayerInfoRequest implements Packet {
 
     private final String name;
     private final String sectorName;
@@ -47,24 +45,23 @@ public class PacketPlayerInfoRequest extends Packet {
         );
     }
 
-    @JsonCreator
     public PacketPlayerInfoRequest(
-            @JsonProperty("name") String name,
-            @JsonProperty("sectorName") String sectorName,
-            @JsonProperty("firstJoin") boolean firstJoin,
-            @JsonProperty("lastSectorTransfer") long lastSectorTransfer,
-            @JsonProperty("lastTransferTimestamp") long lastTransferTimestamp,
-            @JsonProperty("teleportingToSector") boolean teleportingToSector,
-            @JsonProperty("foodLevel") int foodLevel,
-            @JsonProperty("experience") int experience,
-            @JsonProperty("experienceLevel") int experienceLevel,
-            @JsonProperty("fireTicks") int fireTicks,
-            @JsonProperty("allowFlight") boolean allowFlight,
-            @JsonProperty("flying") boolean flying,
-            @JsonProperty("playerGameMode") String playerGameMode,
-            @JsonProperty("playerInventoryData") String playerInventoryData,
-            @JsonProperty("playerEnderChestData") String playerEnderChestData,
-            @JsonProperty("playerEffectsData") String playerEffectsData
+            String name,
+            String sectorName,
+            boolean firstJoin,
+            long lastSectorTransfer,
+            long lastTransferTimestamp,
+            boolean teleportingToSector,
+            int foodLevel,
+            int experience,
+            int experienceLevel,
+            int fireTicks,
+            boolean allowFlight,
+            boolean flying,
+            String playerGameMode,
+            String playerInventoryData,
+            String playerEnderChestData,
+            String playerEffectsData
     ) {
         this.name = name;
         this.sectorName = sectorName;
@@ -82,5 +79,65 @@ public class PacketPlayerInfoRequest extends Packet {
         this.playerInventoryData = playerInventoryData;
         this.playerEnderChestData = playerEnderChestData;
         this.playerEffectsData = playerEffectsData;
+    }
+
+    public String getSectorName() {
+        return sectorName;
+    }
+
+    public boolean isFirstJoin() {
+        return firstJoin;
+    }
+
+    public long getLastSectorTransfer() {
+        return lastSectorTransfer;
+    }
+
+    public long getLastTransferTimestamp() {
+        return lastTransferTimestamp;
+    }
+
+    public boolean isTeleportingToSector() {
+        return teleportingToSector;
+    }
+
+    public int getFoodLevel() {
+        return foodLevel;
+    }
+
+    public int getExperience() {
+        return experience;
+    }
+
+    public int getExperienceLevel() {
+        return experienceLevel;
+    }
+
+    public int getFireTicks() {
+        return fireTicks;
+    }
+
+    public boolean isAllowFlight() {
+        return allowFlight;
+    }
+
+    public boolean isFlying() {
+        return flying;
+    }
+
+    public String getPlayerGameMode() {
+        return playerGameMode;
+    }
+
+    public String getPlayerInventoryData() {
+        return playerInventoryData;
+    }
+
+    public String getPlayerEnderChestData() {
+        return playerEnderChestData;
+    }
+
+    public String getPlayerEffectsData() {
+        return playerEffectsData;
     }
 }

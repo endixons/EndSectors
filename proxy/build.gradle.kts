@@ -25,7 +25,12 @@ dependencies {
     compileOnly("com.velocitypowered:velocity-api:3.1.1")
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
-    implementation("org.redisson:redisson:3.52.0")
+    implementation("io.lettuce:lettuce-core:7.1.0.RELEASE")
+    implementation("io.netty:netty-all:4.2.7.Final")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.15.2")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.2")
+
     compileOnly("com.mojang:authlib:1.5.21")
     implementation("org.mongodb:mongo-java-driver:3.12.14")
 }
@@ -36,6 +41,11 @@ tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         exclude(dependency("net.bytebuddy:.*"))
     }
+
+    relocate("io.netty", "pl.endixon.sectors.shadow.netty") {
+        include("io.netty.**")
+    }
+
     exclude("META-INF/**")
     exclude(
         "**/org/bukkit/**",

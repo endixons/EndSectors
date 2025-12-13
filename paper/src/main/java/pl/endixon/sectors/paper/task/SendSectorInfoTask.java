@@ -17,11 +17,12 @@ public class SendSectorInfoTask implements Runnable {
     @Override
     public void run() {
         int online = Bukkit.getOnlinePlayers().size();
+        String sector = PaperSector.getInstance().getSectorManager().getCurrentSectorName();
         int max = Bukkit.getMaxPlayers();
         float tps = (float) TpsUtil.getTPS();
+        PacketSectorInfo info = new PacketSectorInfo(sector, tps, online, max);
+        paperSector.getRedisManager().publish(PacketChannel.PACKET_SECTOR_INFO, info);
+        paperSector.getRedisManager().publish(PacketChannel.PACKET_SECTOR_INFO_QUEUE, info);
 
-        PacketSectorInfo info = new PacketSectorInfo(tps, online, max);
-        paperSector.getRedisManager().publish(PacketChannel.SECTORS, info);
-        paperSector.getRedisManager().publish(PacketChannel.QUEUE, info);
     }
 }

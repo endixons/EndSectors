@@ -2,6 +2,7 @@ package pl.endixon.sectors.paper.sector.transfer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.object.PacketRequestTeleportSector;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
@@ -12,6 +13,7 @@ import pl.endixon.sectors.paper.user.UserMongo;
 import pl.endixon.sectors.paper.util.Logger;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class SectorTeleportService {
 
@@ -37,9 +39,7 @@ public class SectorTeleportService {
             Logger.info(() -> "[Transfer] Blocked spawn-to-spawn transfer for " + player.getName());
             return;
         }
-
         Logger.info(() -> "[Transfer] Starting connection for player " + player.getName() + " -> " + sector.getName());
-
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             SectorChangeEvent event = new SectorChangeEvent(player, sector);
             Bukkit.getPluginManager().callEvent(event);
@@ -47,19 +47,21 @@ public class SectorTeleportService {
                 Logger.info(() -> "[Transfer] Cancelled by event for " + player.getName());
                 return;
             }
+            if (player.isInsideVehicle()) {
+                Logger.info(() -> "[Transfer] Removing vehicle for " + player.getName());
+                player.leaveVehicle();
+            }
+            CompletableFuture.runAsync(() -> {
+                Logger.info(() -> "[Transfer] Updating player data for " + player.getName());
+                user.updatePlayerData(player, sector);
+                Logger.info(() -> "[Transfer] Sending teleport request for " + player.getName());
+                PacketRequestTeleportSector packet = new PacketRequestTeleportSector(player.getName(), sector.getName());
+                PaperSector.getInstance().getRedisService().publish(PacketChannel.PACKET_TELEPORT_TO_SECTOR, packet);
 
-            Optional.of(player).filter(Player::isInsideVehicle).ifPresent(p -> {
-                Logger.info(() -> "[Transfer] Removing vehicle for " + p.getName());
-                p.leaveVehicle();
+            }).thenRun(() -> {
+                plugin.getServer().getScheduler().runTask(plugin,
+                        () -> Logger.info(() -> "[Transfer] Finished for " + player.getName()));
             });
-
-            Logger.info(() -> "[Transfer] Updating player data for " + player.getName());
-            user.updatePlayerData(player, sector);
-            Logger.info(() -> "[Transfer] Sending teleport request for " + player.getName());
-            Optional.of(new PacketRequestTeleportSector(player.getName(), sector.getName()))
-                    .ifPresent(sector::sendPacketProxy);
-
-            Logger.info(() -> "[Transfer] Finished for " + player.getName());
         });
     }
 }

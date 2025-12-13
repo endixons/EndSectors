@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.object.PacketSectorChatBroadcast;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
@@ -40,8 +41,8 @@ public class PlayerChatListener implements Listener {
                 .build()
                 .serialize(message);
 
-        currentSector.sendPacketSectors(
-                new PacketSectorChatBroadcast(player.getName(), serializedMessage)
-        );
+        PacketSectorChatBroadcast packet = new PacketSectorChatBroadcast(player.getName(), serializedMessage);
+        paperSector.getRedisService().publish(PacketChannel.PACKET_SECTOR_CHAT_BROADCAST, packet);
+
     }
 }

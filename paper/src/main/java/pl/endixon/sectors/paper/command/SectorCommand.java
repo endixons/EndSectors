@@ -84,7 +84,7 @@ public class SectorCommand implements CommandExecutor {
                 }
 
                 String commandToSend = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-                redis.publish(PacketChannel.SECTORS, new PacketExecuteCommand(commandToSend));
+                redis.publish(PacketChannel.PACKET_EXECUTE_COMMAND, new PacketExecuteCommand(commandToSend));
 
                 sender.sendMessage(ChatUtil.fixColors("&aWysłano komendę do sektorów."));
                 break;
@@ -95,21 +95,26 @@ public class SectorCommand implements CommandExecutor {
                     sender.sendMessage(ChatUtil.fixColors("&cPodaj nick: &6/sector isonline <nick>"));
                     return true;
                 }
+                String nick = args[1];
+                sm.isPlayerOnline(nick, isOnline -> {
+                    sender.sendMessage(ChatUtil.fixColors(
+                            "&7Gracz &6" + nick + " &7jest: " + (isOnline ? "&aONLINE" : "&cOFFLINE")
+                    ));
+                });
 
-                boolean online = sm.isPlayerOnline(args[1]);
-
-                sender.sendMessage(ChatUtil.fixColors("&7Gracz &6" + args[1] + " &7jest: " + (online ? "&aONLINE" : "&cOFFLINE")));
                 break;
             }
+
 
             case "who": {
-                List<String> online = sm.getOnlinePlayers();
-
-                sender.sendMessage(ChatUtil.fixColors(
-                        "&7Online (&6" + online.size() + "&7): &6" + String.join("&7, &6", online)
-                ));
+                sm.getOnlinePlayers(online -> {
+                    sender.sendMessage(ChatUtil.fixColors(
+                            "&7Online (&6" + online.size() + "&7): &6" + String.join("&7, &6", online)
+                    ));
+                });
                 break;
             }
+
 
             case "inspect": {
                 if (args.length < 2) {

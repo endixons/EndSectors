@@ -64,7 +64,7 @@ public class PlayerTeleportListener implements Listener {
                 return;
             }
 
-            if (System.currentTimeMillis() - user.getLastSectorTransfer() < 5000L) return;
+            if (System.currentTimeMillis() - user.getLastSectorTransfer() < 3000L) return;
             user.setLastSectorTransfer(true);
             paperSector.getSectorTeleportService().teleportToSector(player, user, targetSector, false);
     }

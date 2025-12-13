@@ -24,7 +24,7 @@ public interface Configuration {
 
 
     String BORDER_MESSAGE = "&6Zbliżasz się do granicy sektora &a{SECTOR} {DISTANCE}m";
-    int BORDER_MESSAGE_DISTANCE = 15;
+    int BORDER_MESSAGE_DISTANCE = 50;
     int BREAK_BORDER_DISTANCE = 10;
     String BREAK_BORDER_DISTANCE_MESSAGE = "&cNie możesz niszczyć bloków przy sektorze!";
     int PLACE_BORDER_DISTANCE = 10;
@@ -38,7 +38,6 @@ public interface Configuration {
     String playerDataNotFoundMessage = "&cWystąpił problem podczas ładowania danych";
     double BORDER_TELEPORT_DISTANCE = 10;
     String BORDER_TELEPORT_DISTANCE_MESSAGE = "&cNie możesz użyć ender perla tak blisko granicy sektora!";
-
 
 }
 

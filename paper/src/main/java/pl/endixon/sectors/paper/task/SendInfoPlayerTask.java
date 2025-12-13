@@ -33,9 +33,10 @@ public class SendInfoPlayerTask extends BukkitRunnable {
             if (user == null) continue;
 
             paperSector.getRedisManager().publish(
-                    PacketChannel.SECTORS,
+                    PacketChannel.PACKET_PLAYER_INFO_REQUEST,
                     new PacketPlayerInfoRequest(user)
             );
+
         }
     }
 

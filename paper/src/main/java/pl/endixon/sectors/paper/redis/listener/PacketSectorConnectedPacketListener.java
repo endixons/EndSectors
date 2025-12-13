@@ -22,26 +22,22 @@ package pl.endixon.sectors.paper.redis.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.packet.object.PacketSectorConnected;
-import pl.endixon.sectors.common.redis.RedisPacketListener;
 import pl.endixon.sectors.common.util.ChatUtil;
+import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.SectorManager;
 import pl.endixon.sectors.paper.util.Logger;
 
-public class PacketSectorConnectedPacketListener extends RedisPacketListener<PacketSectorConnected> {
+public class PacketSectorConnectedPacketListener implements PacketListener<PacketSectorConnected> {
 
-    private final SectorManager sectorManager;
 
-    public PacketSectorConnectedPacketListener(SectorManager sectorManager) {
-        super(PacketSectorConnected.class);
-        this.sectorManager = sectorManager;
-    }
 
     @Override
     public void handle(PacketSectorConnected packet) {
-        String sectorName = packet.getSender();
+        String sectorName = packet.getSector();
 
-        if (!sectorName.equalsIgnoreCase(this.sectorManager.getCurrentSectorName())) {
+        if (!sectorName.equalsIgnoreCase( PaperSector.getInstance().getSectorManager().getCurrentSectorName())) {
             String message = String.format("&aSektor &e%s &azostał uruchomiony i jest dostępny!", sectorName);
             Logger.info(message);
             for (Player player : Bukkit.getOnlinePlayers()) {
@@ -50,7 +46,7 @@ public class PacketSectorConnectedPacketListener extends RedisPacketListener<Pac
                 }
             }
         }
-        this.sectorManager.getSector(sectorName).setOnline(true);
+        PaperSector.getInstance().getSectorManager().getSector(sectorName).setOnline(true);
     }
 }
 

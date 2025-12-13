@@ -1,136 +1,122 @@
-/*
- *
- *  EndSectors  Non-Commercial License
- *  (c) 2025 Endixon
- *
- *  Permission is granted to use, copy, and
- *  modify this software **only** for personal
- *  or educational purposes.
- *
- *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code
- *  without explicit permission is strictly
- *  prohibited.
- *
- *  Visit https://github.com/Endixon/EndSectors
- *  for more info.
- *
- */
-
 package pl.endixon.sectors.common.redis;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.flogger.Flogger;
-import org.redisson.Redisson;
-import org.redisson.api.RSet;
-import org.redisson.api.RedissonClient;
-import org.redisson.client.codec.StringCodec;
-import org.redisson.codec.JsonJacksonCodec;
-import org.redisson.config.Config;
-import org.redisson.config.SingleServerConfig;
+import com.google.gson.Gson;
+import io.lettuce.core.ClientOptions;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
+import io.lettuce.core.api.async.RedisAsyncCommands;
+import io.lettuce.core.pubsub.RedisPubSubAdapter;
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
+import io.lettuce.core.pubsub.api.async.RedisPubSubAsyncCommands;
+import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
+import io.lettuce.core.resource.DefaultClientResources;
 import pl.endixon.sectors.common.packet.Packet;
+import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.util.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.nio.CharBuffer;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
-@Getter
-@Setter
 public class RedisManager {
 
-    @Getter
-    private static RedisManager instance;
+    private RedisClient redisClient;
+    private StatefulRedisPubSubConnection<String, String> pubSubConnection;
+    private RedisAsyncCommands<String, String> publishCommands;
+    private final Gson gson = new Gson();
+    private final Set<String> onlinePlayers = Collections.synchronizedSet(new HashSet<>());
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    public void initialize(String host, int port, String password) {
 
-    private final RedissonClient redisson;
-    private final RSet<String> onlinePlayersSet;
-
-    private String packetSender;
-
-    public RedisManager() {
-        this("localhost", 6379, "");
-    }
-
-    public RedisManager(String address, int port, String password) {
-        if (instance != null) {
-            throw new RuntimeException("Only one RedisManager instance can exist at once");
-        }
-        instance = this;
-
-        Config config = new Config();
-        SingleServerConfig serverConfig = config.useSingleServer()
-                .setAddress("redis://" + address + ":" + port);
-
-        if (!password.isEmpty()) {
-            serverConfig.setPassword(password);
-        }
-
-        BasicPolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
-                .allowIfSubType("pl.endixon.sectors.common")
-                .allowIfSubType("pl.endixon.sectors.paper")
+        RedisURI uri = RedisURI.builder()
+                .withHost(host)
+                .withPort(port)
+                .withPassword(CharBuffer.wrap(password))
                 .build();
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setTypeFactory(mapper.getTypeFactory().withClassLoader(this.getClass().getClassLoader()));
+        DefaultClientResources resources = DefaultClientResources.builder()
+                .ioThreadPoolSize(4)
+                .build();
+        redisClient = RedisClient.create(resources, uri);
 
-        config.setCodec(new JsonJacksonCodec(mapper));
-
-        this.redisson = Redisson.create(config);
-        this.onlinePlayersSet = this.redisson.getSet("onlinePlayers", StringCodec.INSTANCE);
+        ClientOptions options = ClientOptions.builder()
+                .autoReconnect(true)
+                .publishOnScheduler(true)
+                .build();
+        redisClient.setOptions(options);
+        publishCommands = redisClient.connect().async();
+        pubSubConnection = redisClient.connectPubSub();
     }
 
+    public <T extends Serializable> void subscribe(String channel, PacketListener<T> listener, Class<T> type) {
+        RedisPubSubCommands<String, String> sync = pubSubConnection.sync();
+        sync.subscribe(channel);
 
-    public void shutdown() {
-        this.redisson.shutdown();
+        pubSubConnection.addListener(new RedisPubSubAdapter<>() {
+            @Override
+            public void message(String ch, String msg) {
+                if (ch.equals(channel)) {
+                    T packet = gson.fromJson(msg, type);
+                    listener.handle(packet);
+                }
+            }
+        });
     }
-
-
 
     public void publish(String channel, Packet packet) {
-        redisson.getTopic(channel).publishAsync(packet)
-                .thenAccept(count -> {
-                })
+        String json = gson.toJson(packet);
+        publishCommands.publish(channel, json);
+    }
+
+    public void addOnlinePlayer(String name) {
+        if (name != null && !name.isEmpty()) {
+            onlinePlayers.add(name);
+            publishCommands.sadd("online_players", name)
+                    .exceptionally(ex -> {
+                        Logger.info("Failed to add player to Redis online set: " + name, ex);
+                        return null;
+                    });
+        }
+    }
+
+    public void removeOnlinePlayer(String name) {
+        if (name != null && !name.isEmpty()) {
+            onlinePlayers.remove(name);
+            publishCommands.srem("online_players", name)
+                    .exceptionally(ex -> {
+                        Logger.info("Failed to remove player from Redis online set: " + name, ex);
+                        return null;
+                    });
+        }
+    }
+
+    public void getOnlinePlayers(Consumer<List<String>> callback) {
+        publishCommands.smembers("online_players")
+                .thenAccept(players -> callback.accept(new ArrayList<>(players)))
                 .exceptionally(ex -> {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("Failed to publish packet to channel ").append(channel).append(": ").append(ex.toString()).append("\n");
-                    for (StackTraceElement element : ex.getStackTrace()) {
-                        sb.append("    at ").append(element.toString()).append("\n");
-                    }
-                    Logger.error(sb.toString());
+                    Logger.info("Failed to fetch online players from Redis", ex);
+                    callback.accept(Collections.emptyList());
                     return null;
                 });
     }
 
-    public <T extends Packet> void subscribe(RedisPacketListener<T> listener) {
-        this.subscribe(packetSender, listener);
+    public void isPlayerOnline(String name, Consumer<Boolean> callback) {
+        publishCommands.sismember("online_players", name)
+                .thenAccept(callback)
+                .exceptionally(ex -> {
+                    Logger.info("Failed to check if player is online in Redis: " + name, ex);
+                    callback.accept(false);
+                    return null;
+                });
     }
 
-    public <T extends Packet> void subscribe(String channel, RedisPacketListener<T> listener) {
-        this.redisson.getTopic(channel).addListener(listener.getPacketClass(), listener);
-    }
 
-    public void addOnlinePlayer(String playerName) {
-        if (playerName != null && !playerName.isEmpty()) {
-            onlinePlayersSet.add(playerName);
-        }
-    }
 
-    public void removeOnlinePlayer(String playerName) {
-        if (playerName != null && !playerName.isEmpty()) {
-            onlinePlayersSet.remove(playerName);
-        }
-    }
-
-    public List<String> getOnlinePlayers() {
-        return new ArrayList<>(onlinePlayersSet.readAll());
-    }
-
-    public boolean isPlayerOnline(String playerName) {
-        return onlinePlayersSet.contains(playerName);
+    public void shutdown() {
+        if (pubSubConnection != null) pubSubConnection.close();
+        if (publishCommands != null) publishCommands.getStatefulConnection().close();
+        if (redisClient != null) redisClient.shutdown();
     }
 }
-

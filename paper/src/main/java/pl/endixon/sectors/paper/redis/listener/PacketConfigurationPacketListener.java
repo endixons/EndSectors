@@ -20,29 +20,19 @@
 
 package pl.endixon.sectors.paper.redis.listener;
 
-import org.bukkit.Bukkit;
+import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.packet.object.PacketConfiguration;
-import pl.endixon.sectors.common.redis.RedisPacketListener;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.util.Logger;
 
-import java.awt.print.Paper;
+public class PacketConfigurationPacketListener implements PacketListener<PacketConfiguration> {
 
-public class PacketConfigurationPacketListener extends RedisPacketListener<PacketConfiguration> {
-
-    private final PaperSector PaperSector;
-
-    public PacketConfigurationPacketListener(PaperSector PaperSector) {
-        super(PacketConfiguration.class);
-
-        this.PaperSector = PaperSector;
-    }
 
     @Override
     public void handle(PacketConfiguration packet) {
         Logger.info("Otrzymano pakiet konfiguracji od serwera proxy!");
-        this.PaperSector.getSectorManager().loadSectorsData(packet.getSectorsData());
-        PaperSector.init();
+        PaperSector.getInstance().getSectorManager().loadSectorsData(packet.getSectorsData());
+        PaperSector.getInstance().init();
 
     }
 

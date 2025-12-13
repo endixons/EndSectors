@@ -20,23 +20,18 @@
 
 package pl.endixon.sectors.paper.redis.listener;
 
+import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.packet.object.PacketSectorChatBroadcast;
-import pl.endixon.sectors.common.redis.RedisPacketListener;
 import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.PaperSector;
 
-public class PacketSectorChatBroadcastPacketListener extends RedisPacketListener<PacketSectorChatBroadcast> {
+public class PacketSectorChatBroadcastPacketListener implements PacketListener<PacketSectorChatBroadcast> {
 
-    private final PaperSector paperSector;
 
-    public PacketSectorChatBroadcastPacketListener(PaperSector paperSector) {
-        super(PacketSectorChatBroadcast.class);
-        this.paperSector = paperSector;
-    }
 
     @Override
     public void handle(PacketSectorChatBroadcast packet) {
-        this.paperSector.getServer().broadcastMessage(ChatUtil.fixColors("&7" + packet.getSenderName() + ": " + packet.getMessage()));
+        PaperSector.getInstance().getServer().broadcastMessage(ChatUtil.fixColors("&7" + packet.getSenderName() + ": " + packet.getMessage()));
         }
 
 }

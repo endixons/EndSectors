@@ -22,24 +22,19 @@ package pl.endixon.sectors.paper.redis.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
+import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.paper.redis.packet.PacketExecuteCommand;
-import pl.endixon.sectors.common.redis.RedisPacketListener;
 import pl.endixon.sectors.paper.PaperSector;
 
-public class PacketExecuteCommandPacketListener extends RedisPacketListener<PacketExecuteCommand> {
+public class PacketExecuteCommandPacketListener implements PacketListener<PacketExecuteCommand> {
 
-    private final PaperSector paperSector;
 
-    public PacketExecuteCommandPacketListener(PaperSector paperSector) {
-        super(PacketExecuteCommand.class);
-        this.paperSector = paperSector;
-    }
 
     @Override
     public void handle(PacketExecuteCommand packet) {
-        ConsoleCommandSender console = paperSector.getServer().getConsoleSender();
-        Bukkit.getScheduler().runTask(paperSector, () -> {
-            paperSector.getServer().dispatchCommand(console, packet.getCommand());
+        ConsoleCommandSender console = PaperSector.getInstance().getServer().getConsoleSender();
+        Bukkit.getScheduler().runTask(PaperSector.getInstance(), () -> {
+            PaperSector.getInstance().getServer().dispatchCommand(console, packet.getCommand());
         });
     }
 }

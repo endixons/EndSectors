@@ -20,23 +20,16 @@
 
 package pl.endixon.sectors.proxy.redis.listener;
 
+import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.packet.object.PacketRequestTeleportSector;
-import pl.endixon.sectors.common.redis.RedisPacketListener;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.manager.SectorManager;
 import pl.endixon.sectors.proxy.manager.TeleportationManager;
 import pl.endixon.sectors.proxy.util.Logger;
 
-public class TeleportToSectorListener extends RedisPacketListener<PacketRequestTeleportSector> {
+public class TeleportToSectorListener implements PacketListener<PacketRequestTeleportSector> {
 
-    private final SectorManager sectorManager;
-    private final TeleportationManager teleportManager;
 
-    public TeleportToSectorListener(SectorManager sectorManager, TeleportationManager teleportManager) {
-        super(PacketRequestTeleportSector.class);
-        this.sectorManager = sectorManager;
-        this.teleportManager = teleportManager;
-    }
 
     @Override
     public void handle(PacketRequestTeleportSector packet) {
@@ -49,11 +42,11 @@ public class TeleportToSectorListener extends RedisPacketListener<PacketRequestT
         var serverOpt = VelocitySectorPlugin.getInstance().getServerInstance().getServer(sectorName);
 
         if (playerOpt.isPresent() && serverOpt.isPresent()) {
-            teleportManager.addPending(playerName);
+            VelocitySectorPlugin.getInstance().getTeleportationManager().addPending(playerName);
             playerOpt.get().createConnectionRequest(serverOpt.get()).fireAndForget();
             VelocitySectorPlugin.getInstance().getServerInstance()
                     .getScheduler()
-                    .buildTask(VelocitySectorPlugin.getInstance(), () -> teleportManager.removePending(playerName))
+                    .buildTask(VelocitySectorPlugin.getInstance(), () ->  VelocitySectorPlugin.getInstance().getTeleportationManager().removePending(playerName))
                     .delay(2, java.util.concurrent.TimeUnit.SECONDS)
                     .schedule();
         } else {

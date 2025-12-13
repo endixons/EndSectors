@@ -25,14 +25,14 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import lombok.Getter;
-import pl.endixon.sectors.common.cache.UserFlagCache;
 import pl.endixon.sectors.common.packet.PacketChannel;
+import pl.endixon.sectors.common.packet.object.*;
 import pl.endixon.sectors.common.redis.MongoManager;
-import pl.endixon.sectors.common.redis.RedisPacketListener;
 import pl.endixon.sectors.common.redis.RedisManager;
 import pl.endixon.sectors.common.sector.SectorData;
 import pl.endixon.sectors.common.sector.SectorType;
@@ -50,10 +50,8 @@ import pl.endixon.sectors.proxy.util.Logger;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 @Plugin(id = "endsectors-proxy", name = "EndSectorsProxy", version = "1.0")
 
@@ -68,7 +66,7 @@ public class VelocitySectorPlugin {
     private MongoManager mongoManager;
     private SectorManager sectorManager;
 
-    private RedisManager redisManager;
+    public final RedisManager redisManager = new RedisManager();
     private QueueManager QueueManager;
     private TeleportationManager teleportationManager;
 
@@ -78,10 +76,16 @@ public class VelocitySectorPlugin {
         this.dataDirectory = dataDirectory;
     }
 
+    public RedisManager getRedisService() {
+        return redisManager;
+    }
+
+
     @Subscribe
     public void onProxyInitialize(com.velocitypowered.api.event.proxy.ProxyInitializeEvent event) {
         instance = this;
         Logger.info("Uruchamiam EndSectors-Proxy...");
+        System.setProperty("io.netty.transport.noNative", "true");
         this.sectorManager = new SectorManager();
         this.teleportationManager = new TeleportationManager();
         this.QueueManager = new QueueManager();
@@ -93,8 +97,15 @@ public class VelocitySectorPlugin {
         Logger.info("Uruchomiono!");
     }
 
+    @Subscribe
+    public void onProxyShutdown(ProxyShutdownEvent event) {
+        this.redisManager.shutdown();
+        this.mongoManager.shutdown();
+    }
+
+
     private void initMongoManager() {
-        mongoManager = new MongoManager();
+        mongoManager = MongoManager.getInstance();
         Logger.info("Zainicjalizowano MongoManagera");
 
     }
@@ -102,10 +113,10 @@ public class VelocitySectorPlugin {
 
     private void loadSectors() {
         Path configPath = getDataDirectory().resolve("config.json");
+
         if (!Files.exists(configPath)) {
             Logger.info("Brak config.json w katalogu pluginu! Trwa tworzenie domyślnego configu...");
-            Path dataFolder = Paths.get("plugins", "EndSectors-Proxy");
-            ConfigCreator.createDefaultConfig(dataFolder);
+            ConfigCreator.createDefaultConfig(getDataDirectory());
             return;
         }
         try {
@@ -178,50 +189,38 @@ public class VelocitySectorPlugin {
 
 
     private void initRedisManager() {
-        this.redisManager = new RedisManager();
-        this.redisManager.setPacketSender(PacketChannel.PROXY);
+        this.redisManager.initialize("127.0.0.1", 6379, "");
 
-        Arrays.stream(new RedisPacketListener<?>[] {
-                new PacketConfigurationRequestPacketListener(this.sectorManager),
-                new PacketBroadcastMessagePacketListener(),
-                new PacketSendMessageToPlayerPacketListener(),
-
-                new PacketBroadcastTitlePacketListener(),
-        }).forEach(this.redisManager::subscribe);
-
-
-        Stream.of(new RedisPacketListener<?>[]{
-                new PacketUserCheckProxyListener(this)
-        }).forEach(listener -> this.redisManager.subscribe(PacketChannel.PAPER_TO_PROXY, listener));
-        
-        Arrays.stream(new RedisPacketListener<?>[] {
-                new TeleportToSectorListener(this.sectorManager,teleportationManager)
-        }).forEach(listener -> this.redisManager.subscribe(PacketChannel.PROXY, listener));
-
-
-        Arrays.stream(new RedisPacketListener<?>[] {
-                new PacketSectorConnectedPacketListener(this.sectorManager),
-                new PacketSectorDisconnectedPacketListener(this.sectorManager)
-        }).forEach(listener -> this.redisManager.subscribe(PacketChannel.GLOBAL, listener));
+        this.redisManager.subscribe(PacketChannel.PACKET_CONFIGURATION_REQUEST, new PacketConfigurationRequestPacketListener(), PacketConfigurationRequest.class);
+        this.redisManager.subscribe(PacketChannel.PACKET_BROADCAST_MESSAGE, new PacketBroadcastMessagePacketListener(), PacketBroadcastMessage.class);
+        this.redisManager.subscribe(PacketChannel.PACKET_SEND_MESSAGE_TO_PLAYER, new PacketSendMessageToPlayerPacketListener(), PacketSendMessageToPlayer.class);
+        this.redisManager.subscribe(PacketChannel.PACKET_BROADCAST_TITLE, new PacketBroadcastTitlePacketListener(), PacketBroadcastTitle.class);
+        this.redisManager.subscribe(PacketChannel.USER_CHECK_RESPONSE, new PacketUserCheckProxyListener(), PacketUserCheck.class);
+        this.redisManager.subscribe(PacketChannel.PACKET_TELEPORT_TO_SECTOR, new TeleportToSectorListener(), PacketRequestTeleportSector.class);
+        this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_CONNECTED, new PacketSectorConnectedPacketListener(), PacketSectorConnected.class);
+        this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_DISCONNECTED, new PacketSectorDisconnectedPacketListener(), PacketSectorDisconnected.class);
 
         Logger.info("Zainicjalizowano RedisManagera");
     }
 
-    private void initListeners() {
-        server.getEventManager().register(this, new LastSectorConnectListener(this));
 
-        server.getEventManager().register(this, new Object() {
-            @Subscribe
-            public void onPlayerLogin(LoginEvent event) {
-                redisManager.addOnlinePlayer(event.getPlayer().getUsername());
+        private void initListeners() {
+            server.getEventManager().register(this, new LastSectorConnectListener(this));
 
-            }
-            @Subscribe
-            public void onPlayerDisconnect(DisconnectEvent event) {
-                redisManager.removeOnlinePlayer(event.getPlayer().getUsername());
-            }
-        });
-    }
+            server.getEventManager().register(this, new Object() {
+                @Subscribe
+                public void onPlayerLogin(LoginEvent event) {
+                    redisManager.addOnlinePlayer(event.getPlayer().getUsername());
+
+                }
+                @Subscribe
+                public void onPlayerDisconnect(DisconnectEvent event) {
+                    redisManager.removeOnlinePlayer(event.getPlayer().getUsername());
+                }
+            });
+        }
+
+
 
     public ProxyServer getServerInstance() {
         return server;

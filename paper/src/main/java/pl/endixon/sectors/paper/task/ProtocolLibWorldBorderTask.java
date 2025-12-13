@@ -60,7 +60,7 @@ public class ProtocolLibWorldBorderTask extends BukkitRunnable {
                 sizePacket.getWorldBorderActions().write(0, EnumWrappers.WorldBorderAction.LERP_SIZE);
                 sizePacket.getDoubles().write(0, borderSize);
                 sizePacket.getDoubles().write(1, borderSize);
-                sizePacket.getLongs().write(0, 5000L); // 5 sekund "warming"
+                sizePacket.getLongs().write(0, 5000L);
 
 
                 sizePacket.getLongs().write(0, 0L);

@@ -20,33 +20,39 @@
 
 package pl.endixon.sectors.proxy.redis.listener;
 
+import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.packet.object.PacketConfiguration;
 import pl.endixon.sectors.common.packet.object.PacketConfigurationRequest;
-import pl.endixon.sectors.common.redis.RedisPacketListener;
 import pl.endixon.sectors.common.redis.RedisManager;
 import pl.endixon.sectors.common.sector.SectorData;
+import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.manager.SectorManager;
 import pl.endixon.sectors.proxy.util.Logger;
 
-public class PacketConfigurationRequestPacketListener extends RedisPacketListener<PacketConfigurationRequest> {
+public class PacketConfigurationRequestPacketListener implements PacketListener<PacketConfigurationRequest> {
 
-    private final SectorManager sectorManager;
-
-    public PacketConfigurationRequestPacketListener(SectorManager sectorManager) {
-        super(PacketConfigurationRequest.class);
-
-        this.sectorManager = sectorManager;
-    }
 
     @Override
     public void handle(PacketConfigurationRequest packet) {
-        Logger.info("Otrzymano zapytanie o pakiet konfiguracji od sektora " + packet.getSender());
+        String sector = packet.getSector();
+
+        if (sector == null || sector.isEmpty()) {
+            Logger.info("Otrzymano zapytanie o pakiet konfiguracji z pustym sektorem, ignoruję pakiet.");
+            return;
+        }
+
+        SectorManager sectorManager = VelocitySectorPlugin.getInstance().getSectorManager();
+        if (sectorManager == null || sectorManager.getSectorsData() == null) {
+            Logger.info("SectorManager lub lista sektorów jest null, nie można wysłać pakietu konfiguracji.");
+            return;
+        }
+
+        Logger.info("Otrzymano zapytanie o pakiet konfiguracji od sektora " + sector);
 
         PacketConfiguration packetConfiguration = new PacketConfiguration(
-                this.sectorManager.getSectorsData().toArray(new SectorData[0])
+                sectorManager.getSectorsData().toArray(new SectorData[0])
         );
 
-        RedisManager.getInstance().publish(packet.getSender(), packetConfiguration);
+        VelocitySectorPlugin.getInstance().getRedisService().publish(sector, packetConfiguration);
     }
 }
-

@@ -90,8 +90,8 @@ public class MoveListener implements Listener {
                         return;
                     }
 
-                    if (System.currentTimeMillis() - userMongo.getLastTransferTimestamp() < 5000L) {
-                        long remaining = 5000L - (System.currentTimeMillis() - userMongo.getLastTransferTimestamp());
+                    if (System.currentTimeMillis() - userMongo.getLastTransferTimestamp() < 3000L) {
+                        long remaining = 3000L - (System.currentTimeMillis() - userMongo.getLastTransferTimestamp());
                         player.showTitle(Title.title(
                                 Component.text(ChatUtil.fixColors("&cNie możesz połączyć się z tym sektorem teraz!")).color(NamedTextColor.RED),
                                 Component.text(ChatUtil.fixColors("&7Odczekaj " + (remaining / 1000 + 1) + " sekund i spróbuj ponownie")).color(NamedTextColor.GRAY),
@@ -101,10 +101,11 @@ public class MoveListener implements Listener {
                                         java.time.Duration.ofMillis(500)
                                 )
                         ));
+                        currentSector.knockBorder(player, 1.0);
                         return;
                     }
 
-                    if (System.currentTimeMillis() - userMongo.getLastSectorTransfer() < 5000L) return;
+                    if (System.currentTimeMillis() - userMongo.getLastSectorTransfer() < 3000L) return;
 
                     userMongo.setLastSectorTransfer(true);
                     SectorChangeEvent ev = new SectorChangeEvent(player, spawnToTeleport);
@@ -116,7 +117,7 @@ public class MoveListener implements Listener {
                     } else {
                         Bukkit.getScheduler().runTaskLater(paperSector,
                                 () -> paperSector.getSectorTeleportService().teleportToSector(player, userMongo, spawnToTeleport, false),
-                                0L);
+                                1L);
                     }
                     return;
                 }
@@ -137,8 +138,8 @@ public class MoveListener implements Listener {
                         return;
                     }
 
-                    if (System.currentTimeMillis() - userMongo.getLastTransferTimestamp() < 5000L) {
-                        long remaining = 5000L - (System.currentTimeMillis() - userMongo.getLastTransferTimestamp());
+                    if (System.currentTimeMillis() - userMongo.getLastTransferTimestamp() < 3000L) {
+                        long remaining = 3000L - (System.currentTimeMillis() - userMongo.getLastTransferTimestamp());
                         player.showTitle(Title.title(
                                 Component.text(ChatUtil.fixColors("&cNie możesz połączyć się z tym sektorem teraz!")).color(NamedTextColor.RED),
                                 Component.text(ChatUtil.fixColors("&7Odczekaj " + (remaining / 1000 + 1) + " sekund i spróbuj ponownie")).color(NamedTextColor.GRAY),
@@ -148,6 +149,7 @@ public class MoveListener implements Listener {
                                         java.time.Duration.ofMillis(500)
                                 )
                         ));
+                        currentSector.knockBorder(player, 1.0);
                         return;
                     }
 
@@ -163,7 +165,7 @@ public class MoveListener implements Listener {
                     } else {
                         Bukkit.getScheduler().runTaskLater(paperSector,
                                 () -> paperSector.getSectorTeleportService().teleportToSector(player, userMongo, sector, false),
-                                0L);
+                                1L);
                     }
                 }
     }

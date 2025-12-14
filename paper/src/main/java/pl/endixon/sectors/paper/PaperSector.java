@@ -160,7 +160,7 @@ public class PaperSector extends JavaPlugin {
         new ProtocolLibWorldBorderTask(sectorManager).runTaskTimer(this, 20L, 20L);
         new SpawnScoreboardTask(sectorManager).runTaskTimer(this, 20L, 20L);
         new SendInfoPlayerTask(this).runTaskTimer(this, 12000L, 12000L);
-        new BorderActionBarTask(this).runTaskTimer(this, 5L, 5L);
+        new BorderActionBarTask(this).runTaskTimer(this, 20L, 20L);
 
     }
     public static PaperSector getInstance() {

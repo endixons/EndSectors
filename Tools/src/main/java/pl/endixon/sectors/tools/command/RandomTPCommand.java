@@ -42,7 +42,7 @@ public class RandomTPCommand implements CommandExecutor {
             return true;
         }
 
-        UserRedis user = UserManager.getUser(player);
+        UserRedis user = UserManager.getUser(player).orElse(null);
 
         List<Sector> sectors = sectorManager.getSectors().stream()
                 .filter(Sector::isOnline)

@@ -68,7 +68,7 @@ public class SpawnCommand implements CommandExecutor {
         Location spawnLoc = SPAWN_LOC_TEMPLATE.clone();
         spawnLoc.setWorld(Bukkit.getWorld(spawnSector.getWorldName()));
 
-        UserRedis user = UserManager.getUser(player);
+        UserRedis user = UserManager.getUser(player).orElse(null);
         user.setLastTransferTimestamp(System.currentTimeMillis());
 
         player.sendTitle(

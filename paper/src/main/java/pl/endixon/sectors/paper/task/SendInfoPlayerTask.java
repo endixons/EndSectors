@@ -9,7 +9,6 @@ import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.redis.packet.PacketPlayerInfoRequest;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.user.UserRedis;
 
 public class SendInfoPlayerTask extends BukkitRunnable {
 
@@ -28,13 +27,13 @@ public class SendInfoPlayerTask extends BukkitRunnable {
         }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            UserManager.getUser(player.getName()).thenAccept(user -> {
-                if (user == null) return;
-
-                paperSector.getRedisManager().publish(
-                        PacketChannel.PACKET_PLAYER_INFO_REQUEST,
-                        new PacketPlayerInfoRequest(user)
-                );
+            UserManager.getUserAsync(player.getName()).thenAccept(optionalUser -> {
+                optionalUser.ifPresent(user -> {
+                    paperSector.getRedisManager().publish(
+                            PacketChannel.PACKET_PLAYER_INFO_REQUEST,
+                            new PacketPlayerInfoRequest(user)
+                    );
+                });
             });
         }
     }

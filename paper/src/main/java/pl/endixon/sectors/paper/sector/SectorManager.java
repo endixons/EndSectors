@@ -1,20 +1,20 @@
 /*
- * 
- *  EndSectors  Non-Commercial License         
- *  (c) 2025 Endixon                             
- *                                              
- *  Permission is granted to use, copy, and    
- *  modify this software **only** for personal 
- *  or educational purposes.                   
- *                                              
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
  *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code     
- *  without explicit permission is strictly    
- *  prohibited.                                
- *                                              
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
  *  Visit https://github.com/Endixon/EndSectors
- *  for more info.                             
- * 
+ *  for more info.
+ *
  */
 
 
@@ -24,7 +24,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import pl.endixon.sectors.common.sector.SectorData;
@@ -33,15 +32,13 @@ import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.util.Logger;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 public class SectorManager {
 
-    private final Map<String, Sector> sectors = new ConcurrentHashMap<>();
-    private final Map<SectorType, List<Sector>> sectorsByType = new ConcurrentHashMap<>();
+    private final Map<String, Sector> sectors = new HashMap<>();
     private final PaperSector paperSector;
 
     @Getter
@@ -53,7 +50,6 @@ public class SectorManager {
 
     public void addSector(Sector sector) {
         this.sectors.put(sector.getName(), sector);
-        sectorsByType.computeIfAbsent(sector.getType(), k -> new ArrayList<>()).add(sector);
     }
 
     public void loadSectorsData(SectorData[] sectorsData) {
@@ -67,63 +63,45 @@ public class SectorManager {
     }
 
 
-    public Sector getSector(Location location) {
-        Sector current = getCurrentSector();
-        SectorType currentType = current != null ? current.getType() : null;
 
+    public Sector getSector(Location location) {
         for (Sector sector : sectors.values()) {
-            if (!sector.isInSector(location)) continue;
-            if (sector.getType() == SectorType.QUEUE) continue;
-            if (currentType != SectorType.SPAWN) return sector;
-            if (sector.getType() != SectorType.SPAWN) return sector;
+            if (sector.isInSector(location)) {
+                if (sector.getType() == SectorType.QUEUE) continue;
+                if (getCurrentSector() == null || getCurrentSector().getType() != SectorType.SPAWN) {
+                    return sector;
+                } else if (sector.getType() != SectorType.SPAWN) {
+                    return sector;
+                }
+            }
         }
         return null;
     }
 
     public Sector find(SectorType type) {
-        List<Sector> list = sectorsByType.get(type);
-        if (list == null) return null;
-
-        for (Sector sector : list) {
-            if (sector.isOnline()) return sector;
-        }
-
-        return null;
+        return this.sectors.values().stream()
+                .filter(s -> s.getType() == type)
+                .filter(Sector::isOnline)
+                .findFirst()
+                .orElse(null);
     }
-
-
 
     public Location randomLocation(Sector sector) {
         World world = Bukkit.getWorld(sector.getWorldName());
         if (world == null) return null;
 
         double safeMargin = 10;
-        int minX = (int) (Math.min(sector.getFirstCorner().getPosX(), sector.getSecondCorner().getPosX()) + safeMargin);
-        int maxX = (int) (Math.max(sector.getFirstCorner().getPosX(), sector.getSecondCorner().getPosX()) - safeMargin);
-        int minZ = (int) (Math.min(sector.getFirstCorner().getPosZ(), sector.getSecondCorner().getPosZ()) + safeMargin);
-        int maxZ = (int) (Math.max(sector.getFirstCorner().getPosZ(), sector.getSecondCorner().getPosZ()) - safeMargin);
+        double minX = Math.min(sector.getFirstCorner().getPosX(), sector.getSecondCorner().getPosX()) + safeMargin;
+        double maxX = Math.max(sector.getFirstCorner().getPosX(), sector.getSecondCorner().getPosX()) - safeMargin;
+        double minZ = Math.min(sector.getFirstCorner().getPosZ(), sector.getSecondCorner().getPosZ()) + safeMargin;
+        double maxZ = Math.max(sector.getFirstCorner().getPosZ(), sector.getSecondCorner().getPosZ()) - safeMargin;
+        double x = minX + Math.random() * (maxX - minX);
+        double z = minZ + Math.random() * (maxZ - minZ);
+        int y = world.getHighestBlockYAt((int) x, (int) z) + 5;
+        Bukkit.getLogger().info("RandomLocation -> x: " + x + ", y: " + y + ", z: " + z);
 
-        int x = minX + (int) (Math.random() * (maxX - minX + 1));
-        int z = minZ + (int) (Math.random() * (maxZ - minZ + 1));
-        int y = getSafeHighestY(world, x, z);
-
-        return new Location(world, x + 0.5, y + 1, z + 0.5);
+        return new Location(world, x, y, z);
     }
-
-
-    public int getSafeHighestY(World world, int x, int z) {
-        int y = world.getHighestBlockYAt(x, z);
-        while (y > 0) {
-            Material type = world.getBlockAt(x, y, z).getType();
-            if (type.isSolid() && type != Material.BEDROCK && type != Material.WATER && type != Material.LAVA) {
-                return y;
-            }
-            y--;
-        }
-
-        return 1;
-    }
-
 
 
     public Sector getBalancedRandomSpawnSector() {

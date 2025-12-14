@@ -9,7 +9,7 @@ import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.event.sector.SectorChangeEvent;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
-import pl.endixon.sectors.paper.user.UserMongo;
+import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.paper.util.Logger;
 
 import java.util.Optional;
@@ -23,37 +23,39 @@ public class SectorTeleportService {
         this.plugin = plugin;
     }
 
-    public void teleportToSector(Player player,
-                                 UserMongo user,
-                                 Sector sector,
-                                 boolean forceTransfer) {
-
+    public void teleportToSector(Player player, UserRedis user, Sector sector, boolean forceTransfer) {
         SectorManager sectorManager = plugin.getSectorManager();
 
         boolean blockSpawnTransfer = Optional.ofNullable(sectorManager.getCurrentSector())
-                .filter(current -> current.getType() == SectorType.SPAWN)
-                .filter(current -> sector.getType() == SectorType.SPAWN)
-                .isPresent();
+                .map(current -> current.getType() == SectorType.SPAWN)
+                .orElse(false) && sector.getType() == SectorType.SPAWN;
 
         if (blockSpawnTransfer && !forceTransfer) {
             Logger.info(() -> "[Transfer] Blocked spawn-to-spawn transfer for " + player.getName());
             return;
         }
+
         Logger.info(() -> "[Transfer] Starting connection for player " + player.getName() + " -> " + sector.getName());
+
         plugin.getServer().getScheduler().runTask(plugin, () -> {
+
             SectorChangeEvent event = new SectorChangeEvent(player, sector);
             Bukkit.getPluginManager().callEvent(event);
+
             if (event.isCancelled()) {
                 Logger.info(() -> "[Transfer] Cancelled by event for " + player.getName());
                 return;
             }
+
             if (player.isInsideVehicle()) {
                 Logger.info(() -> "[Transfer] Removing vehicle for " + player.getName());
                 player.leaveVehicle();
             }
+
             CompletableFuture.runAsync(() -> {
                 Logger.info(() -> "[Transfer] Updating player data for " + player.getName());
-                user.updatePlayerData(player, sector);
+                user.updateAndSave(player, sector);
+
                 Logger.info(() -> "[Transfer] Sending teleport request for " + player.getName());
                 PacketRequestTeleportSector packet = new PacketRequestTeleportSector(player.getName(), sector.getName());
                 PaperSector.getInstance().getRedisService().publish(PacketChannel.PACKET_TELEPORT_TO_SECTOR, packet);

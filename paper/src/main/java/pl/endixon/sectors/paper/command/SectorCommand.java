@@ -16,13 +16,9 @@ import pl.endixon.sectors.paper.inventory.SectorShowWindow;
 import pl.endixon.sectors.paper.redis.packet.PacketExecuteCommand;
 import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.PaperSector;
-import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
-import pl.endixon.sectors.paper.user.UserMongo;
-import pl.endixon.sectors.paper.util.TpsUtil;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class SectorCommand implements CommandExecutor {
 

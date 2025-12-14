@@ -8,34 +8,35 @@ import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.redis.packet.PacketPlayerInfoRequest;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.user.UserMongo;
+import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.paper.util.PlayerDataSerializer;
 
 public class PacketPlayerInfoRequestPacketListener implements PacketListener<PacketPlayerInfoRequest> {
 
-
     @Override
     public void handle(PacketPlayerInfoRequest dto) {
-        UserMongo user = UserManager.getUsers().get(dto.getName().toLowerCase());
-        if (user == null) return;
+        UserManager.getUserAsync(dto.getName()).thenAccept(optionalUser -> {
+            optionalUser.ifPresent(user -> {
+                Player player = user.getPlayer();
+                if (player != null) {
+                    Bukkit.getScheduler().runTask(PaperSector.getInstance(), () -> {
+                        player.setGameMode(GameMode.valueOf(dto.getPlayerGameMode()));
+                        player.setFoodLevel(dto.getFoodLevel());
+                        player.setTotalExperience(dto.getExperience());
+                        player.setLevel(dto.getExperienceLevel());
+                        player.setFireTicks(dto.getFireTicks());
+                        player.setAllowFlight(dto.isAllowFlight());
+                        player.setFlying(dto.isFlying());
+                        player.getInventory().setContents(PlayerDataSerializer.deserializeItemStacksFromBase64(dto.getPlayerInventoryData()));
+                        player.getEnderChest().setContents(PlayerDataSerializer.deserializeItemStacksFromBase64(dto.getPlayerEnderChestData()));
+                        player.getActivePotionEffects().forEach(e -> player.removePotionEffect(e.getType()));
+                        PlayerDataSerializer.deserializeEffects(dto.getPlayerEffectsData()).forEach(player::addPotionEffect);
 
-        Player player = user.getPlayer();
-        if (player != null) {
-            Bukkit.getScheduler().runTask(PaperSector.getInstance(), () -> {
-                player.setGameMode(GameMode.valueOf(dto.getPlayerGameMode()));
-                player.setFoodLevel(dto.getFoodLevel());
-                player.setTotalExperience(dto.getExperience());
-                player.setLevel(dto.getExperienceLevel());
-                player.setFireTicks(dto.getFireTicks());
-                player.setAllowFlight(dto.isAllowFlight());
-                player.setFlying(dto.isFlying());
-                player.getInventory().setContents(PlayerDataSerializer.deserializeItemStacksFromBase64(dto.getPlayerInventoryData()));
-                player.getEnderChest().setContents(PlayerDataSerializer.deserializeItemStacksFromBase64(dto.getPlayerEnderChestData()));
-                player.getActivePotionEffects().forEach(e -> player.removePotionEffect(e.getType()));
-                PlayerDataSerializer.deserializeEffects(dto.getPlayerEffectsData()).forEach(player::addPotionEffect);
-                Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
-                user.updatePlayerData(player, currentSector);
+                        Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
+                        user.updateAndSave(player, currentSector);
+                    });
+                }
             });
-        }
+        });
     }
-    }
+}

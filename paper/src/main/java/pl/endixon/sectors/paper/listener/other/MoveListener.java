@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -20,7 +18,7 @@ import pl.endixon.sectors.paper.event.sector.SectorChangeEvent;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
 import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.user.UserMongo;
+import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.paper.util.Configuration;
 
 @RequiredArgsConstructor
@@ -48,7 +46,7 @@ public class MoveListener implements Listener {
                 from.getBlockY() == to.getBlockY() &&
                 from.getBlockZ() == to.getBlockZ()) return;
 
-        UserMongo userMongo = UserManager.getUser(player);
+        UserRedis userMongo = UserManager.getUser(player);
             if (userMongo == null) return;
 
                 SectorManager sectorManager = paperSector.getSectorManager();
@@ -117,7 +115,7 @@ public class MoveListener implements Listener {
                     } else {
                         Bukkit.getScheduler().runTaskLater(paperSector,
                                 () -> paperSector.getSectorTeleportService().teleportToSector(player, userMongo, spawnToTeleport, false),
-                                1L);
+                                0L);
                     }
                     return;
                 }
@@ -165,7 +163,7 @@ public class MoveListener implements Listener {
                     } else {
                         Bukkit.getScheduler().runTaskLater(paperSector,
                                 () -> paperSector.getSectorTeleportService().teleportToSector(player, userMongo, sector, false),
-                                1L);
+                                0L);
                     }
                 }
     }

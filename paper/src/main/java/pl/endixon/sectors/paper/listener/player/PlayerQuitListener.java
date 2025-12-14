@@ -17,7 +17,6 @@
  *
  */
 
-
 package pl.endixon.sectors.paper.listener.player;
 
 import org.bukkit.entity.Player;
@@ -28,19 +27,20 @@ import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.util.Logger;
+import pl.endixon.sectors.paper.user.UserRedis;
 
 public class PlayerQuitListener implements Listener {
 
     @EventHandler
     public void onQuitPlayer(final PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        UserManager.getUser(player.getName()).thenAccept(user -> {
-            if (user == null) return;
-            Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
-            if (currentSector == null || currentSector.getType() == SectorType.QUEUE) return;
-            if (System.currentTimeMillis() - user.getLastSectorTransfer() < 5000L) return;
-            user.updatePlayerData(player, currentSector);
-        });
+        UserRedis user = UserManager.getUser(player).orElse(null);
+        if (user == null) return;
+
+        Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
+        if (currentSector == null || currentSector.getType() == SectorType.QUEUE) return;
+        if (System.currentTimeMillis() - user.getLastSectorTransfer() < 3000L) return;
+
+        user.updateAndSave(player, currentSector);
     }
 }

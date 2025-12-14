@@ -44,8 +44,8 @@ import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
-import pl.endixon.sectors.paper.user.UserMongo;
 import pl.endixon.sectors.paper.user.UserManager;
+import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.paper.util.Configuration;
 
 @AllArgsConstructor
@@ -276,15 +276,13 @@ public class PlayerSectorInteractListener implements Listener {
         cancelIfRedirecting(player, event);
     }
 
-
-
     private void cancelIfRedirecting(Player player, org.bukkit.event.Cancellable event) {
-        UserMongo user = UserManager.getUser(player);
-        if (System.currentTimeMillis() - user.getLastSectorTransfer() < 5000L) {
+        UserRedis user = UserManager.getUser(player).orElse(null);
+        if (user == null) return;
+        if (System.currentTimeMillis() - user.getLastSectorTransfer() < 3000L) {
             event.setCancelled(true);
         }
     }
-
 
 }
 

@@ -32,8 +32,8 @@ import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
-import pl.endixon.sectors.paper.user.UserMongo;
 import pl.endixon.sectors.paper.user.UserManager;
+import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.paper.util.Logger;
 
 import java.time.Duration;
@@ -49,46 +49,34 @@ public class PlayerLocallyJoinListener implements Listener {
         event.joinMessage(Component.empty());
         player.setCollidable(false);
 
+        UserRedis user = UserManager.getOrCreate(player);
 
-        UserManager.getUser(player.getName()).thenAccept(user -> {
-            if (user == null) {
-                UserMongo newUser = new UserMongo(player);
-                newUser.insert().thenRun(() -> {
-                    Bukkit.getScheduler().runTask(paperSector, newUser::applyPlayerData);
-                });
-                user = newUser;
+        Bukkit.getScheduler().runTask(paperSector, () -> {
+            Sector currentSector = paperSector.getSectorManager().getCurrentSector();
+            if (currentSector == null) return;
+
+            user.applyPlayerData();
+            sendSectorTitle(player, currentSector);
+            user.setLastSectorTransfer(false);
+            user.setLastTransferTimestamp(System.currentTimeMillis());
+
+            if (user.isFirstJoin()
+                    && currentSector.getType() != SectorType.QUEUE
+                    && currentSector.getType() != SectorType.NETHER
+                    && currentSector.getType() != SectorType.END) {
+
+                user.setFirstJoin(false);
+                user.updateFromPlayer(player, currentSector);
+
+                boolean success = player.teleport(
+                        paperSector.getSectorManager().randomLocation(currentSector)
+                );
+                if (success) sendSectorTitle(player, currentSector);
+                else Logger.info(() -> "Failed to teleport player " + player.getName());
             }
-
-            UserMongo finalUser = user;
-
-            Bukkit.getScheduler().runTask(paperSector, finalUser::applyPlayerData);
-
-            Bukkit.getScheduler().runTask(paperSector, () -> {
-                Sector current = paperSector.getSectorManager().getCurrentSector();
-                if (current == null) return;
-
-                sendSectorTitle(player, current);
-                finalUser.setLastSectorTransfer(false);
-                finalUser.setLastTransferTimestamp(System.currentTimeMillis());
-
-                if (finalUser.isFirstJoin()
-                        && current.getType() != SectorType.QUEUE
-                        && current.getType() != SectorType.NETHER
-                        && current.getType() != SectorType.END) {
-                    finalUser.setFirstJoin(false);
-                    finalUser.updatePlayerData(player, current);
-
-                    boolean success = player.teleport(paperSector.getSectorManager().randomLocation(current));
-                    if (success) {
-                        sendSectorTitle(player, current);
-                    } else {
-                        Logger.info(() -> "Failed to teleport player " + player.getName());
-                    }
-
-                }
-            });
         });
     }
+
 
 
 

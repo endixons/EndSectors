@@ -28,7 +28,7 @@ import pl.endixon.sectors.paper.inventory.api.WindowUI;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
 import pl.endixon.sectors.paper.sector.transfer.SectorTeleportService;
-import pl.endixon.sectors.paper.user.UserMongo;
+import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.paper.util.Configuration;
 import pl.endixon.sectors.paper.util.HeadFactory;
 import pl.endixon.sectors.paper.inventory.api.builder.StackBuilder;
@@ -43,7 +43,7 @@ public class SectorChannelWindow {
 
     public SectorChannelWindow(Player player,
                                SectorManager manager,
-                               UserMongo userData,
+                               UserRedis userData,
                                SectorTeleportService teleportService) {
         this.player = player;
         this.window = new WindowUI("&7Lista Kanałów SPAWN", 1);
@@ -87,7 +87,7 @@ public class SectorChannelWindow {
         return lore;
     }
 
-    private void handleClick(Sector sector, SectorManager manager, UserMongo userData, SectorTeleportService teleportService) {
+    private void handleClick(Sector sector, SectorManager manager, UserRedis userData, SectorTeleportService teleportService) {
         if (manager.getCurrentSector().getName().equals(sector.getName())) {
             player.sendMessage(ChatUtil.fixColors(Configuration.playerAlreadyConnectedMessage));
             return;

@@ -23,6 +23,8 @@ package pl.endixon.sectors.paper.sector;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -50,23 +52,6 @@ public class Sector {
     private double tps;
     private int playerCount = 0;
     private int maxPlayers = 0;
-
-
-    private final int minX;
-    private final int maxX;
-    private final int minZ;
-    private final int maxZ;
-    private final String worldName;
-
-    public Sector(SectorData sectorData) {
-        this.sectorData = sectorData;
-        this.minX = Math.min(sectorData.getFirstCorner().getPosX(), sectorData.getSecondCorner().getPosX());
-        this.maxX = Math.max(sectorData.getFirstCorner().getPosX(), sectorData.getSecondCorner().getPosX());
-        this.minZ = Math.min(sectorData.getFirstCorner().getPosZ(), sectorData.getSecondCorner().getPosZ());
-        this.maxZ = Math.max(sectorData.getFirstCorner().getPosZ(), sectorData.getSecondCorner().getPosZ());
-        this.worldName = sectorData.getWorld();
-    }
-
 
 
     public String getName() {
@@ -124,17 +109,16 @@ public class Sector {
         return (System.currentTimeMillis() - lastInfoPacket) / 1000.0;
     }
 
-
-
     public void setLastInfoPacket() {
         this.lastInfoPacket = System.currentTimeMillis();
     }
 
     public boolean isInSector(Location loc) {
-        if (!worldName.equals(loc.getWorld().getName())) return false;
-        int x = loc.getBlockX();
-        int z = loc.getBlockZ();
-        return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
+        return loc.getBlockX() <= Math.max(this.getFirstCorner().getPosX(), this.getSecondCorner().getPosX())
+                && loc.getBlockX() >= Math.min(this.getFirstCorner().getPosX(), this.getSecondCorner().getPosX())
+                && loc.getBlockZ() <= Math.max(this.getFirstCorner().getPosZ(), this.getSecondCorner().getPosZ())
+                && loc.getBlockZ() >= Math.min(this.getFirstCorner().getPosZ(), this.getSecondCorner().getPosZ())
+                && this.getWorldName().equals(loc.getWorld().getName());
     }
 
 
@@ -152,23 +136,21 @@ public class Sector {
     }
 
     public Sector getNearestSector(int distance, Location location) {
-        int[][] directions = {
-                {distance, 0},
-                {-distance, 0},
-                {0, distance},
-                {0, -distance}
-        };
+        List<Sector> sectors = Arrays.asList(
+                this.sectorManager.getSector(location.clone().add(distance, 0, 0)),
+                this.sectorManager.getSector(location.clone().add(-distance, 0, 0)),
+                this.sectorManager.getSector(location.clone().add(0, 0, distance)),
+                this.sectorManager.getSector(location.clone().add(0, 0, -distance))
+        );
 
-        for (int[] dir : directions) {
-            Location checkLoc = location.clone().add(dir[0], 0, dir[1]);
-            Sector sector = this.sectorManager.getSector(checkLoc);
-
+        for (Sector sector : sectors) {
             if (sector != null
                     && sector.getWorldName().equals(this.getWorldName())
                     && !sector.getName().equals(this.getName())) {
                 return sector;
             }
         }
+
         return null;
     }
 
@@ -186,6 +168,7 @@ public class Sector {
 
         player.setVelocity(direction.multiply(power));
     }
+
 
 }
 

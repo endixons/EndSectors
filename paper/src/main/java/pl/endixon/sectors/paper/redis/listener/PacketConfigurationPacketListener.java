@@ -27,7 +27,6 @@ import pl.endixon.sectors.paper.util.Logger;
 
 public class PacketConfigurationPacketListener implements PacketListener<PacketConfiguration> {
 
-
     @Override
     public void handle(PacketConfiguration packet) {
         Logger.info("Otrzymano pakiet konfiguracji od serwera proxy!");

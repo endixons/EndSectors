@@ -22,7 +22,6 @@ package pl.endixon.sectors.paper.listener.player;
 
 import lombok.AllArgsConstructor;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,8 +33,7 @@ import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.user.UserMongo;
-import pl.endixon.sectors.paper.util.Logger;
+import pl.endixon.sectors.paper.user.UserRedis;
 
 @AllArgsConstructor
 public class PlayerRespawnListener implements Listener {
@@ -57,22 +55,20 @@ public class PlayerRespawnListener implements Listener {
                 2L
         );
     }
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         event.setRespawnLocation(new Location(player.getWorld(), 0.5, 70, 0.5));
-        UserManager.getUser(player.getName()).thenAccept(user -> {
-            if (user == null) {
-                player.kick(Component.text("Brak danych gracza!"));
-                return;
-            }
-            Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
-            user.updatePlayerData(player, currentSector);
-        });
+
+        UserRedis user = UserManager.getUser(player).orElse(null);
+        if (user == null) {
+            player.kick(Component.text("Brak danych gracza!"));
+            return;
+        }
+
+        Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
+        user.updateAndSave(player, currentSector);
     }
-
-
 
 
 }

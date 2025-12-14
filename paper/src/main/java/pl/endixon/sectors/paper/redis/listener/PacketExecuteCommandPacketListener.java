@@ -28,8 +28,6 @@ import pl.endixon.sectors.paper.PaperSector;
 
 public class PacketExecuteCommandPacketListener implements PacketListener<PacketExecuteCommand> {
 
-
-
     @Override
     public void handle(PacketExecuteCommand packet) {
         ConsoleCommandSender console = PaperSector.getInstance().getServer().getConsoleSender();

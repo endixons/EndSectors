@@ -9,7 +9,7 @@ import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.redis.packet.PacketPlayerInfoRequest;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.user.UserMongo;
+import pl.endixon.sectors.paper.user.UserRedis;
 
 public class SendInfoPlayerTask extends BukkitRunnable {
 
@@ -17,28 +17,25 @@ public class SendInfoPlayerTask extends BukkitRunnable {
 
     public SendInfoPlayerTask(PaperSector paperSector) {
         this.paperSector = paperSector;
-
     }
 
     @Override
     public void run() {
-        Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
+        Sector currentSector = paperSector.getSectorManager().getCurrentSector();
         if (currentSector == null || currentSector.getType() == SectorType.QUEUE) {
             cancel();
             return;
         }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            UserMongo user = UserManager.getUsers().get(player.getName().toLowerCase());
-            if (user == null) continue;
+            UserManager.getUser(player.getName()).thenAccept(user -> {
+                if (user == null) return;
 
-            paperSector.getRedisManager().publish(
-                    PacketChannel.PACKET_PLAYER_INFO_REQUEST,
-                    new PacketPlayerInfoRequest(user)
-            );
-
+                paperSector.getRedisManager().publish(
+                        PacketChannel.PACKET_PLAYER_INFO_REQUEST,
+                        new PacketPlayerInfoRequest(user)
+                );
+            });
         }
     }
-
 }
-

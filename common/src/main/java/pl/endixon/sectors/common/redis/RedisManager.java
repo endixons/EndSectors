@@ -114,6 +114,35 @@ public class RedisManager {
 
 
 
+
+    public void hset(String key, Map<String, String> map) {
+        if (map == null || map.isEmpty()) return;
+        publishCommands.hset(key, map);
+    }
+
+    public Map<String, String> hgetAll(String key) {
+        try {
+            return publishCommands.hgetall(key).get();
+        } catch (Exception e) {
+            Logger.info("Redis hgetAll failed for key: " + key, e);
+            return Collections.emptyMap();
+        }
+    }
+
+
+    public void del(String key) {
+        publishCommands.del(key);
+    }
+
+    public boolean exists(String key) {
+        try {
+            return publishCommands.exists(key).get() > 0;
+        } catch (Exception e) {
+            Logger.info("Redis exists failed: " + key, e);
+            return false;
+        }
+    }
+
     public void shutdown() {
         if (pubSubConnection != null) pubSubConnection.close();
         if (publishCommands != null) publishCommands.getStatefulConnection().close();

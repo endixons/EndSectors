@@ -2,7 +2,7 @@ package pl.endixon.sectors.paper.redis.packet;
 
 import lombok.Getter;
 import pl.endixon.sectors.common.packet.Packet;
-import pl.endixon.sectors.paper.user.UserMongo;
+import pl.endixon.sectors.paper.user.UserRedis;
 
 @Getter
 public class PacketPlayerInfoRequest implements Packet {
@@ -24,7 +24,7 @@ public class PacketPlayerInfoRequest implements Packet {
     private final String playerEnderChestData;
     private final String playerEffectsData;
 
-    public PacketPlayerInfoRequest(UserMongo user) {
+    public PacketPlayerInfoRequest(UserRedis user) {
         this(
                 user.getName(),
                 user.getSectorName(),

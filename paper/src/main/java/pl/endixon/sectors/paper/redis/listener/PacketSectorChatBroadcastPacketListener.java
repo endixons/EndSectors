@@ -27,8 +27,6 @@ import pl.endixon.sectors.paper.PaperSector;
 
 public class PacketSectorChatBroadcastPacketListener implements PacketListener<PacketSectorChatBroadcast> {
 
-
-
     @Override
     public void handle(PacketSectorChatBroadcast packet) {
         PaperSector.getInstance().getServer().broadcastMessage(ChatUtil.fixColors("&7" + packet.getSenderName() + ": " + packet.getMessage()));

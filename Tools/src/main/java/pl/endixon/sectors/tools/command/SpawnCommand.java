@@ -13,7 +13,7 @@ import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
 import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.user.UserMongo;
+import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.tools.Main;
 import pl.endixon.sectors.tools.utils.Messages;
 
@@ -68,7 +68,7 @@ public class SpawnCommand implements CommandExecutor {
         Location spawnLoc = SPAWN_LOC_TEMPLATE.clone();
         spawnLoc.setWorld(Bukkit.getWorld(spawnSector.getWorldName()));
 
-        UserMongo user = UserManager.getUser(player);
+        UserRedis user = UserManager.getUser(player);
         user.setLastTransferTimestamp(System.currentTimeMillis());
 
         player.sendTitle(
@@ -123,7 +123,8 @@ public class SpawnCommand implements CommandExecutor {
                 }
 
                 player.teleport(spawnLoc);
-                user.updatePlayerData(player, spawnSector);
+                user.updateFromPlayer(player, spawnSector);
+
 
                 player.sendTitle(
                         Messages.SPAWN_TITLE.get(),

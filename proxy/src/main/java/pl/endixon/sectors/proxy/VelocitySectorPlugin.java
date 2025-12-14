@@ -63,7 +63,6 @@ public class VelocitySectorPlugin {
     private final ObjectMapper mapper = new ObjectMapper();
     private final ProxyServer server;
     private final Path dataDirectory;
-    private MongoManager mongoManager;
     private SectorManager sectorManager;
 
     public final RedisManager redisManager = new RedisManager();
@@ -91,7 +90,6 @@ public class VelocitySectorPlugin {
         this.QueueManager = new QueueManager();
         this.loadSectors();
         this.initRedisManager();
-        this.initMongoManager();
         this.initListeners();
         this.getServer().getScheduler().buildTask(this, new QueueRunnable()).repeat(2, TimeUnit.SECONDS).schedule();
         Logger.info("Uruchomiono!");
@@ -100,15 +98,9 @@ public class VelocitySectorPlugin {
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
         this.redisManager.shutdown();
-        this.mongoManager.shutdown();
     }
 
 
-    private void initMongoManager() {
-        mongoManager = MongoManager.getInstance();
-        Logger.info("Zainicjalizowano MongoManagera");
-
-    }
 
 
     private void loadSectors() {
@@ -190,7 +182,6 @@ public class VelocitySectorPlugin {
 
     private void initRedisManager() {
         this.redisManager.initialize("127.0.0.1", 6379, "");
-
         this.redisManager.subscribe(PacketChannel.PACKET_CONFIGURATION_REQUEST, new PacketConfigurationRequestPacketListener(), PacketConfigurationRequest.class);
         this.redisManager.subscribe(PacketChannel.PACKET_BROADCAST_MESSAGE, new PacketBroadcastMessagePacketListener(), PacketBroadcastMessage.class);
         this.redisManager.subscribe(PacketChannel.PACKET_SEND_MESSAGE_TO_PLAYER, new PacketSendMessageToPlayerPacketListener(), PacketSendMessageToPlayer.class);
@@ -199,7 +190,6 @@ public class VelocitySectorPlugin {
         this.redisManager.subscribe(PacketChannel.PACKET_TELEPORT_TO_SECTOR, new TeleportToSectorListener(), PacketRequestTeleportSector.class);
         this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_CONNECTED, new PacketSectorConnectedPacketListener(), PacketSectorConnected.class);
         this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_DISCONNECTED, new PacketSectorDisconnectedPacketListener(), PacketSectorDisconnected.class);
-
         Logger.info("Zainicjalizowano RedisManagera");
     }
 

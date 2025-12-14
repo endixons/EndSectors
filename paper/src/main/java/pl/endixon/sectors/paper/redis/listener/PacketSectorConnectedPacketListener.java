@@ -31,8 +31,6 @@ import pl.endixon.sectors.paper.util.Logger;
 
 public class PacketSectorConnectedPacketListener implements PacketListener<PacketSectorConnected> {
 
-
-
     @Override
     public void handle(PacketSectorConnected packet) {
         String sectorName = packet.getSector();

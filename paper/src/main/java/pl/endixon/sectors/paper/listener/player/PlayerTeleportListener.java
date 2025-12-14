@@ -13,7 +13,7 @@ import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
 import pl.endixon.sectors.paper.user.UserManager;
 import pl.endixon.sectors.common.sector.SectorType;
-import pl.endixon.sectors.paper.user.UserMongo;
+import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.paper.util.Configuration;
 
 import java.time.Duration;
@@ -38,7 +38,7 @@ public class PlayerTeleportListener implements Listener {
         Location to = event.getTo();
 
 
-        UserMongo user = UserManager.getUser(player);
+        UserRedis user = UserManager.getUser(player).orElse(null);
             if (user == null) return;
 
             SectorManager sectorManager = paperSector.getSectorManager();

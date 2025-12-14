@@ -27,7 +27,7 @@ import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
 import pl.endixon.sectors.paper.sector.transfer.SectorTeleportService;
 import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.user.UserMongo;
+import pl.endixon.sectors.paper.user.UserRedis;
 
 public class ChannelCommand implements CommandExecutor {
 
@@ -46,11 +46,7 @@ public class ChannelCommand implements CommandExecutor {
 
         if (!isInSpawnSector(player)) return true;
 
-        UserMongo user = UserManager.getUser(player);
-        if (user == null) {
-            player.sendMessage("§cUser data not found!");
-            return true;
-        }
+        UserRedis user = UserManager.getUser(player);
         new SectorChannelWindow(player, sectorManager, user, teleportService).open();
         return true;
     }

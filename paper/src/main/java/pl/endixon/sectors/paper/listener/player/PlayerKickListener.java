@@ -1,22 +1,21 @@
 /*
- * 
- *  EndSectors  Non-Commercial License         
- *  (c) 2025 Endixon                             
- *                                              
- *  Permission is granted to use, copy, and    
- *  modify this software **only** for personal 
- *  or educational purposes.                   
- *                                              
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
  *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code     
- *  without explicit permission is strictly    
- *  prohibited.                                
- *                                              
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
  *  Visit https://github.com/Endixon/EndSectors
- *  for more info.                             
- * 
+ *  for more info.
+ *
  */
-
 
 package pl.endixon.sectors.paper.listener.player;
 
@@ -28,8 +27,7 @@ import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.user.UserMongo;
-import pl.endixon.sectors.paper.util.Logger;
+import pl.endixon.sectors.paper.user.UserRedis;
 
 public class PlayerKickListener implements Listener {
 
@@ -37,12 +35,13 @@ public class PlayerKickListener implements Listener {
     public void onKickPlayer(final PlayerKickEvent event) {
         Player player = event.getPlayer();
 
-        UserManager.getUser(player.getName()).thenAccept(user -> {
-            if (user == null) return;
-            Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
-            if (currentSector == null || currentSector.getType() == SectorType.QUEUE) return;
-            if (System.currentTimeMillis() - user.getLastSectorTransfer() < 5000L) return;
-            user.updatePlayerData(player, currentSector);
-        });
+        UserRedis user = UserManager.getUser(player).orElse(null);
+        if (user == null) return;
+
+        Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
+        if (currentSector == null || currentSector.getType() == SectorType.QUEUE) return;
+        if (System.currentTimeMillis() - user.getLastSectorTransfer() < 5000L) return;
+
+        user.updateAndSave(player, currentSector);
     }
 }

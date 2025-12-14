@@ -17,7 +17,7 @@ import pl.endixon.sectors.paper.event.sector.SectorChangeEvent;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
 import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.user.UserMongo;
+import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.tools.Main;
 
 import pl.endixon.sectors.tools.utils.Messages;
@@ -42,7 +42,7 @@ public class RandomTPCommand implements CommandExecutor {
             return true;
         }
 
-        UserMongo user = UserManager.getUser(player);
+        UserRedis user = UserManager.getUser(player);
 
         List<Sector> sectors = sectorManager.getSectors().stream()
                 .filter(Sector::isOnline)
@@ -134,7 +134,7 @@ public class RandomTPCommand implements CommandExecutor {
                 if (!event.isCancelled()) {
                     player.teleport(loc);
                     user.setLastSectorTransfer(true);
-                    user.updatePlayerData(player, sector);
+                    user.updateFromPlayer(player, sector);
 
                     Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
                         Vector v = player.getLocation().getDirection().normalize().multiply(0.8);

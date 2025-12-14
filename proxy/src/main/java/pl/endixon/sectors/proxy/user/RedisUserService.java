@@ -18,7 +18,7 @@ public class RedisUserService {
     public Optional<String> getSectorName(String playerName) {
         if (playerName == null || playerName.isEmpty()) return Optional.empty();
         String key = buildKey(playerName);
-        Map<String, String> data = plugin.getRedisService().hgetAll(key); // hgetAll z RedisManager
+        Map<String, String> data = plugin.getRedisService().hgetAll(key);
         if (data == null || data.isEmpty()) return Optional.empty();
         return Optional.ofNullable(data.get("sector"));
     }
@@ -26,7 +26,7 @@ public class RedisUserService {
     public void setSectorName(String playerName, String sectorName) {
         if (playerName == null || playerName.isEmpty() || sectorName == null) return;
         String key = buildKey(playerName);
-        plugin.getRedisService().hset(key, Map.of("sector", sectorName)); // hset z RedisManager
+        plugin.getRedisService().hset(key, Map.of("sector", sectorName));
     }
 
     private String buildKey(String playerName) {

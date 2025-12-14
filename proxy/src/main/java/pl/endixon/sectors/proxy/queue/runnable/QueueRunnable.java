@@ -54,6 +54,7 @@ public class QueueRunnable implements Runnable {
 
                 if (sector == null) {
                     Optional<SectorData> randomOnline = sectorManager.getRandomNonQueueSector();
+
                     if (randomOnline.isPresent()) {
                         sector = randomOnline.get();
                         lastSectorName = sector.getName();
@@ -62,6 +63,7 @@ public class QueueRunnable implements Runnable {
                         Logger.info("[QueueRunnable] Gracz " + player.getUsername() + " nie miał lastSector, przypisano losowy sektor: " + lastSectorName);
                     }
                 }
+
 
                 boolean sectorOnline = sector != null && sector.isOnline();
 

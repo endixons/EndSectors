@@ -50,29 +50,33 @@ public class PlayerLocallyJoinListener implements Listener {
         player.setCollidable(false);
 
         UserRedis user = UserManager.getOrCreate(player);
+        Sector currentSector = paperSector.getSectorManager().getCurrentSector();
 
         Bukkit.getScheduler().runTask(paperSector, () -> {
-            Sector currentSector = paperSector.getSectorManager().getCurrentSector();
             if (currentSector == null) return;
 
-            user.applyPlayerData();
-            sendSectorTitle(player, currentSector);
-            user.setLastSectorTransfer(false);
-            user.setLastTransferTimestamp(System.currentTimeMillis());
-
-            if (user.isFirstJoin()
-                    && currentSector.getType() != SectorType.QUEUE
-                    && currentSector.getType() != SectorType.NETHER
-                    && currentSector.getType() != SectorType.END) {
+            if (user.isFirstJoin() &&
+                    currentSector.getType() != SectorType.QUEUE &&
+                    currentSector.getType() != SectorType.NETHER &&
+                    currentSector.getType() != SectorType.END) {
 
                 user.setFirstJoin(false);
                 user.updateFromPlayer(player, currentSector);
+                sendSectorTitle(player, currentSector);
+                user.setLastSectorTransfer(false);
+                user.setLastTransferTimestamp(System.currentTimeMillis());
 
                 boolean success = player.teleport(
                         paperSector.getSectorManager().randomLocation(currentSector)
                 );
                 if (success) sendSectorTitle(player, currentSector);
                 else Logger.info(() -> "Failed to teleport player " + player.getName());
+
+            } else {
+                user.applyPlayerData();
+                sendSectorTitle(player, currentSector);
+                user.setLastSectorTransfer(false);
+                user.setLastTransferTimestamp(System.currentTimeMillis());
             }
         });
     }
@@ -80,7 +84,7 @@ public class PlayerLocallyJoinListener implements Listener {
 
 
 
-    private void sendSectorTitle(Player player, Sector sector) {
+        private void sendSectorTitle(Player player, Sector sector) {
         player.showTitle(Title.title(
                 Component.text(ChatUtil.fixColors("")),
                 Component.text(ChatUtil.fixColors("&cPołączono się na sektor " + sector.getName())),

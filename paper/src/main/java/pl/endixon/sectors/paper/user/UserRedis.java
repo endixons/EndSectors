@@ -3,16 +3,21 @@ package pl.endixon.sectors.paper.user;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import pl.endixon.sectors.common.sector.SectorType;
+import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.util.Logger;
 import pl.endixon.sectors.paper.util.PlayerDataSerializer;
+
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -175,7 +180,52 @@ public class UserRedis {
         saveAsync();
     }
 
-    // --- Private helpers ---
+
+
+    public UserRedis handleFirstJoin(Sector currentSector) {
+        if (!this.isFirstJoin()) return this;
+
+        if (currentSector.getType() == SectorType.QUEUE
+                || currentSector.getType() == SectorType.NETHER
+                || currentSector.getType() == SectorType.END) {
+            return this;
+        }
+
+        this.setFirstJoin(false);
+        this.updateFromPlayer(this.getPlayer(), currentSector);
+
+        boolean success = this.getPlayer().teleport(
+                PaperSector.getInstance().getSectorManager().randomLocation(currentSector)
+        );
+
+        if (success) {
+            this.sendSectorTitle(currentSector);
+        } else {
+            Logger.info(() -> "Failed to teleport player " + this.getPlayer().getName());
+        }
+
+        return this;
+    }
+
+
+
+    public void sendSectorTitle(Sector sector) {
+        Player player = getPlayer();
+        if (player == null) return;
+
+        player.showTitle(Title.title(
+                Component.text(ChatUtil.fixColors("")),
+                Component.text(ChatUtil.fixColors("&cPołączono się na sektor " + sector.getName())),
+                Title.Times.times(
+                        Duration.ofMillis(500),
+                        Duration.ofMillis(2000),
+                        Duration.ofMillis(500)
+                )
+        ));
+    }
+
+
+
     private void handleQueueSector(Player player) {
         Location loc = new Location(player.getWorld(), 0, 70, 0);
         if (player.teleport(loc)) {

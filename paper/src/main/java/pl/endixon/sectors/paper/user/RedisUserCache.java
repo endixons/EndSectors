@@ -26,9 +26,7 @@ public final class RedisUserCache {
                     .hset(getKey(user.getName()), user.toRedisMap());
 
             long duration = System.currentTimeMillis() - start;
-            Logger.info(() ->
-                    "[RedisUserCache] Saved user '" + user.getName() + "' in " + duration + "ms"
-            );
+
         }, () -> "[RedisUserCache] Failed to save user '" + user.getName() + "'");
     }
 
@@ -49,9 +47,6 @@ public final class RedisUserCache {
                 return null;
             }
 
-            Logger.info(() ->
-                    "[RedisUserCache] Loaded user '" + name + "' from Redis in " + duration + "ms"
-            );
             return data;
         }, () -> "[RedisUserCache] Failed to load user '" + name + "'");
     }

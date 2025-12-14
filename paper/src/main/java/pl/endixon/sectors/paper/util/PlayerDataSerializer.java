@@ -91,7 +91,6 @@
         }
 
 
-
         public static String serializeEffects(@NonNull Player player) {
             List<PotionEffect> effects = new ArrayList<>(player.getActivePotionEffects());
             List<Map<String, Object>> effectList = new ArrayList<>();
@@ -112,10 +111,20 @@
 
 
         public static List<PotionEffect> deserializeEffects(String base64Data) {
+            if (base64Data == null || base64Data.isEmpty()) {
+                return new ArrayList<>();
+            }
+
             String jsonData = new String(Base64.getDecoder().decode(base64Data));
             Gson gson = new Gson();
-            Type listType = new TypeToken<List<Map<String, Object>>>(){}.getType();
+            Type listType = new TypeToken<List<Map<String, Object>>>() {
+            }.getType();
             List<Map<String, Object>> effectList = gson.fromJson(jsonData, listType);
+
+            if (effectList == null) {
+                return new ArrayList<>();
+            }
+
             List<PotionEffect> effects = new ArrayList<>();
             for (Map<String, Object> effectMap : effectList) {
                 String typeName = (String) effectMap.get("type");

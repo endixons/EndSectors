@@ -43,7 +43,7 @@ Check out an **interactive sector map example**: [Sectors Generator](https://osk
 ## 🛠️ Quick Start
 
 1. Install **Paper 1.20+** (tested on 1.24.1)
-2. Configure **MongoDB** and **Redis** in `config.json`
+2. Configure **Redis** in `config.json`
 3. Define your sectors in JSON
 4. Start the server and let **EndSectors** handle teleportation, syncing, and queues automatically
 

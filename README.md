@@ -17,8 +17,7 @@ Check out an **interactive sector map example**: [Sectors Generator](https://osk
 
 ## 🔹 About
 
-- EndSectors is a **fork of PocketSectors (Nukkit)**, rewritten from scratch for Paper/Spigot in Java.
-- Built using **MongoDB** and **Redis** for real-time player data synchronization.
+- Built using **Redis** for real-time player data synchronization.
 - The project is **educational and experimental**, created to explore sector-based world mechanics.
 - While some ideas were inspired by other public GitHub projects, **all code is original**.
 

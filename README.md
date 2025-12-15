@@ -28,8 +28,6 @@ Check out an **interactive sector map example**: [Sectors Generator](https://osk
 - Minimum Minecraft version: 1.20
 - Tested on PaperMC 1.24.1
 - Redis
-- MongoDB
-
 ---
 
 ## ✨ Features
@@ -51,15 +49,6 @@ Check out an **interactive sector map example**: [Sectors Generator](https://osk
 
 ---
 
-## ⚠️ Notes
-
-- JSON sector coordinates may cause minor teleporting **before the border**
-- Correct setup (matching frontend `sectors` array) is recommended:
-    - Spawn sectors: `-250 / 250`
-    - Other sectors: `251 / 751` (or `-751 / -251` for negative axes)
-- Using outdated coordinates may produce unexpected border behavior
-
----
 
 ## 📌 TODO
 

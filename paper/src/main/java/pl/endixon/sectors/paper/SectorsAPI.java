@@ -37,7 +37,6 @@ public class SectorsAPI {
         return instance;
     }
 
-
     public Corner createCorner(int x, int y, int z) {
         return new Corner(x, y, z);
     }

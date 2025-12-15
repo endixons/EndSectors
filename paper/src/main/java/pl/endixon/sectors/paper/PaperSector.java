@@ -65,7 +65,6 @@ public class PaperSector extends JavaPlugin {
         return redisManager;
     }
 
-
     @Override
     public void onEnable() {
         instance = this;

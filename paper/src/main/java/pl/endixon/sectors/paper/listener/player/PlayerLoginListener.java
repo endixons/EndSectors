@@ -21,6 +21,7 @@
 package pl.endixon.sectors.paper.listener.player;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -42,10 +43,10 @@ public class PlayerLoginListener implements Listener {
         SectorManager sectorManager = paperSector.getSectorManager();
 
         if (sectorManager.getSectors().isEmpty()) {
-            paperSector.getLogger().warning("No sectors available. Kicking player " + player.getName());
-            event.kickMessage(Component.text("§cBrak dostepnych sektorów"));
+            paperSector.getLogger().warning("No sectors available. Kicking player %s".formatted(player.getName()));
+            event.kickMessage(Component.text("Brak dostępnych sektorów").color(TextColor.fromHexString("#ef4444")));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
         }
     }
-    }
+}
 

@@ -3,6 +3,7 @@ package pl.endixon.sectors.paper.inventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import pl.endixon.sectors.common.sector.SectorType;
+import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.inventory.api.WindowUI;
 import pl.endixon.sectors.paper.inventory.api.builder.StackBuilder;
 import pl.endixon.sectors.paper.sector.Sector;
@@ -57,12 +58,14 @@ public class SectorShowWindow {
     private List<String> buildLore(Sector s) {
         List<String> lore = new ArrayList<>();
         lore.add("");
-        lore.add(String.format("&7Status: %s", s.isOnline() ? "&aOnline" : "&cOffline"));
-        lore.add(String.format("&7TPS: &6%.1f", s.isOnline() ? TpsUtil.getTPS() : 0.0));
-        lore.add(String.format("&7Online: &6%d", s.getPlayerCount()));
-        lore.add(String.format("&7Ostatnia aktualizacja: &6%.1fs", s.getLastInfoPacket()));
+        lore.add(ChatUtil.fixHexColors("&#9ca3afStatus: %s".formatted(s.isOnline() ? "&#4ade80Online" : "&#ef4444Offline")));
+        lore.add(ChatUtil.fixHexColors("&#9ca3afTPS: &#f59e0b%.1f".formatted(s.isOnline() ? TpsUtil.getTPS() : 0.0)));
+        lore.add(ChatUtil.fixHexColors("&#9ca3afOnline: &#7dd3fc%d".formatted(s.getPlayerCount())));
+        lore.add(ChatUtil.fixHexColors("&#9ca3afOstatnia aktualizacja: &#a78bfa%.1fs".formatted(s.getLastInfoPacket())));
         return lore;
     }
+
+
 
     public void open() {
         window.openFor(player);

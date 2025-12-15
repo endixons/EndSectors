@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.config.ConfigLoader;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
@@ -55,15 +56,18 @@ public class SpawnScoreboardTask extends BukkitRunnable {
         } else {
             cpuText = String.format("%.2f", cpuLoad * 100);
         }
-        return line.replace("{playerName}", player.getName())
-                .replace("{sectorName}", sector.getName())
-                .replace("{tps}", sector.getTPSColored())
-                .replace("{onlineCount}", String.valueOf(sector.getPlayerCount()))
-                .replace("{ping}", String.valueOf(player.getPing()))
-                .replace("{cpu}", String.format(cpuText))
-                .replace("{freeRam}", String.valueOf(freeMem))
-                .replace("{maxRam}", String.valueOf(maxMem));
-    }
+
+        return ChatUtil.fixHexColors(
+                line.replace("{playerName}", player.getName())
+                        .replace("{sectorName}", sector.getName())
+                        .replace("{tps}", sector.getTPSColored())
+                        .replace("{onlineCount}", String.valueOf(sector.getPlayerCount()))
+                        .replace("{ping}", String.valueOf(player.getPing()))
+                        .replace("{cpu}", cpuText)
+                        .replace("{freeRam}", String.valueOf(freeMem))
+                        .replace("{maxRam}", String.valueOf(maxMem))
+        );
+        }
 
     private String getTitle(Sector sector, boolean isAdmin) {
         String icon = config.sectorTitles.getOrDefault(
@@ -80,7 +84,11 @@ public class SpawnScoreboardTask extends BukkitRunnable {
 
     private void sendSidebar(Player player, String title, List<String> lines) {
         var board = Bukkit.getScoreboardManager().getNewScoreboard();
-        var obj = board.registerNewObjective("spawnSB", "dummy", Component.text(title));
+        var obj = board.registerNewObjective(
+                "spawnSB",
+                "dummy",
+                Component.text(ChatUtil.fixHexColors(title))
+        );
         obj.setDisplaySlot(org.bukkit.scoreboard.DisplaySlot.SIDEBAR);
 
         int score = lines.size();
@@ -89,6 +97,7 @@ public class SpawnScoreboardTask extends BukkitRunnable {
         }
         player.setScoreboard(board);
     }
+
 
     public static double getSystemCpuLoad() {
         OperatingSystemMXBean osBean =

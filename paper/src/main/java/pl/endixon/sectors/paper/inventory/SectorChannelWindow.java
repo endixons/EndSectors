@@ -70,22 +70,20 @@ public class SectorChannelWindow {
     private List<String> buildLore(Sector sector, SectorManager manager) {
         List<String> lore = new ArrayList<>();
         lore.add("");
-
         if (sector.isOnline()) {
-            lore.add("&7Online: &a" + sector.getPlayerCount());
-            lore.add("&7TPS: " + sector.getTPSColored());
-            lore.add("&7Ostatnia aktualizacja: &a" + sector.getLastInfoPacket());
+            lore.add(ChatUtil.fixHexColors("&#9ca3afOnline: &#4ade80%d".formatted(sector.getPlayerCount())));
+            lore.add(ChatUtil.fixHexColors("&#9ca3afTPS: %s".formatted(sector.getTPSColored())));
+            lore.add(ChatUtil.fixHexColors("&#9ca3afOstatnia aktualizacja: &#4ade80%.1fs".formatted(sector.getLastInfoPacket())));
         } else {
-            lore.add("&cSektor jest offline");
+            lore.add(ChatUtil.fixHexColors("&#ef4444Sektor jest offline"));
         }
-
         lore.add("");
-        lore.add(manager.getCurrentSector().getName().equals(sector.getName())
-                ? "&eZnajdujesz się na tym kanale"
-                : "&eKliknij, aby połączyć się z kanałem");
-
+        lore.add(ChatUtil.fixHexColors(manager.getCurrentSector().getName().equals(sector.getName())
+                ? "&#facc15Znajdujesz się na tym kanale"
+                : "&#facc15Kliknij, aby połączyć się z kanałem"));
         return lore;
     }
+
 
     private void handleClick(Sector sector, SectorManager manager, UserRedis userData, SectorTeleportService teleportService) {
         if (manager.getCurrentSector().getName().equals(sector.getName())) {

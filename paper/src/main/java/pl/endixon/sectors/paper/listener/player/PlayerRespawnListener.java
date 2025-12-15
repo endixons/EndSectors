@@ -34,6 +34,7 @@ import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.UserManager;
 import pl.endixon.sectors.paper.user.UserRedis;
+import pl.endixon.sectors.paper.util.Configuration;
 
 @AllArgsConstructor
 public class PlayerRespawnListener implements Listener {
@@ -62,7 +63,7 @@ public class PlayerRespawnListener implements Listener {
 
         UserRedis user = UserManager.getUser(player).orElse(null);
         if (user == null) {
-            player.kick(Component.text("Brak danych gracza!"));
+            player.kick(Component.text(Configuration.playerDataNotFoundMessage));
             return;
         }
 

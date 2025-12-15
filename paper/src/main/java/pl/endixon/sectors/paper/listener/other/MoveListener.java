@@ -91,8 +91,12 @@ public class MoveListener implements Listener {
             if (System.currentTimeMillis() - userRedis.getLastTransferTimestamp() < TRANSFER_DELAY) {
                 long remaining = TRANSFER_DELAY - (System.currentTimeMillis() - userRedis.getLastTransferTimestamp());
                 player.showTitle(Title.title(
-                        Component.text(ChatUtil.fixColors("&cSektor chwilowo niedostępny!")).color(NamedTextColor.RED),
-                        Component.text(ChatUtil.fixColors("&7Odczekaj " + (remaining / 1000 + 1) + "s")).color(NamedTextColor.GRAY),
+                        Component.text(
+                                ChatUtil.fixHexColors("&#ef4444Sektor chwilowo niedostępny!")
+                        ),
+                        Component.text(
+                                ChatUtil.fixHexColors("&#9ca3afOdczekaj &#7dd3fc" + (remaining / 1000 + 1) + "s")
+                        ),
                         Title.Times.times(java.time.Duration.ofMillis(500),
                                 java.time.Duration.ofMillis(2000),
                                 java.time.Duration.ofMillis(500))
@@ -143,8 +147,12 @@ public class MoveListener implements Listener {
         if (System.currentTimeMillis() - userRedis.getLastTransferTimestamp() < TRANSFER_DELAY) {
             long remaining = TRANSFER_DELAY - (System.currentTimeMillis() - userRedis.getLastTransferTimestamp());
             player.showTitle(Title.title(
-                    Component.text(ChatUtil.fixColors("&cSektor chwilowo niedostępny!")).color(NamedTextColor.RED),
-                    Component.text(ChatUtil.fixColors("&7Odczekaj " + (remaining / 1000 + 1) + "s")).color(NamedTextColor.GRAY),
+                    Component.text(
+                            ChatUtil.fixHexColors("&#ef4444Sektor chwilowo niedostępny!")
+                    ),
+                    Component.text(
+                            ChatUtil.fixHexColors("&#9ca3afOdczekaj &#7dd3fc" + (remaining / 1000 + 1) + "s")
+                    ),
                     Title.Times.times(java.time.Duration.ofMillis(500),
                             java.time.Duration.ofMillis(2000),
                             java.time.Duration.ofMillis(500))

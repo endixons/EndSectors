@@ -42,7 +42,7 @@ public class ChatUtil {
             StringBuilder replacement = new StringBuilder("§x");
 
             for (char c : hex.toCharArray()) {
-                replacement.append('§').append(c);
+                replacement.append("§").append(c);
             }
 
             matcher.appendReplacement(buffer, replacement.toString());

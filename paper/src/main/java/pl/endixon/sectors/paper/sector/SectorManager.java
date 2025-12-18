@@ -122,8 +122,6 @@ public class SectorManager {
         int y = world.getHighestBlockYAt((int) x, (int) z) + 1;
 
         Location loc = new Location(world, x, y, z);
-
-
         user.setX(x);
         user.setY(y);
         user.setZ(z);
@@ -135,20 +133,19 @@ public class SectorManager {
             user.updateAndSave(player,randomSector);
         } else {
             paperSector.getSectorTeleportService().teleportToSector(player, user, randomSector, false, true);
-
         }
         return loc;
     }
 
     public Sector getBalancedRandomSpawnSector() {
-        List<Sector> onlineSpawns = sectors.values().stream()
+        List<Sector> onlineSpawns = new ArrayList<>(sectors.values().stream()
                 .filter(s -> s.getType() == SectorType.SPAWN)
                 .filter(Sector::isOnline)
                 .filter(s -> s.getTPS() > 0)
                 .sorted(Comparator.comparingDouble(
                         s -> ((double) s.getPlayerCount() / Math.max(s.getMaxPlayers(), 1)) / s.getTPS()
                 ))
-                .toList();
+                .toList());
 
         if (onlineSpawns.isEmpty()) {
             throw new IllegalStateException("Brak dostępnych online sektorów spawn!");
@@ -157,7 +154,6 @@ public class SectorManager {
         int topN = Math.min(3, onlineSpawns.size());
         return onlineSpawns.get(ThreadLocalRandom.current().nextInt(topN));
     }
-
 
     public Sector getCurrentSector() {
         return this.getSector(currentSectorName);
@@ -170,7 +166,6 @@ public class SectorManager {
     public void getOnlinePlayers(Consumer<List<String>> callback) {
         paperSector.getRedisManager().getOnlinePlayers(callback);
     }
-
 
     public void isPlayerOnline(String playerName, Consumer<Boolean> callback) {
         paperSector.getRedisManager().isPlayerOnline(playerName, callback);

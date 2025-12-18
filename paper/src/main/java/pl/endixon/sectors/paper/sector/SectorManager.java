@@ -99,7 +99,6 @@ public class SectorManager {
                 .filter(s -> s.getType() != SectorType.END)
                 .filter(s -> s.getType() != SectorType.QUEUE)
                 .filter(s -> s.getType() != SectorType.SPAWN)
-
                 .toList();
 
         if (candidates.isEmpty()) {
@@ -108,8 +107,6 @@ public class SectorManager {
 
         return candidates.get(ThreadLocalRandom.current().nextInt(candidates.size()));
     }
-
-
 
 
     public Location randomLocation(@NonNull Player player, @NonNull UserRedis user) {
@@ -147,8 +144,6 @@ public class SectorManager {
         }
         return loc;
     }
-
-
 
     public Sector getBalancedRandomSpawnSector() {
         List<Sector> onlineSpawns = sectors.values().stream()

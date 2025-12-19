@@ -30,6 +30,7 @@ import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.UserManager;
 import pl.endixon.sectors.paper.user.UserRedis;
+import pl.endixon.sectors.paper.util.Logger;
 
 public class PlayerDisconnectListener implements Listener {
 
@@ -49,6 +50,28 @@ public class PlayerDisconnectListener implements Listener {
 
     @EventHandler
     public void onQuitPlayer(final PlayerQuitEvent event) {
+        Player player = event.getPlayer();
         event.quitMessage(null);
+
+        UserRedis user = UserManager.getUser(player).orElse(null);
+        if (user == null) return;
+
+        long now = System.currentTimeMillis();
+        if (now < user.getTransferOffsetUntil()) {
+            Logger.info(() -> String.format(
+                    "[Quit] Player %s is in sector transfer cooldown, skipping update (%.0f ms remaining).",
+                    player.getName(),
+                    (double) (user.getTransferOffsetUntil() - now)
+            ));
+            return;
+        }
+
+        Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
+        Logger.info(() -> String.format(
+                "[Quit] Saving player %s data for sector %s.",
+                player.getName(),
+                currentSector != null ? currentSector.getName() : "null"
+        ));
+        user.updateAndSave(player, currentSector);
     }
 }

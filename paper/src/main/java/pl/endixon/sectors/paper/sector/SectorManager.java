@@ -25,12 +25,16 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import pl.endixon.sectors.common.sector.SectorData;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.user.UserRedis;
+import pl.endixon.sectors.paper.util.Logger;
+
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
@@ -111,49 +115,66 @@ public class SectorManager {
         if (world == null)
             throw new IllegalStateException("World not loaded for sector " + randomSector.getName());
 
-        double safeMargin = 10;
+        double safeMargin = 20;
         double minX = Math.min(randomSector.getFirstCorner().getPosX(), randomSector.getSecondCorner().getPosX()) + safeMargin;
         double maxX = Math.max(randomSector.getFirstCorner().getPosX(), randomSector.getSecondCorner().getPosX()) - safeMargin;
         double minZ = Math.min(randomSector.getFirstCorner().getPosZ(), randomSector.getSecondCorner().getPosZ()) + safeMargin;
         double maxZ = Math.max(randomSector.getFirstCorner().getPosZ(), randomSector.getSecondCorner().getPosZ()) - safeMargin;
-
         double x = minX + ThreadLocalRandom.current().nextDouble(maxX - minX);
         double z = minZ + ThreadLocalRandom.current().nextDouble(maxZ - minZ);
-        int y = world.getHighestBlockYAt((int) x, (int) z) + 1;
-
+        int y = findSafeY(world, (int) x, (int) z);
         Location loc = new Location(world, x, y, z);
         user.setX(x);
         user.setY(y);
         user.setZ(z);
         user.setYaw(loc.getYaw());
         user.setPitch(loc.getPitch());
-
-        if (paperSector.getSectorManager().getCurrentSector() != null && paperSector.getSectorManager().getCurrentSector().getName().equals(user.getSectorName())) {
+        if (randomSector.getName().equals(user.getSectorName())) {
             player.teleport(loc);
-            user.updateAndSave(player,randomSector);
+            user.updateAndSave(player, randomSector);
         } else {
             paperSector.getSectorTeleportService().teleportToSector(player, user, randomSector, false, true);
         }
         return loc;
     }
 
+
+    private int findSafeY(World world, int x, int z) {
+        int maxHeight = world.getMaxHeight() - 2;
+        for (int y = maxHeight; y > 0; y--) {
+            Block block = world.getBlockAt(x, y, z);
+            Block above = world.getBlockAt(x, y + 1, z);
+            Block above2 = world.getBlockAt(x, y + 2, z);
+            if (isSafeBase(block) && above.isEmpty() && above2.isEmpty()) {
+                return y + 1;
+            }
+        }
+        return world.getHighestBlockYAt(x, z) + 1;
+    }
+
+    private boolean isSafeBase(Block block) {
+        Material type = block.getType();
+        return type == Material.GRASS_BLOCK || type == Material.DIRT || type == Material.SAND;
+    }
+
+
     public Sector getBalancedRandomSpawnSector() {
-        List<Sector> onlineSpawns = new ArrayList<>(sectors.values().stream()
+        List<Sector> onlineSpawns = sectors.values().stream()
                 .filter(s -> s.getType() == SectorType.SPAWN)
                 .filter(Sector::isOnline)
                 .filter(s -> s.getTPS() > 0)
                 .sorted(Comparator.comparingDouble(
                         s -> ((double) s.getPlayerCount() / Math.max(s.getMaxPlayers(), 1)) / s.getTPS()
                 ))
-                .toList());
+                .toList();
 
-        if (onlineSpawns.isEmpty()) {
-            throw new IllegalStateException("Brak dostępnych online sektorów spawn!");
-        }
+        if (onlineSpawns.isEmpty()) return null;
+
         Collections.reverse(onlineSpawns);
         int topN = Math.min(3, onlineSpawns.size());
         return onlineSpawns.get(ThreadLocalRandom.current().nextInt(topN));
     }
+
 
     public Sector getCurrentSector() {
         return this.getSector(currentSectorName);

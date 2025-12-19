@@ -61,18 +61,16 @@ public class PlayerLocallyJoinListener implements Listener {
                     currentSector.getType() != SectorType.QUEUE &&
                     currentSector.getType() != SectorType.NETHER &&
                     currentSector.getType() != SectorType.END) {
-
-                user.setFirstJoin(false);
-                user.updateFromPlayer(player, currentSector);
                 sendSectorTitle(player, currentSector);
+                user.setFirstJoin(false);
                 user.setLastSectorTransfer(false);
-                user.setLastTransferTimestamp(System.currentTimeMillis());
+                user.updateFromPlayer(player, currentSector);
                 paperSector.getSectorManager().randomLocation(player, user);
             } else {
-                user.applyPlayerData();
                 sendSectorTitle(player, currentSector);
+                user.applyPlayerData();
                 user.setLastSectorTransfer(false);
-                user.setLastTransferTimestamp(System.currentTimeMillis());
+
             }
         });
     }

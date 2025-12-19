@@ -12,7 +12,6 @@ public class PacketPlayerInfoRequest implements Packet {
     private final boolean firstJoin;
     private final long lastSectorTransfer;
     private final long lastTransferTimestamp;
-    private final boolean teleportingToSector;
     private final int foodLevel;
     private final int experience;
     private final int experienceLevel;
@@ -31,7 +30,7 @@ public class PacketPlayerInfoRequest implements Packet {
                 user.isFirstJoin(),
                 user.getLastSectorTransfer(),
                 user.getLastTransferTimestamp(),
-                user.isTeleportingToSector(),
+
                 user.getFoodLevel(),
                 user.getExperience(),
                 user.getExperienceLevel(),
@@ -51,7 +50,6 @@ public class PacketPlayerInfoRequest implements Packet {
             boolean firstJoin,
             long lastSectorTransfer,
             long lastTransferTimestamp,
-            boolean teleportingToSector,
             int foodLevel,
             int experience,
             int experienceLevel,
@@ -68,7 +66,6 @@ public class PacketPlayerInfoRequest implements Packet {
         this.firstJoin = firstJoin;
         this.lastSectorTransfer = lastSectorTransfer;
         this.lastTransferTimestamp = lastTransferTimestamp;
-        this.teleportingToSector = teleportingToSector;
         this.foodLevel = foodLevel;
         this.experience = experience;
         this.experienceLevel = experienceLevel;
@@ -97,9 +94,7 @@ public class PacketPlayerInfoRequest implements Packet {
         return lastTransferTimestamp;
     }
 
-    public boolean isTeleportingToSector() {
-        return teleportingToSector;
-    }
+
 
     public int getFoodLevel() {
         return foodLevel;

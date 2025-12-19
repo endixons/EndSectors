@@ -15,7 +15,6 @@ import pl.endixon.sectors.paper.util.Logger;
 import pl.endixon.sectors.paper.util.PlayerDataSerializer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @Getter
 @Setter
@@ -26,7 +25,7 @@ public class UserRedis {
     private boolean firstJoin;
     private long lastSectorTransfer;
     private long lastTransferTimestamp;
-    private boolean teleportingToSector;
+    private long transferOffsetUntil;
     private int foodLevel;
     private int experience;
     private int experienceLevel;
@@ -45,7 +44,7 @@ public class UserRedis {
         this.firstJoin = true;
         this.lastSectorTransfer = 0L;
         this.lastTransferTimestamp = 0L;
-        this.teleportingToSector = false;
+        this.transferOffsetUntil = 0L;
         this.foodLevel = 20;
         this.experience = 0;
         this.experienceLevel = 0;
@@ -79,7 +78,7 @@ public class UserRedis {
         this.firstJoin = Boolean.parseBoolean(redisData.getOrDefault("firstJoin", String.valueOf(firstJoin)));
         this.lastSectorTransfer = Long.parseLong(redisData.getOrDefault("lastSectorTransfer", String.valueOf(lastSectorTransfer)));
         this.lastTransferTimestamp = Long.parseLong(redisData.getOrDefault("lastTransferTimestamp", String.valueOf(lastTransferTimestamp)));
-        this.teleportingToSector = Boolean.parseBoolean(redisData.getOrDefault("teleportingToSector", String.valueOf(teleportingToSector)));
+        this.transferOffsetUntil = Long.parseLong(redisData.getOrDefault("transferOffsetUntil", "0"));
         this.x = Double.parseDouble(redisData.getOrDefault("x", String.valueOf(x)));
         this.y = Double.parseDouble(redisData.getOrDefault("y", String.valueOf(y)));
         this.z = Double.parseDouble(redisData.getOrDefault("z", String.valueOf(z)));
@@ -99,6 +98,10 @@ public class UserRedis {
 
 
     public void updateFromPlayer(@NonNull Player player, @NonNull Sector currentSector) {
+        long previousLastSectorTransfer = this.lastSectorTransfer;
+        long previousLastTransferTimestamp = this.lastTransferTimestamp;
+        long previousTransferOffsetUntil = this.transferOffsetUntil;
+
         this.name = player.getName();
         Location loc = player.getLocation();
         this.x = loc.getX(); this.y = loc.getY(); this.z = loc.getZ();
@@ -114,6 +117,9 @@ public class UserRedis {
         this.playerEnderChestData = PlayerDataSerializer.serializeItemStacksToBase64(player.getEnderChest().getContents());
         this.playerEffectsData = PlayerDataSerializer.serializeEffects(player);
         this.sectorName = (currentSector != null && currentSector.getType() != SectorType.QUEUE) ? currentSector.getName() : "null";
+        this.lastSectorTransfer = previousLastSectorTransfer;
+        this.lastTransferTimestamp = previousLastTransferTimestamp;
+        this.transferOffsetUntil = previousTransferOffsetUntil;
     }
 
 
@@ -125,7 +131,7 @@ public class UserRedis {
         map.put("firstJoin", String.valueOf(firstJoin));
         map.put("lastSectorTransfer", String.valueOf(lastSectorTransfer));
         map.put("lastTransferTimestamp", String.valueOf(lastTransferTimestamp));
-        map.put("teleportingToSector", String.valueOf(teleportingToSector));
+        map.put("transferOffsetUntil", String.valueOf(transferOffsetUntil));
         map.put("x", String.valueOf(x)); map.put("y", String.valueOf(y)); map.put("z", String.valueOf(z));
         map.put("yaw", String.valueOf(yaw)); map.put("pitch", String.valueOf(pitch));
         map.put("playerGameMode", playerGameMode);
@@ -143,16 +149,6 @@ public class UserRedis {
 
     public void updateAndSave(@NonNull Player player, @NonNull Sector currentSector) {
         updateFromPlayer(player, currentSector);
-        Logger.info(() -> String.format(
-                "Zapis użytkownika %s -> sektor=%s, x=%.2f, y=%.2f, z=%.2f, yaw=%.2f, pitch=%.2f",
-                getName(),
-                currentSector.getName(),
-                getX(),
-                getY(),
-                getZ(),
-                getYaw(),
-                getPitch()
-        ));
         RedisUserCache.save(this);
     }
 
@@ -166,10 +162,14 @@ public class UserRedis {
 
 
 
-
-
     public void setLastSectorTransfer(boolean redirecting) {
         this.lastSectorTransfer = redirecting ? System.currentTimeMillis() : 0L;
+        RedisUserCache.save(this);
+    }
+
+
+    public void activateTransferOffset() {
+        this.transferOffsetUntil = System.currentTimeMillis() + TRANSFER_DELAY;
         RedisUserCache.save(this);
     }
 
@@ -224,11 +224,21 @@ public class UserRedis {
             player.addPotionEffects(PlayerDataSerializer.deserializeEffects(playerEffectsData));
     }
 
+    private static final long TRANSFER_DELAY = 5000L;
+
+    private static final double OFFSET_DISTANCE = 5.0;
+
     private void teleportPlayerToStoredLocation(@NonNull Player player) {
-        Location loc = new Location(player.getWorld(), x, y, z, yaw, pitch);
-        Vector direction = loc.getDirection();
-        direction.setY(0).normalize().multiply(4);
-        loc.add(direction);
-        player.teleport(loc);
+        long now = System.currentTimeMillis();
+
+        Location targetLoc = new Location(player.getWorld(), x, y, z, yaw, pitch);
+
+        if (now < transferOffsetUntil) {
+            Vector direction = targetLoc.getDirection().setY(0).normalize();
+            targetLoc = targetLoc.clone().add(direction.multiply(OFFSET_DISTANCE));
+        }
+
+        player.teleport(targetLoc);
     }
+
 }

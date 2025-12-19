@@ -30,7 +30,7 @@ import pl.endixon.sectors.common.packet.object.*;
 import pl.endixon.sectors.common.redis.RedisManager;
 import pl.endixon.sectors.paper.command.ChannelCommand;
 import pl.endixon.sectors.paper.config.ConfigLoader;
-import pl.endixon.sectors.paper.listener.other.PortalListener;
+
 import pl.endixon.sectors.paper.listener.player.*;
 import pl.endixon.sectors.paper.command.SectorCommand;
 import pl.endixon.sectors.paper.listener.other.MoveListener;
@@ -44,7 +44,6 @@ import pl.endixon.sectors.paper.sector.transfer.SectorTeleportService;
 import pl.endixon.sectors.paper.sector.SectorManager;
 import pl.endixon.sectors.paper.task.*;
 import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.util.DeathScreenPacketutils;
 import pl.endixon.sectors.paper.util.Logger;
 import java.util.List;
 
@@ -79,7 +78,7 @@ public class PaperSector extends JavaPlugin {
         this.initCommands();
         this.scheduleTasks(config);
         new SectorsAPI(this);
-        DeathScreenPacketutils.register(this);
+
         Logger.info("EndSectors enabled successfully.");
 
     }
@@ -146,7 +145,6 @@ public class PaperSector extends JavaPlugin {
     private void initListeners() {
         List<Listener> listeners = List.of(
                 new PlayerRespawnListener(this),
-                new PlayerDisconnectListener(),
                 new PlayerDisconnectListener(),
                 new PlayerLoginListener(this),
                 new PlayerSectorInteractListener(sectorManager, this),

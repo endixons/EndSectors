@@ -1,4 +1,4 @@
-package pl.endixon.sectors.paper.listener.other;
+package pl.endixon.sectors.paper.listener.player;
 
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
@@ -46,27 +46,34 @@ public class PortalListener implements Listener {
         Sector current = sectorManager.getCurrentSector();
         if (current == null) return;
 
-
-        if (System.currentTimeMillis() - userRedis.getLastTransferTimestamp() < TRANSFER_DELAY) return;
-        if (System.currentTimeMillis() - userRedis.getLastSectorTransfer() < TRANSFER_DELAY) return;
-
-        userRedis.setLastSectorTransfer(true);
-
-        Sector targetSector;
-        try {
-            if (current.getType() == SectorType.SPAWN) {
-                targetSector = sectorManager.getSector("nether01");
-            } else if (current.getType() == SectorType.NETHER) {
-                targetSector = sectorManager.getBalancedRandomSpawnSector();
-            } else {
-                return;
-            }
-        } catch (IllegalStateException e) {
-            Logger.info("Could not find a valid sector to transfer the player!");
+        if (System.currentTimeMillis() < userRedis.getTransferOffsetUntil()) {
+            long remaining = userRedis.getTransferOffsetUntil() - System.currentTimeMillis();
+            player.showTitle(Title.title(
+                    Component.text(Configuration.TITLE_SECTOR_UNAVAILABLE),
+                    Component.text(Configuration.TITLE_WAIT_TIME.replace("{SECONDS}", String.valueOf(remaining / 1000 + 1))),
+                    Title.Times.times(Duration.ofMillis(500),
+                            Duration.ofMillis(2000),
+                            Duration.ofMillis(500))
+            ));
+            current.knockBorder(player, KNOCK_BORDER_FORCE);
             return;
         }
 
+        if (System.currentTimeMillis() - userRedis.getLastSectorTransfer() < TRANSFER_DELAY) return;
+
+        userRedis.setLastSectorTransfer(true);
+        userRedis.activateTransferOffset();
+        userRedis.setLastTransferTimestamp(System.currentTimeMillis());
+
+        Sector targetSector = null;
+        if (current.getType() == SectorType.SPAWN) {
+            targetSector = sectorManager.getSector("nether01");
+        } else if (current.getType() == SectorType.NETHER) {
+            targetSector = sectorManager.getBalancedRandomSpawnSector();
+        }
+
         if (targetSector == null || !targetSector.isOnline()) {
+            Logger.info("Could not find a valid sector to transfer the player: " + player.getName());
             player.showTitle(Title.title(
                     Component.text(ChatUtil.fixColors(Configuration.SECTOR_DISABLED_TITLE)),
                     Component.text(ChatUtil.fixColors(Configuration.SECTOR_DISABLED_SUBTITLE)),
@@ -82,6 +89,6 @@ public class PortalListener implements Listener {
         Bukkit.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) return;
 
-        paperSector.getSectorTeleportService().teleportToSector(player, userRedis, targetSector, false,false);
+        paperSector.getSectorTeleportService().teleportToSector(player, userRedis, targetSector, false, false);
     }
 }

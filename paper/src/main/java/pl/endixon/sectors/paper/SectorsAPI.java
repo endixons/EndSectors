@@ -3,13 +3,14 @@ package pl.endixon.sectors.paper;
 import lombok.NonNull;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import pl.endixon.sectors.common.sector.SectorData;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.common.util.Corner;
-import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
 import pl.endixon.sectors.paper.sector.transfer.SectorTeleportService;
+import pl.endixon.sectors.paper.user.RedisUserCache;
 import pl.endixon.sectors.paper.user.UserManager;
 import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.paper.util.Logger;
@@ -33,12 +34,24 @@ public class SectorsAPI {
         this.sectorManager = plugin.getSectorManager();
         this.teleportService = new SectorTeleportService(plugin);
         instance = this;
-      Logger.info("SectorsAPI zainicjowane");
+        Logger.info("SectorsAPI zainicjowane");
     }
 
     public static SectorsAPI getInstance() {
         return instance;
     }
+
+
+    public PaperSector getPaperSector() {
+        return this.plugin;
+    }
+
+    public void callEvent(Event event) {
+        if (event != null) {
+            this.plugin.getServer().getPluginManager().callEvent(event);
+        }
+    }
+
 
     public Corner createCorner(int x, int y, int z) {
         return new Corner(x, y, z);
@@ -84,7 +97,6 @@ public class SectorsAPI {
         return sectorManager.randomLocation(player,user);
     }
 
-
     public Sector getBalancedSpawn() {
         return sectorManager.getBalancedRandomSpawnSector();
     }
@@ -96,7 +108,6 @@ public class SectorsAPI {
     public void teleportPlayer(Player player, UserRedis user, Sector sector, boolean force, boolean preserveCoordinates) {
         teleportService.teleportToSector(player, user, sector, force,preserveCoordinates);
     }
-
 
     public void getOnlinePlayers(Consumer<List<String>> callback) {
         sectorManager.getOnlinePlayers(callback);
@@ -132,5 +143,26 @@ public class SectorsAPI {
 
     public CompletableFuture<UserRedis> getOrCreateUserAsync(Player player) {
         return UserManager.getOrCreateAsync(player);
+    }
+
+
+    public void activateTransferOffset(UserRedis user) {
+        if (user != null) user.activateTransferOffset();
+    }
+
+    public void resetTransferOffset(UserRedis user) {
+        if (user != null) {
+            user.setTransferOffsetUntil(0);
+            RedisUserCache.save(user);
+        }
+    }
+
+    public long getTransferOffset(UserRedis user) {
+        return user != null ? user.getTransferOffsetUntil() : 0L;
+    }
+
+    public void updateAndSave(UserRedis user, Player player) {
+        if (user == null || player == null) return;
+        user.updateAndSave(player, sectorManager.getCurrentSector());
     }
 }

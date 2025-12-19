@@ -105,15 +105,12 @@ public class MoveListener implements Listener {
                 return;
             }
 
-            if (System.currentTimeMillis() - userRedis.getLastTransferTimestamp() < TRANSFER_DELAY) {
-                long remaining = TRANSFER_DELAY - (System.currentTimeMillis() - userRedis.getLastTransferTimestamp());
+            boolean inTransfer = userRedis.getLastSectorTransfer() > 0;
+            if (System.currentTimeMillis() < userRedis.getTransferOffsetUntil() && !inTransfer) {
+                long remaining = userRedis.getTransferOffsetUntil() - System.currentTimeMillis();
                 player.showTitle(Title.title(
-                        Component.text(
-                                Configuration.TITLE_SECTOR_UNAVAILABLE
-                        ),
-                        Component.text(
-                                Configuration.TITLE_WAIT_TIME.replace("{SECONDS}", String.valueOf(remaining / 1000 + 1))
-                        ),
+                        Component.text(Configuration.TITLE_SECTOR_UNAVAILABLE),
+                        Component.text(Configuration.TITLE_WAIT_TIME.replace("{SECONDS}", String.valueOf(remaining / 1000 + 1))),
                         Title.Times.times(java.time.Duration.ofMillis(500),
                                 java.time.Duration.ofMillis(2000),
                                 java.time.Duration.ofMillis(500))
@@ -122,8 +119,12 @@ public class MoveListener implements Listener {
                 return;
             }
 
+
             if (System.currentTimeMillis() - userRedis.getLastSectorTransfer() < TRANSFER_DELAY) return;
 
+            userRedis.setLastSectorTransfer(true);
+            userRedis.setLastTransferTimestamp(System.currentTimeMillis());
+            userRedis.activateTransferOffset();
 
             SectorChangeEvent ev = new SectorChangeEvent(player, sector);
             Bukkit.getPluginManager().callEvent(ev);
@@ -174,15 +175,12 @@ public class MoveListener implements Listener {
             return;
         }
 
-        if (System.currentTimeMillis() - userRedis.getLastTransferTimestamp() < TRANSFER_DELAY) {
-            long remaining = TRANSFER_DELAY - (System.currentTimeMillis() - userRedis.getLastTransferTimestamp());
+        boolean inTransfer = userRedis.getLastSectorTransfer() > 0;
+        if (System.currentTimeMillis() < userRedis.getTransferOffsetUntil() && !inTransfer) {
+            long remaining = userRedis.getTransferOffsetUntil() - System.currentTimeMillis();
             player.showTitle(Title.title(
-                    Component.text(
-                            Configuration.TITLE_SECTOR_UNAVAILABLE
-                    ),
-                    Component.text(
-                            Configuration.TITLE_WAIT_TIME.replace("{SECONDS}", String.valueOf(remaining / 1000 + 1))
-                    ),
+                    Component.text(Configuration.TITLE_SECTOR_UNAVAILABLE),
+                    Component.text(Configuration.TITLE_WAIT_TIME.replace("{SECONDS}", String.valueOf(remaining / 1000 + 1))),
                     Title.Times.times(java.time.Duration.ofMillis(500),
                             java.time.Duration.ofMillis(2000),
                             java.time.Duration.ofMillis(500))
@@ -191,9 +189,12 @@ public class MoveListener implements Listener {
             return;
         }
 
+
         if (System.currentTimeMillis() - userRedis.getLastSectorTransfer() < TRANSFER_DELAY) return;
 
         userRedis.setLastSectorTransfer(true);
+        userRedis.activateTransferOffset();
+        userRedis.setLastTransferTimestamp(System.currentTimeMillis());
         SectorChangeEvent ev = new SectorChangeEvent(player, spawnToTeleport);
         Bukkit.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) return;

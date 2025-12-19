@@ -41,7 +41,21 @@ public class PlayerRespawnListener implements Listener {
 
     private final PaperSector paperSector;
 
+    @EventHandler
+    void onPlayerDeath(PlayerDeathEvent event) {
+        event.deathMessage(Component.text(""));
+        final Player victim = event.getEntity();
+        Sector currentSector = paperSector.getSectorManager().getCurrentSector();
 
+        if (currentSector.getType() == SectorType.QUEUE)
+            return;
+
+        paperSector.getServer().getScheduler().scheduleSyncDelayedTask(
+                paperSector,
+                () -> victim.spigot().respawn(),
+                1L
+        );
+    }
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();

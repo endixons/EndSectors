@@ -122,17 +122,24 @@ public class SectorCommand implements CommandExecutor {
 
                     UserManager.getUserAsync(targetName).thenAccept(optionalUser -> {
                         optionalUser.ifPresentOrElse(u -> {
-                            sender.sendMessage(ChatUtil.fixColors("&e&m==========&6&l[ INFORMACJE O GRACZU ]&e&m=========="));
-                            sender.sendMessage(ChatUtil.fixColors(" &fNick: &a" + u.getName()));
-                            sender.sendMessage(ChatUtil.fixColors(" &fSektor: &b" + u.getSectorName()));
-                            sender.sendMessage(ChatUtil.fixColors(" &fGamemode: &d" + u.getPlayerGameMode()));
-                            sender.sendMessage(ChatUtil.fixColors(" &fLevel: &a" + u.getExperienceLevel()));
-                            sender.sendMessage(ChatUtil.fixColors(" &fExp: &e" + u.getExperience()));
-                            sender.sendMessage(ChatUtil.fixColors("&e&m=========================================="));
+                            long now = System.currentTimeMillis();
+                            long cooldownRemaining = Math.max(0, u.getTransferOffsetUntil() - now);
+                            long lastTransferElapsed = (u.getLastTransferTimestamp() == 0 ? 0 : now - u.getLastTransferTimestamp());
+                            sender.sendMessage(ChatUtil.fixHexColors("      &#00FFFFINFORMACJE O GRACZU            "));
+                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFNick: &#00FF00" + u.getName()));
+                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFSektor: &#00BFFF" + u.getSectorName()));
+                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFGamemode: &#FF69B4" + u.getPlayerGameMode()));
+                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFLevel: &#ADFF2F" + u.getExperienceLevel()));
+                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFExp: &#FFFF00" + u.getExperience()));
+                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFOstatnia zmiana sektora: &#FF8C00" + (u.getLastTransferTimestamp() == 0 ? "BRAK" : (lastTransferElapsed / 1000) + "s temu")));
+                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFpozostaly czas do zmiany sektora: &#FF4500" + (cooldownRemaining <= 0 ? "BRAK" : (cooldownRemaining / 1000) + "s")));
+                            sender.sendMessage(ChatUtil.fixHexColors("                                             "));
                         }, () -> {
-                            sender.sendMessage(ChatUtil.fixColors("&cNie znaleziono danych lub gracz jest offline."));
+                            sender.sendMessage(ChatUtil.fixHexColors("&cNie znaleziono danych lub gracz jest offline."));
                         });
                     });
+
+
 
                     break;
                 }

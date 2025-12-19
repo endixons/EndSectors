@@ -5,8 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
-import pl.endixon.sectors.paper.PaperSector;
-import pl.endixon.sectors.paper.sector.SectorManager;
+import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.tools.command.RandomTPCommand;
 import pl.endixon.sectors.tools.command.SpawnCommand;
 import pl.endixon.sectors.tools.utils.Logger;
@@ -17,13 +16,13 @@ public class Main extends JavaPlugin {
     private static Main instance;
 
     @Getter
-    private SectorManager sectorManager;
+    private SectorsAPI sectorsAPI;
 
     @Override
     public void onEnable() {
         instance = this;
 
-        if (!initSectorManager()) {
+        if (!initSectorsAPI()) {
             shutdown("Brak EndSectors – plugin wyłączony");
             return;
         }
@@ -33,20 +32,31 @@ public class Main extends JavaPlugin {
         Logger.info("Plugin wystartował");
     }
 
-    private boolean initSectorManager() {
+    private boolean initSectorsAPI() {
         var plugin = Bukkit.getPluginManager().getPlugin("EndSectors");
 
-        if (!(plugin instanceof PaperSector paperSector)) {
+        if (plugin == null || !plugin.isEnabled()) {
             return false;
         }
 
-        this.sectorManager = paperSector.getSectorManager();
+        try {
+            this.sectorsAPI = SectorsAPI.getInstance();
+            if (this.sectorsAPI == null) {
+                Logger.info("SectorsAPI nie jest dostępne!");
+                return false;
+            }
+        } catch (Exception e) {
+            Logger.info("Błąd przy inicjalizacji SectorsAPI: " + e.getMessage());
+            return false;
+        }
+
         return true;
     }
 
     private void registerCommands() {
-        registerCommand("randomtp", new RandomTPCommand(sectorManager));
-        registerCommand("spawn", new SpawnCommand(sectorManager));
+        // teraz RandomTPCommand i SpawnCommand korzystają bezpośrednio z SectorsAPI
+        registerCommand("randomtp", new RandomTPCommand());
+        registerCommand("spawn", new SpawnCommand());
     }
 
     private void registerCommand(String name, Object executor) {

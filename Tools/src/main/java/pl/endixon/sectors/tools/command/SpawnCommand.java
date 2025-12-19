@@ -5,26 +5,17 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.Sound;
-
 import pl.endixon.sectors.common.util.ChatUtil;
-import pl.endixon.sectors.paper.PaperSector;
-import pl.endixon.sectors.paper.sector.Sector;
-import pl.endixon.sectors.paper.sector.SectorManager;
-import pl.endixon.sectors.paper.user.UserManager;
 import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.common.sector.SectorType;
+import pl.endixon.sectors.paper.SectorsAPI;
+import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.tools.helper.TeleportHelper;
 import pl.endixon.sectors.tools.utils.Messages;
-
 
 public class SpawnCommand implements CommandExecutor {
 
     private static final int COUNTDOWN_TIME = 10;
-    private final SectorManager sectorManager;
-
-    public SpawnCommand(SectorManager sectorManager) {
-        this.sectorManager = sectorManager;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -34,11 +25,10 @@ public class SpawnCommand implements CommandExecutor {
             return true;
         }
 
-        UserRedis user = UserManager.getUser(player).orElse(null);
+        UserRedis user = SectorsAPI.getInstance().getUser(player).orElse(null);
         if (user == null) return true;
-        user.setLastTransferTimestamp(System.currentTimeMillis());
 
-        Sector currentSector = sectorManager.getCurrentSector();
+        Sector currentSector = SectorsAPI.getInstance().getCurrentSector();
         if (currentSector != null && currentSector.getType() == SectorType.SPAWN) {
             player.sendTitle(
                     ChatUtil.fixHexColors(Messages.SPAWN_TITLE.get()),
@@ -52,19 +42,20 @@ public class SpawnCommand implements CommandExecutor {
 
         Sector spawnSector;
         try {
-            spawnSector = sectorManager.getBalancedRandomSpawnSector();
+            spawnSector = SectorsAPI.getInstance().getBalancedSpawn();
         } catch (IllegalStateException e) {
             player.sendTitle(
                     ChatUtil.fixHexColors(Messages.SPAWN_TITLE.get()),
                     ChatUtil.fixHexColors(Messages.SPAWN_OFFLINE.get()),
                     10, 40, 10
             );
-
             return true;
         }
 
+        user.setTransferOffsetUntil(0);
+
         TeleportHelper.startTeleportCountdown(player, COUNTDOWN_TIME, () -> {
-            PaperSector.getInstance().getSectorTeleportService().teleportToSector(player, user, spawnSector, false,true);
+            SectorsAPI.getInstance().teleportPlayer(player, user, spawnSector, false, true);
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
         });
 

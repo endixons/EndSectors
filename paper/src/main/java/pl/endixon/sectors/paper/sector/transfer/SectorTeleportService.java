@@ -55,6 +55,7 @@
 
                 if (!preserveCoordinates) {
                     user.updateAndSave(player, sector);
+
                 } else {
                     user.setSectorName(sector.getName());
                     RedisUserCache.save(user);

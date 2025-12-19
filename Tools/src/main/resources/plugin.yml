@@ -11,9 +11,6 @@ commands:
   spawn:
     description: Teleport na spawn
     usage: /spawn
-  sethome:
-    description: Ustaw swój home w obecnym sektorze
-    usage: /sethome
   home:
     description: Teleport na swój home
     usage: /home

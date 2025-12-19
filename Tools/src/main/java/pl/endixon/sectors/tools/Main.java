@@ -10,7 +10,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.tools.command.HomeCommand;
 import pl.endixon.sectors.tools.command.RandomTPCommand;
-import pl.endixon.sectors.tools.command.SetHomeCommand;
 import pl.endixon.sectors.tools.command.SpawnCommand;
 import pl.endixon.sectors.tools.listeners.InventoryInternactListener;
 import pl.endixon.sectors.tools.listeners.PlayerJoinListener;

@@ -1,5 +1,6 @@
 package pl.endixon.sectors.tools.command;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,7 +23,7 @@ public class RandomTPCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ChatUtil.fixHexColors(Messages.CONSOLE_BLOCK.get()));
+            sender.sendMessage(Component.text(ChatUtil.fixHexColors(Messages.CONSOLE_BLOCK.get())));
             return true;
         }
 
@@ -35,17 +36,18 @@ public class RandomTPCommand implements CommandExecutor {
 
         UserRedis user = api.getUser(player).orElse(null);
         if (user == null) {
-            player.sendMessage("§cProfil użytkownika nie został znaleziony!");
+            player.sendMessage(Component.text(ChatUtil.fixHexColors("&#FF5555Profil użytkownika nie został znaleziony!")));
             return true;
         }
-
+        boolean isAdmin = player.hasPermission("endsectors.admin");
+        int countdown = isAdmin ? 0 : COUNTDOWN_TIME;
         user.setTransferOffsetUntil(0);
-        TeleportHelper.startTeleportCountdown(player, COUNTDOWN_TIME, () -> {
+        TeleportHelper.startTeleportCountdown(player, countdown, () -> {
             api.getRandomLocation(player, user);
 
             Sector randomSector = api.getSectorManager().getSector(user.getSectorName());
             if (randomSector == null) {
-                player.sendMessage("§cNie udało się znaleźć losowego sektora!");
+                player.sendMessage(Component.text(ChatUtil.fixHexColors("&#FF5555Nie udało się znaleźć losowego sektora!")));
                 return;
             }
             SectorChangeEvent event = new SectorChangeEvent(player, randomSector);

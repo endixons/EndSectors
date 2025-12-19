@@ -7,7 +7,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import pl.endixon.sectors.common.redis.RedisManager;
 import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.tools.command.HomeCommand;
 import pl.endixon.sectors.tools.command.RandomTPCommand;
@@ -29,18 +28,13 @@ public class Main extends JavaPlugin {
     private MongoService mongoService;
     private PlayerProfileRepository repository;
 
-
-    /* ===================== ENABLE / DISABLE ===================== */
-
     @Override
     public void onEnable() {
         instance = this;
-
         if (!initSectorsAPI()) {
             shutdown("Brak EndSectors – plugin wyłączony");
             return;
         }
-
         initMongo();
         initRepositories();
         registerCommands();
@@ -53,7 +47,6 @@ public class Main extends JavaPlugin {
         shutdownMongo();
     }
 
-    /* ===================== INIT ===================== */
 
     private void initMongo() {
         mongoService = new MongoService();
@@ -65,18 +58,14 @@ public class Main extends JavaPlugin {
 
     private void initRepositories() {
         Logger.info("Inicjalizacja repozytoriów MongoDB...");
-
         try {
             MongoCollection<PlayerProfile> collection =
                     mongoService.getDatabase().getCollection(
                             "players",
                             PlayerProfile.class
                     );
-
             repository = new PlayerProfileRepository(collection);
-
             long loaded = collection.countDocuments();
-
             Logger.info("Repozytorium PlayerProfile załadowane (kolekcja: players, rekordy: " + loaded + ")");
         } catch (Exception e) {
             Logger.info("Błąd inicjalizacji repozytorium PlayerProfile: " + e.getMessage());
@@ -90,11 +79,9 @@ public class Main extends JavaPlugin {
 
     private boolean initSectorsAPI() {
         var plugin = Bukkit.getPluginManager().getPlugin("EndSectors");
-
         if (plugin == null || !plugin.isEnabled()) {
             return false;
         }
-
         try {
             sectorsAPI = SectorsAPI.getInstance();
             return sectorsAPI != null;
@@ -103,8 +90,6 @@ public class Main extends JavaPlugin {
             return false;
         }
     }
-
-    /* ===================== REGISTER ===================== */
 
     private void registerListeners() {
         PluginManager pm = Bukkit.getPluginManager();
@@ -122,12 +107,10 @@ public class Main extends JavaPlugin {
 
     private void registerCommand(String name, Object executor) {
         PluginCommand command = getCommand(name);
-
         if (command == null) {
             Logger.info("Komenda /" + name + " NIE jest w plugin.yml");
             return;
         }
-
         command.setExecutor((CommandExecutor) executor);
     }
 

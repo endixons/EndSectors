@@ -16,6 +16,7 @@ import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.tools.cache.UserCache;
 import pl.endixon.sectors.tools.service.home.Home;
 import pl.endixon.sectors.tools.service.users.PlayerProfile;
+import pl.endixon.sectors.tools.utils.Messages;
 
 public class HomeCommand implements CommandExecutor {
 
@@ -25,19 +26,21 @@ public class HomeCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text(ChatUtil.fixHexColors("<#FF5555>Ta komenda jest tylko dla gracza!")));
+            sender.sendMessage(Component.text(ChatUtil.fixHexColors(Messages.CONSOLE_BLOCK.get())));
             return true;
         }
 
         PlayerProfile profile = UserCache.get(player.getUniqueId());
         if (profile == null) {
-            player.sendMessage(Component.text(ChatUtil.fixHexColors("<#FF5555>Twój profil nie został załadowany!")));
+            player.sendMessage(Component.text(ChatUtil.fixHexColors("&#FF5555Profil użytkownika nie został znaleziony!")));
+
             return true;
         }
 
         UserRedis user = sectorsAPI.getUser(player).orElse(null);
         if (user == null) {
-            player.sendMessage(Component.text(ChatUtil.fixHexColors("<#FF5555>Profil użytkownika nie został znaleziony!")));
+            player.sendMessage(Component.text(ChatUtil.fixHexColors("&#FF5555Profil użytkownika nie został znaleziony!")));
+
             return true;
         }
 
@@ -46,19 +49,19 @@ public class HomeCommand implements CommandExecutor {
         String homeName = "home"; //todo dodać wiele home
         Home home = profile.getHomes().get(homeName);
         if (home == null) {
-            player.sendMessage(Component.text(ChatUtil.fixHexColors("<#FF5555>Nie masz ustawionego home o nazwie <#FFAA00>" + homeName + "<#FF5555>!")));
+            player.sendMessage(Component.text(ChatUtil.fixHexColors("&#FF5555Nie masz ustawionego home o nazwie &#FFAA00" + homeName + "&#FF5555!")));
             return true;
         }
 
         Sector homeSector = sectorsAPI.getSectorManager().getSector(home.getSector());
         if (homeSector == null) {
-            player.sendMessage(Component.text(ChatUtil.fixHexColors("<#FF5555>Nie udało się znaleźć sektora dla home!")));
+            player.sendMessage(Component.text(ChatUtil.fixHexColors("&#FF5555Nie udało się znaleźć sektora dla home!")));
             return true;
         }
 
         World world = Bukkit.getWorld(homeSector.getWorldName());
         if (world == null) {
-            player.sendMessage(Component.text(ChatUtil.fixHexColors("<#FF5555>Świat dla home nie jest załadowany!")));
+            player.sendMessage(Component.text(ChatUtil.fixHexColors("&#FF5555Świat dla home nie jest załadowany!")));
             return true;
         }
 

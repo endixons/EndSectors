@@ -1,5 +1,6 @@
 package pl.endixon.sectors.tools.command;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,13 +22,14 @@ public class SpawnCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ChatUtil.fixHexColors(Messages.CONSOLE_BLOCK.get()));
+            sender.sendMessage(Component.text(ChatUtil.fixHexColors(Messages.CONSOLE_BLOCK.get())));
             return true;
         }
 
         UserRedis user = SectorsAPI.getInstance().getUser(player).orElse(null);
         if (user == null) {
-            player.sendMessage("§cProfil użytkownika nie został znaleziony!");
+            player.sendMessage(Component.text(ChatUtil.fixHexColors("&#FF5555Profil użytkownika nie został znaleziony!")));
+
             return true;
         }
 
@@ -55,7 +57,10 @@ public class SpawnCommand implements CommandExecutor {
         }
 
         user.setTransferOffsetUntil(0);
-        TeleportHelper.startTeleportCountdown(player, COUNTDOWN_TIME, () -> {
+
+        boolean isAdmin = player.hasPermission("endsectors.admin");
+        int countdown = isAdmin ? 0 : COUNTDOWN_TIME;
+        TeleportHelper.startTeleportCountdown(player, countdown, () -> {
             SectorsAPI.getInstance().teleportPlayer(player, user, spawnSector, false, true);
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
         });

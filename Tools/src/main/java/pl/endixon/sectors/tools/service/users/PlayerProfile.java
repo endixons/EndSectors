@@ -16,11 +16,8 @@ public class PlayerProfile {
 
     @BsonId
     private UUID uuid;
-
     private String name;
-
     private int kills;
     private int deaths;
-
     private Map<String, Home> homes = new HashMap<>();
 }

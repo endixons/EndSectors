@@ -17,9 +17,6 @@ import pl.endixon.sectors.tools.inventory.api.WindowUI;
 import pl.endixon.sectors.tools.inventory.api.builder.StackBuilder;
 import pl.endixon.sectors.tools.service.home.Home;
 import pl.endixon.sectors.tools.service.users.PlayerProfile;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +26,6 @@ public class HomeWindow {
     private final SectorsAPI sectorsAPI = SectorsAPI.getInstance();
     private final Main plugin = Main.getInstance();
     private static final int HOME_SLOTS = 3;
-
     private PlayerProfile profile;
     private UserRedis user;
 

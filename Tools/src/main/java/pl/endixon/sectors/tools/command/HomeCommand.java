@@ -32,15 +32,11 @@ public class HomeCommand implements CommandExecutor {
             player.sendMessage(Component.text(ChatUtil.fixHexColors("&#FF5555Profil użytkownika nie został znaleziony!")));
             return true;
         }
-
-
         UserRedis user = sectorsAPI.getUser(player).orElse(null);
         if (user == null) {
             player.sendMessage(Component.text(ChatUtil.fixHexColors("&#FF5555Profil użytkownika nie został znaleziony!")));
             return true;
         }
-
-
 
         new HomeWindow(player, profile).open();
         return true;

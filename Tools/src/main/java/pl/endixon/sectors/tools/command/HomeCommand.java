@@ -5,8 +5,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.SectorsAPI;
+import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.tools.cache.UserCache;
 import pl.endixon.sectors.tools.inventory.HomeWindow;
@@ -31,11 +33,14 @@ public class HomeCommand implements CommandExecutor {
             return true;
         }
 
+
         UserRedis user = sectorsAPI.getUser(player).orElse(null);
         if (user == null) {
             player.sendMessage(Component.text(ChatUtil.fixHexColors("&#FF5555Profil użytkownika nie został znaleziony!")));
             return true;
         }
+
+
 
         new HomeWindow(player, profile).open();
         return true;

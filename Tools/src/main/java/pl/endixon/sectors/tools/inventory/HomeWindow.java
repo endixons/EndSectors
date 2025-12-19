@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.paper.sector.Sector;
@@ -83,6 +84,13 @@ public class HomeWindow {
                         open();
                     }
                 } else {
+
+                    if (currentSector.getType() == SectorType.SPAWN) {
+                        player.closeInventory();
+                        player.sendMessage(ChatUtil.fixHexColors("&#FF5555Nie możesz tworzyć domków na sektorze SPAWN!"));
+                        return;
+                    }
+
                     Location loc = player.getLocation();
                     Home newHome = new Home(
                             homeKey,

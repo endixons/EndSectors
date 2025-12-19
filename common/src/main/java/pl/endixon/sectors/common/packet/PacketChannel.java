@@ -22,6 +22,7 @@ package pl.endixon.sectors.common.packet;
 public interface PacketChannel {
 
     String PACKET_CONFIGURATION_REQUEST = "PacketConfigurationRequest";
+    String PACKET_TELEPORT_HOME = "PacketTeleportHome";
     String PACKET_BROADCAST_MESSAGE = "PacketBroadcastMessage";
     String PACKET_SEND_MESSAGE_TO_PLAYER = "PacketSendMessageToPlayer";
     String PACKET_BROADCAST_TITLE = "PacketBroadcastTitle";

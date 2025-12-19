@@ -1,4 +1,4 @@
-package pl.endixon.sectors.tools.helper;
+package pl.endixon.sectors.tools.utils;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;

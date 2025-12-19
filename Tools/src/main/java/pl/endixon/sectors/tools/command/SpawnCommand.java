@@ -10,7 +10,7 @@ import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.paper.sector.Sector;
-import pl.endixon.sectors.tools.helper.TeleportHelper;
+import pl.endixon.sectors.tools.utils.TeleportHelper;
 import pl.endixon.sectors.tools.utils.Messages;
 
 public class SpawnCommand implements CommandExecutor {
@@ -26,23 +26,25 @@ public class SpawnCommand implements CommandExecutor {
         }
 
         UserRedis user = SectorsAPI.getInstance().getUser(player).orElse(null);
-        if (user == null) return true;
+        if (user == null) {
+            player.sendMessage("§cProfil użytkownika nie został znaleziony!");
+            return true;
+        }
 
-        Sector currentSector = SectorsAPI.getInstance().getCurrentSector();
+        Sector currentSector = SectorsAPI.getInstance().getSectorManager().getCurrentSector();
         if (currentSector != null && currentSector.getType() == SectorType.SPAWN) {
             player.sendTitle(
                     ChatUtil.fixHexColors(Messages.SPAWN_TITLE.get()),
                     ChatUtil.fixHexColors(Messages.SPAWN_ALREADY.get()),
                     10, 40, 10
             );
-
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
             return true;
         }
 
         Sector spawnSector;
         try {
-            spawnSector = SectorsAPI.getInstance().getBalancedSpawn();
+            spawnSector = SectorsAPI.getInstance().getSectorManager().getBalancedRandomSpawnSector();
         } catch (IllegalStateException e) {
             player.sendTitle(
                     ChatUtil.fixHexColors(Messages.SPAWN_TITLE.get()),
@@ -53,7 +55,6 @@ public class SpawnCommand implements CommandExecutor {
         }
 
         user.setTransferOffsetUntil(0);
-
         TeleportHelper.startTeleportCountdown(player, COUNTDOWN_TIME, () -> {
             SectorsAPI.getInstance().teleportPlayer(player, user, spawnSector, false, true);
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);

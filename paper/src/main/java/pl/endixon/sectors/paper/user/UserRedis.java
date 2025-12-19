@@ -96,12 +96,10 @@ public class UserRedis {
         this.flying = Boolean.parseBoolean(redisData.getOrDefault("flying", String.valueOf(flying)));
     }
 
-
     public void updateFromPlayer(@NonNull Player player, @NonNull Sector currentSector) {
         long previousLastSectorTransfer = this.lastSectorTransfer;
         long previousLastTransferTimestamp = this.lastTransferTimestamp;
         long previousTransferOffsetUntil = this.transferOffsetUntil;
-
         this.name = player.getName();
         Location loc = player.getLocation();
         this.x = loc.getX(); this.y = loc.getY(); this.z = loc.getZ();
@@ -121,8 +119,6 @@ public class UserRedis {
         this.lastTransferTimestamp = previousLastTransferTimestamp;
         this.transferOffsetUntil = previousTransferOffsetUntil;
     }
-
-
 
     public Map<String, String> toRedisMap() {
         Map<String, String> map = new HashMap<>();
@@ -152,14 +148,9 @@ public class UserRedis {
         RedisUserCache.save(this);
     }
 
-
-
-
     public Player getPlayer() {
         return Bukkit.getPlayer(name);
     }
-
-
 
 
     public void setLastSectorTransfer(boolean redirecting) {
@@ -167,9 +158,8 @@ public class UserRedis {
         RedisUserCache.save(this);
     }
 
-
     public void activateTransferOffset() {
-        this.transferOffsetUntil = System.currentTimeMillis() + TRANSFER_DELAY;
+        this.transferOffsetUntil = System.currentTimeMillis() + 5000L;
         RedisUserCache.save(this);
     }
 
@@ -224,20 +214,13 @@ public class UserRedis {
             player.addPotionEffects(PlayerDataSerializer.deserializeEffects(playerEffectsData));
     }
 
-    private static final long TRANSFER_DELAY = 5000L;
-
-    private static final double OFFSET_DISTANCE = 5.0;
-
     private void teleportPlayerToStoredLocation(@NonNull Player player) {
         long now = System.currentTimeMillis();
-
         Location targetLoc = new Location(player.getWorld(), x, y, z, yaw, pitch);
-
         if (now < transferOffsetUntil) {
             Vector direction = targetLoc.getDirection().setY(0).normalize();
-            targetLoc = targetLoc.clone().add(direction.multiply(OFFSET_DISTANCE));
+            targetLoc = targetLoc.clone().add(direction.multiply(5.0));
         }
-
         player.teleport(targetLoc);
     }
 

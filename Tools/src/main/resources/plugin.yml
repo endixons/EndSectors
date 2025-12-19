@@ -3,9 +3,17 @@ version: 1.0
 main: pl.endixon.sectors.tools.Main
 api-version: 1.20
 depend: [EndSectors]
-softdepend: [dynmap]
+
 commands:
   randomtp:
+    description: Losowy teleport w sektorze
     usage: /randomtp
   spawn:
-      usage: /spawn
+    description: Teleport na spawn
+    usage: /spawn
+  sethome:
+    description: Ustaw swój home w obecnym sektorze
+    usage: /sethome
+  home:
+    description: Teleport na swój home
+    usage: /home

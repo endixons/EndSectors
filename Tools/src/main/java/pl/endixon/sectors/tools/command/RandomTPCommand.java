@@ -9,9 +9,8 @@ import org.bukkit.Sound;
 import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.paper.event.sector.SectorChangeEvent;
 import pl.endixon.sectors.paper.sector.Sector;
-import pl.endixon.sectors.paper.user.RedisUserCache;
 import pl.endixon.sectors.paper.user.UserRedis;
-import pl.endixon.sectors.tools.helper.TeleportHelper;
+import pl.endixon.sectors.tools.utils.TeleportHelper;
 import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.tools.utils.Messages;
 
@@ -30,30 +29,31 @@ public class RandomTPCommand implements CommandExecutor {
         SectorsAPI api = SectorsAPI.getInstance();
         if (api == null) return true;
 
-        UserRedis user = api.getUser(player).orElse(null);
-        if (user == null) return true;
-
         player.sendTitle(Messages.RANDOM_TITLE.get(),
                 Messages.RANDOM_START.get(),
                 0, 9999, 0);
 
+        UserRedis user = api.getUser(player).orElse(null);
+        if (user == null) {
+            player.sendMessage("§cProfil użytkownika nie został znaleziony!");
+            return true;
+        }
 
-api.resetTransferOffset(user);
-
+        user.setTransferOffsetUntil(0);
         TeleportHelper.startTeleportCountdown(player, COUNTDOWN_TIME, () -> {
-            // teleport random
             api.getRandomLocation(player, user);
-            Sector randomSector = api.getSector(user.getSectorName());
 
-            // wywołanie eventu
+            Sector randomSector = api.getSectorManager().getSector(user.getSectorName());
+            if (randomSector == null) {
+                player.sendMessage("§cNie udało się znaleźć losowego sektora!");
+                return;
+            }
             SectorChangeEvent event = new SectorChangeEvent(player, randomSector);
             api.getPaperSector().getServer().getPluginManager().callEvent(event);
-
             if (!event.isCancelled()) {
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
             }
         });
-
         return true;
     }
 }

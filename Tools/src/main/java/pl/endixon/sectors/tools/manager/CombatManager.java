@@ -13,6 +13,7 @@ public class CombatManager {
     public void startCombat(Player attacker, Player victim) {
         inCombat.put(attacker, victim);
         inCombat.put(victim, attacker);
+
     }
 
 

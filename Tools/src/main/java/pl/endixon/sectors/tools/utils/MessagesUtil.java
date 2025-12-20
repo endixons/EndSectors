@@ -1,9 +1,8 @@
 package pl.endixon.sectors.tools.utils;
 
 import net.kyori.adventure.text.Component;
-import pl.endixon.sectors.common.util.ChatUtil;
 
-public enum Messages {
+public enum MessagesUtil {
 
 
     CONSOLE_BLOCK("&#ef4444Ta komenda jest tylko dla gracza"),
@@ -23,7 +22,7 @@ public enum Messages {
 
     private final String text;
 
-    Messages(String text) {
+    MessagesUtil(String text) {
         this.text = text;
     }
 

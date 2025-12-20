@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import pl.endixon.sectors.tools.Main;
 import pl.endixon.sectors.common.util.ChatUtil;
 
-public class TeleportHelper {
+public class TeleportUtil {
 
     public static void startTeleportCountdown(Player player, int seconds, Runnable onFinish) {
         Location startLocation = player.getLocation().clone();

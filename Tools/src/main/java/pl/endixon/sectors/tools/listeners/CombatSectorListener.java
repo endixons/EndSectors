@@ -1,10 +1,7 @@
 package pl.endixon.sectors.tools.listeners;
 
 import lombok.RequiredArgsConstructor;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,8 +14,7 @@ import pl.endixon.sectors.paper.event.sector.SectorChangeEvent;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
 import pl.endixon.sectors.tools.manager.CombatManager;
-import pl.endixon.sectors.tools.utils.ChatAdventureUtil;
-import pl.endixon.sectors.tools.utils.Messages;
+import pl.endixon.sectors.tools.utils.MessagesUtil;
 
 import java.time.Duration;
 
@@ -53,8 +49,8 @@ public class CombatSectorListener implements Listener {
 
         current.knockBorder(player, KNOCK_BORDER_FORCE);
         player.showTitle(Title.title(
-                Messages.SECTOR_COMBAT_TITLE.get(),
-                Messages.SECTOR_COMBAT_SUBTITLE.get(),
+                MessagesUtil.SECTOR_COMBAT_TITLE.get(),
+                MessagesUtil.SECTOR_COMBAT_SUBTITLE.get(),
                 Title.Times.times(
                         Duration.ofMillis(200),
                         Duration.ofSeconds(2),
@@ -83,8 +79,8 @@ public class CombatSectorListener implements Listener {
         }
 
         player.showTitle(Title.title(
-                Messages.PORTAL_COMBAT_TITLE.get(),
-                Messages.PORTAL_COMBAT_SUBTITLE.get(),
+                MessagesUtil.PORTAL_COMBAT_TITLE.get(),
+                MessagesUtil.PORTAL_COMBAT_SUBTITLE.get(),
                 Title.Times.times(
                         Duration.ofMillis(200),
                         Duration.ofSeconds(2),
@@ -111,8 +107,8 @@ public class CombatSectorListener implements Listener {
             player.teleport(event.getFrom());
 
             player.showTitle(Title.title(
-                    Messages.PORTAL_COMBAT_TITLE.get(),
-                    Messages.SECTOR_COMBAT_SUBTITLE.get(),
+                    MessagesUtil.PORTAL_COMBAT_TITLE.get(),
+                    MessagesUtil.SECTOR_COMBAT_SUBTITLE.get(),
                     Title.Times.times(
                             Duration.ofMillis(200),
                             Duration.ofSeconds(2),

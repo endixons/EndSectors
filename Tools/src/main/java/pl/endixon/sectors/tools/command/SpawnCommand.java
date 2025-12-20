@@ -1,19 +1,17 @@
 package pl.endixon.sectors.tools.command;
 
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.entity.Player;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.Sound;
-import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.paper.sector.Sector;
-import pl.endixon.sectors.tools.utils.TeleportHelper;
-import pl.endixon.sectors.tools.utils.Messages;
+import pl.endixon.sectors.tools.utils.TeleportUtil;
+import pl.endixon.sectors.tools.utils.MessagesUtil;
 
 import java.time.Duration;
 
@@ -25,13 +23,13 @@ public class SpawnCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Messages.CONSOLE_BLOCK.get());
+            sender.sendMessage(MessagesUtil.CONSOLE_BLOCK.get());
             return true;
         }
 
         UserRedis user = SectorsAPI.getInstance().getUser(player).orElse(null);
         if (user == null) {
-            player.sendMessage(Messages.PLAYERDATANOT_FOUND_MESSAGE.get());
+            player.sendMessage(MessagesUtil.PLAYERDATANOT_FOUND_MESSAGE.get());
 
             return true;
         }
@@ -39,8 +37,8 @@ public class SpawnCommand implements CommandExecutor {
         Sector currentSector = SectorsAPI.getInstance().getSectorManager().getCurrentSector();
         if (currentSector != null && currentSector.getType() == SectorType.SPAWN) {
             player.showTitle(Title.title(
-                    Messages.SPAWN_TITLE.get(),
-                    Messages.SPAWN_ALREADY.get(),
+                    MessagesUtil.SPAWN_TITLE.get(),
+                    MessagesUtil.SPAWN_ALREADY.get(),
                     Title.Times.times(
                             Duration.ofMillis(10),
                             Duration.ofMillis(40),
@@ -57,8 +55,8 @@ public class SpawnCommand implements CommandExecutor {
             spawnSector = SectorsAPI.getInstance().getSectorManager().getBalancedRandomSpawnSector();
         } catch (IllegalStateException e) {
             player.showTitle(Title.title(
-                    Messages.SPAWN_TITLE.get(),
-                    Messages.SPAWN_OFFLINE.get(),
+                    MessagesUtil.SPAWN_TITLE.get(),
+                    MessagesUtil.SPAWN_OFFLINE.get(),
                     Title.Times.times(
                             Duration.ofMillis(10),
                             Duration.ofMillis(40),
@@ -73,7 +71,7 @@ public class SpawnCommand implements CommandExecutor {
 
         boolean isAdmin = player.hasPermission("endsectors.admin");
         int countdown = isAdmin ? 0 : COUNTDOWN_TIME;
-        TeleportHelper.startTeleportCountdown(player, countdown, () -> {
+        TeleportUtil.startTeleportCountdown(player, countdown, () -> {
             SectorsAPI.getInstance().teleportPlayer(player, user, spawnSector, false, true);
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
         });

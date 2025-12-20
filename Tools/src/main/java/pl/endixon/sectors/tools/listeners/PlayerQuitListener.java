@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import pl.endixon.sectors.tools.service.users.UserCache;
-import pl.endixon.sectors.tools.service.Repository.PlayerProfileRepository;
+import pl.endixon.sectors.tools.service.users.ProfileCache;
+import pl.endixon.sectors.tools.service.users.PlayerProfileRepository;
 import pl.endixon.sectors.tools.service.users.PlayerProfile;
 
 import java.util.UUID;
@@ -18,11 +18,11 @@ public class PlayerQuitListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
-        PlayerProfile profile = UserCache.get(uuid);
+        PlayerProfile profile = ProfileCache.get(uuid);
 
         if (profile != null) {
             repository.save(profile);
-            UserCache.remove(uuid);
+            ProfileCache.remove(uuid);
         }
     }
 }

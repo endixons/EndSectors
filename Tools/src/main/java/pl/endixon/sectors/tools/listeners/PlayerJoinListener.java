@@ -5,8 +5,8 @@
     import org.bukkit.event.EventHandler;
     import org.bukkit.event.Listener;
     import org.bukkit.event.player.PlayerJoinEvent;
-    import pl.endixon.sectors.tools.service.users.UserCache;
-    import pl.endixon.sectors.tools.service.Repository.PlayerProfileRepository;
+    import pl.endixon.sectors.tools.service.users.ProfileCache;
+    import pl.endixon.sectors.tools.service.users.PlayerProfileRepository;
     import pl.endixon.sectors.tools.service.users.PlayerProfile;
 
     @RequiredArgsConstructor
@@ -23,6 +23,6 @@
                             repository.create(player.getUniqueId(), player.getName())
                     );
 
-            UserCache.put(profile);
+            ProfileCache.put(profile);
         }
     }

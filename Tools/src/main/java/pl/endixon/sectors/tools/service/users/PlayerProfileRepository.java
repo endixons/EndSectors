@@ -1,8 +1,7 @@
-package pl.endixon.sectors.tools.service.Repository;
+package pl.endixon.sectors.tools.service.users;
 
 import com.mongodb.client.MongoCollection;
 import lombok.RequiredArgsConstructor;
-import pl.endixon.sectors.tools.service.users.PlayerProfile;
 
 import java.util.HashMap;
 import java.util.Optional;

@@ -20,7 +20,7 @@
     import pl.endixon.sectors.tools.listeners.PlayerQuitListener;
     import pl.endixon.sectors.tools.listeners.CombatSectorListener;
     import pl.endixon.sectors.tools.manager.MongoManager;
-    import pl.endixon.sectors.tools.service.Repository.PlayerProfileRepository;
+    import pl.endixon.sectors.tools.service.users.PlayerProfileRepository;
     import pl.endixon.sectors.tools.service.users.PlayerProfile;
     import pl.endixon.sectors.tools.utils.Logger;
 

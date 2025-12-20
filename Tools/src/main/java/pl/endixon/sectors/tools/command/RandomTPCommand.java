@@ -1,6 +1,5 @@
 package pl.endixon.sectors.tools.command;
 
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.entity.Player;
 import org.bukkit.command.Command;
@@ -12,10 +11,8 @@ import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.paper.event.sector.SectorChangeEvent;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.UserRedis;
-import pl.endixon.sectors.tools.utils.ChatAdventureUtil;
-import pl.endixon.sectors.tools.utils.TeleportHelper;
-import pl.endixon.sectors.common.util.ChatUtil;
-import pl.endixon.sectors.tools.utils.Messages;
+import pl.endixon.sectors.tools.utils.TeleportUtil;
+import pl.endixon.sectors.tools.utils.MessagesUtil;
 
 import java.time.Duration;
 
@@ -27,7 +24,7 @@ public class RandomTPCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Messages.CONSOLE_BLOCK.get());
+            sender.sendMessage(MessagesUtil.CONSOLE_BLOCK.get());
             return true;
         }
 
@@ -35,8 +32,8 @@ public class RandomTPCommand implements CommandExecutor {
         if (api == null) return true;
 
         player.showTitle(Title.title(
-                Messages.RANDOM_TITLE.get(),
-                Messages.RANDOM_START.get(),
+                MessagesUtil.RANDOM_TITLE.get(),
+                MessagesUtil.RANDOM_START.get(),
                 Title.Times.times(
                         Duration.ofMillis(0),
                         Duration.ofMillis(9999),
@@ -48,18 +45,18 @@ public class RandomTPCommand implements CommandExecutor {
 
         UserRedis user = api.getUser(player).orElse(null);
         if (user == null) {
-            player.sendMessage(Messages.PLAYERDATANOT_FOUND_MESSAGE.get());
+            player.sendMessage(MessagesUtil.PLAYERDATANOT_FOUND_MESSAGE.get());
             return true;
         }
         boolean isAdmin = player.hasPermission("endsectors.admin");
         int countdown = isAdmin ? 0 : COUNTDOWN_TIME;
         user.setTransferOffsetUntil(0);
-        TeleportHelper.startTeleportCountdown(player, countdown, () -> {
+        TeleportUtil.startTeleportCountdown(player, countdown, () -> {
             api.getRandomLocation(player, user);
 
             Sector randomSector = api.getSectorManager().getSector(user.getSectorName());
             if (randomSector == null) {
-                player.sendMessage(Messages.RANDOM_SECTOR_NOTFOUND.get());
+                player.sendMessage(MessagesUtil.RANDOM_SECTOR_NOTFOUND.get());
                 return;
             }
             SectorChangeEvent event = new SectorChangeEvent(player, randomSector);

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import pl.endixon.sectors.tools.cache.UserCache;
+import pl.endixon.sectors.tools.service.users.UserCache;
 import pl.endixon.sectors.tools.service.Repository.PlayerProfileRepository;
 import pl.endixon.sectors.tools.service.users.PlayerProfile;
 

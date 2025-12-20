@@ -1,6 +1,4 @@
-package pl.endixon.sectors.tools.cache;
-
-import pl.endixon.sectors.tools.service.users.PlayerProfile;
+package pl.endixon.sectors.tools.service.users;
 
 import java.util.Map;
 import java.util.UUID;

@@ -10,6 +10,7 @@ import pl.endixon.sectors.paper.user.UserRedis;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.paper.sector.Sector;
+import pl.endixon.sectors.paper.util.Logger;
 import pl.endixon.sectors.tools.utils.TeleportUtil;
 import pl.endixon.sectors.tools.utils.MessagesUtil;
 
@@ -18,6 +19,14 @@ import java.time.Duration;
 public class SpawnCommand implements CommandExecutor {
 
     private static final int COUNTDOWN_TIME = 10;
+    private final SectorsAPI api;
+
+    public SpawnCommand(SectorsAPI api) {
+        if (api == null) {
+            throw new IllegalArgumentException("SectorsAPI cannot be null!");
+        }
+        this.api = api;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -27,13 +36,13 @@ public class SpawnCommand implements CommandExecutor {
             return true;
         }
 
-        UserRedis user = SectorsAPI.getInstance().getUser(player).orElse(null);
+        UserRedis user = api.getUser(player).orElse(null);
         if (user == null) {
             player.sendMessage(MessagesUtil.PLAYERDATANOT_FOUND_MESSAGE.get());
             return true;
         }
 
-        Sector currentSector = SectorsAPI.getInstance().getSectorManager().getCurrentSector();
+        Sector currentSector = api.getSectorManager().getCurrentSector();
         if (currentSector != null && currentSector.getType() == SectorType.SPAWN) {
             player.showTitle(Title.title(
                     MessagesUtil.SPAWN_TITLE.get(),
@@ -49,7 +58,7 @@ public class SpawnCommand implements CommandExecutor {
             return true;
         }
 
-        Sector spawnSector = SectorsAPI.getInstance().getSectorManager().getBalancedRandomSpawnSector();
+        Sector spawnSector = api.getSectorManager().getBalancedRandomSpawnSector();
 
         if (spawnSector == null) {
             player.sendMessage(MessagesUtil.RANDOM_SECTORSPAWN_NOTFOUND.get());
@@ -85,7 +94,7 @@ public class SpawnCommand implements CommandExecutor {
         boolean isAdmin = player.hasPermission("endsectors.admin");
         int countdown = isAdmin ? 0 : COUNTDOWN_TIME;
         TeleportUtil.startTeleportCountdown(player, countdown, () -> {
-            SectorsAPI.getInstance().teleportPlayer(player, user, spawnSector, false, true);
+            api.teleportPlayer(player, user, spawnSector, false, true);
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
         });
         return true;

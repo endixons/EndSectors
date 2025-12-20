@@ -98,15 +98,15 @@
         private void registerListeners() {
             PluginManager pm = Bukkit.getPluginManager();
             pm.registerEvents(new ProfileListener(repository), this);
-            pm.registerEvents(new CombatListener(combatManager), this);
+            pm.registerEvents(new CombatListener(combatManager,sectorsAPI), this);
             pm.registerEvents(new InventoryInternactListener(),this);
 
         }
 
         private void registerCommands() {
-            registerCommand("randomtp", new RandomTPCommand());
-            registerCommand("spawn", new SpawnCommand());
-            registerCommand("home", new HomeCommand());
+            registerCommand("randomtp", new RandomTPCommand(sectorsAPI));
+            registerCommand("spawn", new SpawnCommand(sectorsAPI));
+            registerCommand("home", new HomeCommand(sectorsAPI));
         }
 
         private void registerCommand(String name, Object executor) {

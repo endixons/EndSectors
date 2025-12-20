@@ -11,6 +11,7 @@ import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.paper.event.sector.SectorChangeEvent;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.UserRedis;
+import pl.endixon.sectors.paper.util.Logger;
 import pl.endixon.sectors.tools.utils.TeleportUtil;
 import pl.endixon.sectors.tools.utils.MessagesUtil;
 
@@ -19,6 +20,14 @@ import java.time.Duration;
 public class RandomTPCommand implements CommandExecutor {
 
     private static final int COUNTDOWN_TIME = 10;
+    private final SectorsAPI api;
+
+    public RandomTPCommand(SectorsAPI api) {
+        if (api == null) {
+            throw new IllegalArgumentException("SectorsAPI cannot be null!");
+        }
+        this.api = api;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -27,9 +36,6 @@ public class RandomTPCommand implements CommandExecutor {
             sender.sendMessage(MessagesUtil.CONSOLE_BLOCK.get());
             return true;
         }
-
-        SectorsAPI api = SectorsAPI.getInstance();
-        if (api == null) return true;
 
         player.showTitle(Title.title(
                 MessagesUtil.RANDOM_TITLE.get(),
@@ -40,8 +46,6 @@ public class RandomTPCommand implements CommandExecutor {
                         Duration.ofMillis(0)
                 )
         ));
-
-
 
         UserRedis user = api.getUser(player).orElse(null);
         if (user == null) {

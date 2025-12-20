@@ -23,15 +23,20 @@ import java.util.Map;
 public class HomeWindow {
 
     private final Player player;
-    private final SectorsAPI sectorsAPI = SectorsAPI.getInstance();
+    private final SectorsAPI sectorsAPI;
     private final Main plugin = Main.getInstance();
     private static final int HOME_SLOTS = 3;
     private PlayerProfile profile;
     private UserRedis user;
 
-    public HomeWindow(Player player, PlayerProfile profile) {
+    public HomeWindow(Player player, PlayerProfile profile, SectorsAPI sectorsAPI) {
+        if (sectorsAPI == null) {
+            throw new IllegalArgumentException("SectorsAPI cannot be null!");
+        }
+
         this.player = player;
         this.profile = profile;
+        this.sectorsAPI = sectorsAPI;
         this.user = sectorsAPI.getUser(player).orElse(null);
         open();
     }

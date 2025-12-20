@@ -26,11 +26,18 @@ import java.time.Duration;
 public class CombatListener implements Listener {
 
     private final CombatManager combatManager;
+    private final SectorsAPI api;
+
     private static final double KNOCK_BORDER_FORCE = 1.35;
 
 
-    public CombatListener(CombatManager combatManager) {
+    public CombatListener(CombatManager combatManager, SectorsAPI sectorsAPI) {
         this.combatManager = combatManager;
+
+        if (sectorsAPI == null) {
+            throw new IllegalArgumentException("SectorsAPI cannot be null!");
+        }
+        this.api = sectorsAPI;
     }
 
     @EventHandler
@@ -59,13 +66,14 @@ public class CombatListener implements Listener {
     @EventHandler
     public void onMoveDuringCombat(PlayerMoveEvent event) {
         Player player = event.getPlayer();
+
         if (!combatManager.isInCombat(player)) return;
 
         if (event.getFrom().getBlockX() == event.getTo().getBlockX() &&
                 event.getFrom().getBlockY() == event.getTo().getBlockY() &&
                 event.getFrom().getBlockZ() == event.getTo().getBlockZ()) return;
 
-        SectorManager sectorManager = SectorsAPI.getInstance().getSectorManager();
+        SectorManager sectorManager = api.getSectorManager();
         Sector current = sectorManager.getCurrentSector();
         Sector next = sectorManager.getSector(event.getTo());
 
@@ -94,7 +102,7 @@ public class CombatListener implements Listener {
         event.setCanCreatePortal(false);
         player.teleport(event.getFrom());
 
-        SectorManager sectorManager = SectorsAPI.getInstance().getSectorManager();
+        SectorManager sectorManager = api.getSectorManager();
         Sector current = sectorManager.getCurrentSector();
 
         if (current != null) {

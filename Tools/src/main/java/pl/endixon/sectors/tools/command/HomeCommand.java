@@ -13,7 +13,14 @@ import pl.endixon.sectors.tools.utils.MessagesUtil;
 
 public class HomeCommand implements CommandExecutor {
 
-    private final SectorsAPI sectorsAPI = SectorsAPI.getInstance();
+    private final SectorsAPI api;
+
+    public HomeCommand(SectorsAPI api) {
+        if (api == null) {
+            throw new IllegalArgumentException("SectorsAPI cannot be null!");
+        }
+        this.api = api;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -28,13 +35,13 @@ public class HomeCommand implements CommandExecutor {
             player.sendMessage(MessagesUtil.PLAYERDATANOT_FOUND_MESSAGE.get());
             return true;
         }
-        UserRedis user = sectorsAPI.getUser(player).orElse(null);
+        UserRedis user = api.getUser(player).orElse(null);
         if (user == null) {
             player.sendMessage(MessagesUtil.PLAYERDATANOT_FOUND_MESSAGE.get());
             return true;
         }
 
-        new HomeWindow(player, profile).open();
+        new HomeWindow(player, profile,api).open();
         return true;
     }
 }

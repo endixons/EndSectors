@@ -34,7 +34,6 @@ public class CombatTask implements Runnable {
             existing.resetTime();
             return;
         }
-
         activeTasks.put(player, this);
         createBossBar();
     }

@@ -18,7 +18,8 @@ public enum MessagesUtil {
     RANDOM_TITLE("&#4ade80RandomTP"),
     RANDOM_START("&#9ca3afLosowanie sektora... &#4ade80proszę czekać"),
     PLAYERDATANOT_FOUND_MESSAGE("&#ef4444Profil użytkownika nie został znaleziony!"),
-    RANDOM_SECTOR_NOTFOUND("&#FF5555Nie udało się znaleźć losowego sektora!");
+    RANDOM_SECTOR_NOTFOUND("&#FF5555Nie udało się znaleźć losowego sektora!"),
+    RANDOM_SECTORSPAWN_NOTFOUND("&#FF5555Nie udało się znaleźć losowego sektora spawn!");
 
     private final String text;
 

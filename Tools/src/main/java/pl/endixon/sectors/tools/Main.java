@@ -20,7 +20,7 @@
     import pl.endixon.sectors.tools.manager.MongoManager;
     import pl.endixon.sectors.tools.user.profile.PlayerProfileRepository;
     import pl.endixon.sectors.tools.user.profile.PlayerProfile;
-    import pl.endixon.sectors.tools.utils.Logger;
+    import pl.endixon.sectors.tools.utils.LoggerUtil;
 
     @Getter
     public class Main extends JavaPlugin {
@@ -43,7 +43,7 @@
             registerCommands();
             combatManager = new CombatManager();
             registerListeners();
-            Logger.info("EndSectors-Tools wystartował");
+            LoggerUtil.info("EndSectors-Tools wystartował");
         }
 
         @Override
@@ -61,7 +61,7 @@
         }
 
         private void initRepositories() {
-            Logger.info("Inicjalizacja repozytoriów MongoDB...");
+            LoggerUtil.info("Inicjalizacja repozytoriów MongoDB...");
             try {
                 MongoCollection<PlayerProfile> collection =
                         mongoService.getDatabase().getCollection(
@@ -70,9 +70,9 @@
                         );
                 repository = new PlayerProfileRepository(collection);
                 long loaded = collection.countDocuments();
-                Logger.info("Repozytorium PlayerProfile załadowane (kolekcja: players, rekordy: " + loaded + ")");
+                LoggerUtil.info("Repozytorium PlayerProfile załadowane (kolekcja: players, rekordy: " + loaded + ")");
             } catch (Exception e) {
-                Logger.info("Błąd inicjalizacji repozytorium PlayerProfile: " + e.getMessage());
+                LoggerUtil.info("Błąd inicjalizacji repozytorium PlayerProfile: " + e.getMessage());
                 e.printStackTrace();
                 shutdown("Nie można zainicjalizować repozytoriów MongoDB");
             }
@@ -90,7 +90,7 @@
                 sectorsAPI = SectorsAPI.getInstance();
                 return sectorsAPI != null;
             } catch (Exception e) {
-                Logger.info("Błąd przy inicjalizacji SectorsAPI: " + e.getMessage());
+                LoggerUtil.info("Błąd przy inicjalizacji SectorsAPI: " + e.getMessage());
                 return false;
             }
         }
@@ -112,7 +112,7 @@
         private void registerCommand(String name, Object executor) {
             PluginCommand command = getCommand(name);
             if (command == null) {
-                Logger.info("Komenda /" + name + " NIE jest w plugin.yml");
+                LoggerUtil.info("Komenda /" + name + " NIE jest w plugin.yml");
                 return;
             }
             command.setExecutor((CommandExecutor) executor);
@@ -126,7 +126,7 @@
         }
 
         private void shutdown(String reason) {
-            Logger.info(reason);
+            LoggerUtil.info(reason);
             Bukkit.getPluginManager().disablePlugin(this);
         }
 

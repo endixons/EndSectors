@@ -52,10 +52,10 @@ public class SpawnCommand implements CommandExecutor {
         Sector spawnSector = SectorsAPI.getInstance().getSectorManager().getBalancedRandomSpawnSector();
 
         if (spawnSector == null) {
-            player.sendMessage(MessagesUtil.RANDOM_SECTOR_NOTFOUND.get());
+            player.sendMessage(MessagesUtil.RANDOM_SECTORSPAWN_NOTFOUND.get());
             player.showTitle(Title.title(
                     MessagesUtil.SPAWN_TITLE.get(),
-                    MessagesUtil.RANDOM_SECTOR_NOTFOUND.get(),
+                    MessagesUtil.RANDOM_SECTORSPAWN_NOTFOUND.get(),
                     Title.Times.times(
                             Duration.ofMillis(10),
                             Duration.ofMillis(40),
@@ -67,7 +67,6 @@ public class SpawnCommand implements CommandExecutor {
         }
 
         if (!spawnSector.isOnline()) {
-            player.sendMessage(MessagesUtil.SPAWN_OFFLINE.get());
             player.showTitle(Title.title(
                     MessagesUtil.SPAWN_TITLE.get(),
                     MessagesUtil.SPAWN_OFFLINE.get(),

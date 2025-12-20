@@ -26,7 +26,7 @@ import pl.endixon.sectors.common.util.ChatUtil;
 
 import java.util.function.Supplier;
 
-public class Logger {
+public class LoggerUtil {
 
     private static final ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 

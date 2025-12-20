@@ -18,9 +18,7 @@ import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.paper.event.sector.SectorChangeEvent;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.sector.SectorManager;
-import pl.endixon.sectors.tools.Main;
 import pl.endixon.sectors.tools.manager.CombatManager;
-import pl.endixon.sectors.tools.task.CombatTask;
 import pl.endixon.sectors.tools.utils.MessagesUtil;
 
 import java.time.Duration;
@@ -29,9 +27,7 @@ public class CombatListener implements Listener {
 
     private final CombatManager combatManager;
     private final SectorsAPI api;
-
     private static final double KNOCK_BORDER_FORCE = 1.35;
-
 
     public CombatListener(CombatManager combatManager, SectorsAPI sectorsAPI) {
         this.combatManager = combatManager;

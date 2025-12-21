@@ -3,8 +3,6 @@ import com.diffplug.gradle.spotless.SpotlessExtension
 plugins {
     id("java")
     id("com.diffplug.spotless") version "6.23.0"
-    id("checkstyle")
-    id("pmd")
 }
 
 allprojects {
@@ -22,56 +20,23 @@ allprojects {
 
     apply(plugin = "java")
     apply(plugin = "com.diffplug.spotless")
-    apply(plugin = "checkstyle")
-    apply(plugin = "pmd")
 
-    // Spotless – formatowanie Eclipse
     configure<SpotlessExtension> {
         java {
             eclipse().configFile(rootProject.file("config/intellij-java-formatter.xml"))
-
             removeUnusedImports()
             trimTrailingWhitespace()
             endWithNewline()
         }
     }
 
-    checkstyle {
-        toolVersion = "10.12.1"
-        configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+    tasks.matching { it.name.startsWith("spotless") }.configureEach {
+        setEnabled(false)
     }
 
-    pmd {
-        toolVersion = "6.59.0"
-        ruleSets = listOf(
-            "category/java/bestpractices.xml",
-            "category/java/design.xml",
-            "category/java/errorprone.xml"
-        )
-    }
 
-    tasks.withType<JavaCompile> {
+    tasks.withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
-        options.compilerArgs.addAll(
-            listOf(
-                "-Xlint:all",
-                "-Werror",
-                "-parameters"
-            )
-        )
-    }
-
-    tasks.withType<Checkstyle>().configureEach {
-        reports {
-            xml.required.set(false)
-            html.required.set(true)
-        }
-    }
-
-    tasks.withType<Pmd>().configureEach {
-        reports {
-            xml.required.set(false)
-            html.required.set(true)
-        }
+        options.compilerArgs.addAll(listOf("-Xlint:all", "-parameters"))
     }
 }

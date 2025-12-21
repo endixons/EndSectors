@@ -7,7 +7,7 @@
  *  modify this software **only** for personal
  *  or educational purposes.
  *
- *  Commercial use, redistribution, claiming
+ *   Commercial use, redistribution, claiming
  *  this work as your own, or copying code
  *  without explicit permission is strictly
  *  prohibited.
@@ -34,25 +34,36 @@ public class InventoryInternactListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        Inventory inv = event.getClickedInventory();
-        if (!isWindowInventory(inv) && !isWindowInventory(event.getInventory())) return;
+        Inventory clickedInventory = event.getClickedInventory();
+        Inventory topInventory = event.getInventory();
+        InventoryHolder holder = topInventory.getHolder();
 
-        InventoryHolder rawHolder = event.getInventory().getHolder();
-        if (!(rawHolder instanceof WindowHolder holder)) return;
+        if (!isWindowInventory(clickedInventory) && !isWindowInventory(topInventory)) {
+            return;
+        }
+
+        if (!(holder instanceof WindowHolder windowHolder)) {
+            return;
+        }
 
         event.setCancelled(true);
-        holder.processClick(event);
+        windowHolder.processClick(event);
     }
-
 
     @EventHandler
     public void onInteract(InventoryInteractEvent event) {
-        if (!isWindowInventory(event.getInventory())) return;
+
+        if (!isWindowInventory(event.getInventory())) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     private boolean isWindowInventory(Inventory inventory) {
-        if (inventory == null || inventory.getType() != InventoryType.CHEST) return false;
+
+        if (inventory == null || inventory.getType() != InventoryType.CHEST) {
+            return false;
+        }
 
         InventoryHolder holder = inventory.getHolder();
         return holder instanceof WindowHolder && holder.getClass() == WindowHolder.class;

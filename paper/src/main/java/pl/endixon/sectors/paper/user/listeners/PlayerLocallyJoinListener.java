@@ -17,9 +17,9 @@
  *
  */
 
+package pl.endixon.sectors.paper.user.listeners;
 
-package pl.endixon.sectors.paper.listener.player;
-
+import java.time.Duration;
 import lombok.AllArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
@@ -29,21 +29,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import pl.endixon.sectors.common.sector.SectorType;
-import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
-import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.user.UserRedis;
+import pl.endixon.sectors.paper.user.profile.UserProfile;
+import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
 import pl.endixon.sectors.paper.util.ChatAdventureUtil;
-import pl.endixon.sectors.paper.util.Configuration;
-import pl.endixon.sectors.paper.util.Logger;
-
-import java.time.Duration;
+import pl.endixon.sectors.paper.util.ConfigurationUtil;
 
 @AllArgsConstructor
 public class PlayerLocallyJoinListener implements Listener {
 
     private final PaperSector paperSector;
+    private final ChatAdventureUtil CHAT = new ChatAdventureUtil();
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -51,18 +48,15 @@ public class PlayerLocallyJoinListener implements Listener {
         event.joinMessage(Component.empty());
         player.setCollidable(false);
 
-        UserRedis user = UserManager.getUser(player)
-                .orElseGet(() -> new UserRedis(player)); 
+        UserProfile user = UserProfileRepository.getUser(player).orElseGet(() -> new UserProfile(player));
 
         Sector currentSector = paperSector.getSectorManager().getCurrentSector();
 
         Bukkit.getScheduler().runTask(paperSector, () -> {
-            if (currentSector == null) return;
+            if (currentSector == null)
+                return;
 
-            if (user.isFirstJoin() &&
-                    currentSector.getType() != SectorType.QUEUE &&
-                    currentSector.getType() != SectorType.NETHER &&
-                    currentSector.getType() != SectorType.END) {
+            if (user.isFirstJoin() && currentSector.getType() != SectorType.QUEUE && currentSector.getType() != SectorType.NETHER && currentSector.getType() != SectorType.END) {
                 sendSectorTitle(player, currentSector);
                 user.setFirstJoin(false);
                 user.setLastSectorTransfer(false);
@@ -72,24 +66,21 @@ public class PlayerLocallyJoinListener implements Listener {
                 sendSectorTitle(player, currentSector);
                 user.applyPlayerData();
                 user.setLastSectorTransfer(false);
-
             }
         });
     }
 
-
     private void sendSectorTitle(Player player, Sector sector) {
-        player.showTitle(Title.title(
-                ChatAdventureUtil.toComponent(""),
-                ChatAdventureUtil.toComponent(
-                        Configuration.SECTOR_CONNECTED_MESSAGE.replace("{SECTOR}", sector.getName())
-                ),
-                Title.Times.times(
-                        Duration.ofMillis(500),
-                        Duration.ofMillis(2000),
-                        Duration.ofMillis(500)
-                )
-        ));
-}
-}
+        Component title = CHAT.toComponent("");
+        Component subtitle = CHAT.toComponent(ConfigurationUtil.SECTOR_CONNECTED_MESSAGE.replace("{SECTOR}", sector.getName())
+        );
+        Title.Times times = Title.Times.times(
+                Duration.ofMillis(500),
+                Duration.ofMillis(2000),
+                Duration.ofMillis(500)
+        );
 
+        player.showTitle(Title.title(title, subtitle, times));
+    }
+
+}

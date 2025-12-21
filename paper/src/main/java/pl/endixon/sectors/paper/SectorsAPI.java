@@ -1,25 +1,35 @@
+/*
+ *
+ * EndSectors – Non-Commercial License
+ * (c) 2025 Endixon
+ *
+ * Permission is granted to use, copy, and
+ * modify this software **only** for personal
+ * or educational purposes.
+ *
+ * Commercial use, redistribution, claiming
+ * this work as your own, or copying code
+ * without explicit permission is strictly
+ * prohibited.
+ *
+ * Visit https://github.com/Endixon/EndSectors
+ * for more info.
+ *
+ */
+
 package pl.endixon.sectors.paper;
 
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import lombok.NonNull;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import pl.endixon.sectors.common.sector.SectorData;
-import pl.endixon.sectors.common.sector.SectorType;
-import pl.endixon.sectors.common.util.Corner;
+import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.sector.Sector;
-import pl.endixon.sectors.paper.sector.SectorManager;
-import pl.endixon.sectors.paper.sector.transfer.SectorTeleportService;
-import pl.endixon.sectors.paper.user.RedisUserCache;
-import pl.endixon.sectors.paper.user.UserManager;
-import pl.endixon.sectors.paper.user.UserRedis;
-import pl.endixon.sectors.paper.util.Logger;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
+import pl.endixon.sectors.paper.sector.SectorTeleport;
+import pl.endixon.sectors.paper.user.profile.UserProfile;
+import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
+import pl.endixon.sectors.paper.util.LoggerUtil;
 
 public class SectorsAPI {
 
@@ -27,14 +37,15 @@ public class SectorsAPI {
 
     private final PaperSector plugin;
     private final SectorManager sectorManager;
-    private final SectorTeleportService teleportService;
+    private final SectorTeleport teleportService;
 
     public SectorsAPI(PaperSector plugin) {
         this.plugin = plugin;
         this.sectorManager = plugin.getSectorManager();
-        this.teleportService = new SectorTeleportService(plugin);
+        this.teleportService = new SectorTeleport(plugin);
         instance = this;
-        Logger.info("SectorsAPI zainicjowane");
+
+        LoggerUtil.info("SectorsAPI zainicjowane");
     }
 
     public static SectorsAPI getInstance() {
@@ -45,27 +56,23 @@ public class SectorsAPI {
         return this.plugin;
     }
 
-
-    public Location getRandomLocation(@NonNull Player player, @NonNull UserRedis user) {
-        return sectorManager.randomLocation(player,user);
+    public Location getRandomLocation(@NonNull Player player, @NonNull UserProfile user) {
+        return sectorManager.randomLocation(player, user);
     }
 
-    public void teleportPlayer(Player player, UserRedis user, Sector sector, boolean force, boolean preserveCoordinates) {
-        teleportService.teleportToSector(player, user, sector, force,preserveCoordinates);
+    public void teleportPlayer(Player player, UserProfile user, Sector sector, boolean force, boolean preserveCoordinates) {
+        teleportService.teleportToSector(player, user, sector, force, preserveCoordinates);
     }
 
-
-    public Optional<UserRedis> getUser(Player player) {
-        return UserManager.getUser(player);
+    public Optional<UserProfile> getUser(Player player) {
+        return UserProfileRepository.getUser(player);
     }
 
     public SectorManager getSectorManager() {
         return this.sectorManager;
     }
 
-
-    public CompletableFuture<Optional<UserRedis>> getUserAsync(String name) {
-        return UserManager.getUserAsync(name);
+    public CompletableFuture<Optional<UserProfile>> getUserAsync(String name) {
+        return UserProfileRepository.getUserAsync(name);
     }
-
 }

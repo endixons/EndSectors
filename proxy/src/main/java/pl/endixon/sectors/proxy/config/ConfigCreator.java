@@ -26,18 +26,15 @@ public class ConfigCreator {
             Map<String, Object> root = new LinkedHashMap<>();
             Map<String, Object> sectors = new LinkedHashMap<>();
 
-
             Map<String, Object> spawn = new LinkedHashMap<>();
             spawn.put("spawn_1", createSectorMap(-100, -100, 100, 100, "SPAWN", "world"));
             spawn.put("spawn_2", createSectorMap(-100, -100, 100, 100, "SPAWN", "world"));
             spawn.put("spawn_3", createSectorMap(-100, -100, 100, 100, "SPAWN", "world"));
             sectors.put("SPAWN", spawn);
 
-
             Map<String, Object> queue = new LinkedHashMap<>();
             queue.put("queue", createSectorMap(-100, -100, 100, 100, "QUEUE", "world"));
             sectors.put("QUEUE", queue);
-
 
             Map<String, Object> sector = new LinkedHashMap<>();
             sector.put("s1", createSectorMap(-100, 100, 1000, 1000, "SECTOR", "world"));
@@ -46,12 +43,10 @@ public class ConfigCreator {
             sector.put("n1", createSectorMap(-1000, -1000, 100, -100, "SECTOR", "world"));
             sectors.put("SECTOR", sector);
 
-
             Map<String, Object> nether = new LinkedHashMap<>();
             nether.put("nether01", createSectorMap(-100, -100, 100, 100, "NETHER", "world_nether"));
             nether.put("nether02", createSectorMap(-100, -100, 100, 100, "NETHER", "world_nether"));
             sectors.put("NETHER", nether);
-
 
             Map<String, Object> end = new LinkedHashMap<>();
             end.put("end01", createSectorMap(-100, -100, 100, 100, "END", "world_end"));

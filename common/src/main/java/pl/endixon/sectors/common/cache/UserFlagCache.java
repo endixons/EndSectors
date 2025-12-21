@@ -11,7 +11,8 @@ public class UserFlagCache {
 
     private static final UserFlagCache INSTANCE = new UserFlagCache();
 
-    private UserFlagCache() {}
+    private UserFlagCache() {
+    }
 
     public static UserFlagCache getInstance() {
         return INSTANCE;

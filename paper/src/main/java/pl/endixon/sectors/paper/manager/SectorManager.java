@@ -17,9 +17,11 @@
  *
  */
 
+package pl.endixon.sectors.paper.manager;
 
-package pl.endixon.sectors.paper.sector;
-
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +34,9 @@ import org.bukkit.entity.Player;
 import pl.endixon.sectors.common.sector.SectorData;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
-import pl.endixon.sectors.paper.user.UserRedis;
-import pl.endixon.sectors.paper.util.Logger;
-
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
+import pl.endixon.sectors.paper.sector.Sector;
+import pl.endixon.sectors.paper.user.profile.UserProfile;
+import pl.endixon.sectors.paper.util.LoggerUtil;
 
 @RequiredArgsConstructor
 public class SectorManager {
@@ -69,7 +68,8 @@ public class SectorManager {
     public Sector getSector(Location location) {
         for (Sector sector : sectors.values()) {
             if (sector.isInSector(location)) {
-                if (sector.getType() == SectorType.QUEUE) continue;
+                if (sector.getType() == SectorType.QUEUE)
+                    continue;
                 if (getCurrentSector() == null || getCurrentSector().getType() != SectorType.SPAWN) {
                     return sector;
                 } else if (sector.getType() != SectorType.SPAWN) {
@@ -108,14 +108,15 @@ public class SectorManager {
     }
 
 
-    public Location randomLocation(@NonNull Player player, @NonNull UserRedis user) {
+    public Location randomLocation(@NonNull Player player, @NonNull UserProfile user) {
         Sector randomSector = getRandomSector();
 
         World world = Bukkit.getWorld(randomSector.getWorldName());
-        if (world == null)
+        if (world == null) {
             throw new IllegalStateException("World not loaded for sector " + randomSector.getName());
+        }
 
-        double safeMargin = 20;
+        double safeMargin = 20.0;
         double minX = Math.min(randomSector.getFirstCorner().getPosX(), randomSector.getSecondCorner().getPosX()) + safeMargin;
         double maxX = Math.max(randomSector.getFirstCorner().getPosX(), randomSector.getSecondCorner().getPosX()) - safeMargin;
         double minZ = Math.min(randomSector.getFirstCorner().getPosZ(), randomSector.getSecondCorner().getPosZ()) + safeMargin;
@@ -123,21 +124,23 @@ public class SectorManager {
         double x = minX + ThreadLocalRandom.current().nextDouble(maxX - minX);
         double z = minZ + ThreadLocalRandom.current().nextDouble(maxZ - minZ);
         int y = findSafeY(world, (int) x, (int) z);
+
         Location loc = new Location(world, x, y, z);
+
         user.setX(x);
         user.setY(y);
         user.setZ(z);
         user.setYaw(loc.getYaw());
         user.setPitch(loc.getPitch());
+
         if (randomSector.getName().equals(user.getSectorName())) {
             player.teleport(loc);
             user.updateAndSave(player, randomSector);
         } else {
-            paperSector.getSectorTeleportService().teleportToSector(player, user, randomSector, false, true);
+            paperSector.getSectorTeleport().teleportToSector(player, user, randomSector, false, true);
         }
         return loc;
     }
-
 
     private int findSafeY(World world, int x, int z) {
         int maxHeight = world.getMaxHeight() - 2;
@@ -157,18 +160,22 @@ public class SectorManager {
         return type == Material.GRASS_BLOCK || type == Material.DIRT || type == Material.SAND;
     }
 
-
     public Sector getBalancedRandomSpawnSector() {
-        List<Sector> onlineSpawns = sectors.values().stream()
-                .filter(s -> s.getType() == SectorType.SPAWN)
-                .filter(Sector::isOnline)
-                .filter(s -> s.getTPS() > 0)
-                .sorted(Comparator.comparingDouble(
-                        s -> ((double) s.getPlayerCount() / Math.max(s.getMaxPlayers(), 1)) / s.getTPS()
-                ))
-                .toList();
+        List<Sector> onlineSpawns = new ArrayList<>(
+                sectors.values().stream()
+                        .filter(s -> s.getType() == SectorType.SPAWN)
+                        .filter(Sector::isOnline)
+                        .filter(s -> s.getTPS() > 0)
+                        .sorted(Comparator.comparingDouble(
+                                s -> ((double) s.getPlayerCount() / Math.max(s.getMaxPlayers(), 1)) / s.getTPS()
+                        ))
+                        .toList()
+        );
 
-        if (onlineSpawns.isEmpty()) return null;
+        if (onlineSpawns.isEmpty()) {
+            LoggerUtil.info("No online spawn sectors available for balanced selection.");
+            return null;
+        }
 
         Collections.reverse(onlineSpawns);
         int topN = Math.min(3, onlineSpawns.size());
@@ -191,6 +198,4 @@ public class SectorManager {
     public void isPlayerOnline(String playerName, Consumer<Boolean> callback) {
         paperSector.getRedisManager().isPlayerOnline(playerName, callback);
     }
-
 }
-

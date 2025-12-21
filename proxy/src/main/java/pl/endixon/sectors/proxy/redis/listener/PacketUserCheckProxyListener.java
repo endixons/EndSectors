@@ -10,8 +10,6 @@ import pl.endixon.sectors.proxy.util.Logger;
 
 public class PacketUserCheckProxyListener implements PacketListener<PacketUserCheck> {
 
-
-
     @Override
     public void handle(PacketUserCheck packet) {
         String username = packet.getUsername();
@@ -36,9 +34,6 @@ public class PacketUserCheckProxyListener implements PacketListener<PacketUserCh
     private void addPlayerToQueue(String username, String sector) {
         QueueManager queueManager = VelocitySectorPlugin.getInstance().getQueueManager();
         Queue queue = queueManager.getMap().computeIfAbsent(sector, Queue::new);
-        VelocitySectorPlugin.getInstance().getServer().getPlayer(username).ifPresentOrElse(
-                queue::addPlayer,
-                () -> Logger.info("Gracz " + username + " nie znaleziony na serwerze!")
-        );
+        VelocitySectorPlugin.getInstance().getServer().getPlayer(username).ifPresentOrElse(queue::addPlayer, () -> Logger.info("Gracz " + username + " nie znaleziony na serwerze!"));
     }
 }

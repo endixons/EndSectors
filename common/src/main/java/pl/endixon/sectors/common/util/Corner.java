@@ -11,11 +11,7 @@ public class Corner implements Serializable {
     private int posZ;
 
     @JsonCreator
-    public Corner(
-            @JsonProperty("posX") int posX,
-            @JsonProperty("y") int y,
-            @JsonProperty("posZ") int posZ
-    ) {
+    public Corner(@JsonProperty("posX") int posX, @JsonProperty("y") int y, @JsonProperty("posZ") int posZ) {
         this.posX = posX;
         this.y = y;
         this.posZ = posZ;

@@ -3,19 +3,10 @@ package pl.endixon.sectors.proxy.queue;
 import com.velocitypowered.api.proxy.Player;
 import java.util.Optional;
 
-/**
- * Zarządza kolejkami graczy na serwerze.
- */
+/** Zarządza kolejkami graczy na serwerze. */
 public class QueueManager extends SimpleQueueManager<String, Queue> {
 
-
-    public Optional<Queue> findQueueByPlayer(Player player){
-        return this.getMap()
-                .values()
-                .stream()
-                .filter(queue -> queue.hasPlayer(player))
-                .findFirst();
-
-}
-
+    public Optional<Queue> findQueueByPlayer(Player player) {
+        return this.getMap().values().stream().filter(queue -> queue.hasPlayer(player)).findFirst();
+    }
 }

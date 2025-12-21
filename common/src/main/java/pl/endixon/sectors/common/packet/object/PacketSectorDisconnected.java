@@ -10,7 +10,6 @@ public class PacketSectorDisconnected implements Packet {
         this.sector = sector;
     }
 
-
     public String getSector() {
         return sector;
     }

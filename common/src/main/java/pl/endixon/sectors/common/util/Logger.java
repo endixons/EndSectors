@@ -17,20 +17,12 @@ public class Logger {
     }
 
     public static void info(String message, Long count, String channel) {
-        String formatted = String.format("%s §f%s (sent to %d subscribers on channel %s)",
-                ChatUtil.fixColorsLogger("%M[EndSectors-Common]"),
-                message,
-                count,
-                channel
-        );
+        String formatted = String.format("%s §f%s (sent to %d subscribers on channel %s)", ChatUtil.fixColorsLogger("%M[EndSectors-Common]"), message, count, channel);
         System.out.println(formatted);
     }
 
     public static void info(String message, Throwable ex) {
-        String formatted = String.format("%s §f%s",
-                ChatUtil.fixColorsLogger("%M[EndSectors-Common]"),
-                message
-        );
+        String formatted = String.format("%s §f%s", ChatUtil.fixColorsLogger("%M[EndSectors-Common]"), message);
         System.out.println(formatted);
         if (ex != null) {
             System.err.println(ChatUtil.fixColorsLogger(PREFIX + "§cException stack trace:"));

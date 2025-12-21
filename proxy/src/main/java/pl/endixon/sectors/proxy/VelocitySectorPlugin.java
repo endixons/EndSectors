@@ -1,20 +1,20 @@
 /*
- * 
- *  EndSectors  Non-Commercial License         
- *  (c) 2025 Endixon                             
- *                                              
- *  Permission is granted to use, copy, and    
- *  modify this software **only** for personal 
- *  or educational purposes.                   
- *                                              
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
  *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code     
- *  without explicit permission is strictly    
- *  prohibited.                                
- *                                              
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
  *  Visit https://github.com/Endixon/EndSectors
- *  for more info.                             
- * 
+ *  for more info.
+ *
  */
 
 package pl.endixon.sectors.proxy;
@@ -23,12 +23,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
-import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
+import com.velocitypowered.api.proxy.ProxyServer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.object.*;
@@ -41,19 +45,11 @@ import pl.endixon.sectors.proxy.listener.LastSectorConnectListener;
 import pl.endixon.sectors.proxy.manager.SectorManager;
 import pl.endixon.sectors.proxy.manager.TeleportationManager;
 import pl.endixon.sectors.proxy.queue.QueueManager;
-
 import pl.endixon.sectors.proxy.queue.runnable.QueueRunnable;
 import pl.endixon.sectors.proxy.redis.listener.*;
-
 import pl.endixon.sectors.proxy.util.Logger;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 @Plugin(id = "endsectors-proxy", name = "EndSectorsProxy", version = "1.0")
-
 @Getter
 public class VelocitySectorPlugin {
 
@@ -78,7 +74,6 @@ public class VelocitySectorPlugin {
         return redisManager;
     }
 
-
     @Subscribe
     public void onProxyInitialize(com.velocitypowered.api.event.proxy.ProxyInitializeEvent event) {
         instance = this;
@@ -99,9 +94,6 @@ public class VelocitySectorPlugin {
         this.redisManager.shutdown();
     }
 
-
-
-
     private void loadSectors() {
         Path configPath = getDataDirectory().resolve("config.json");
 
@@ -111,7 +103,8 @@ public class VelocitySectorPlugin {
             return;
         }
         try {
-            TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {};
+            TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {
+            };
             Map<String, Object> root = mapper.readValue(Files.newBufferedReader(configPath), typeRef);
             Object sectorsObj = root.get("sectors");
             if (!(sectorsObj instanceof Map)) {
@@ -122,7 +115,8 @@ public class VelocitySectorPlugin {
             for (Map.Entry<String, Object> typeEntry : sectors.entrySet()) {
                 String typeName = typeEntry.getKey();
                 Object typeDataObj = typeEntry.getValue();
-                if (!(typeDataObj instanceof Map)) continue;
+                if (!(typeDataObj instanceof Map))
+                    continue;
 
                 Map<String, Object> typeDataMap = (Map<String, Object>) typeDataObj;
                 Map<String, Map<String, Object>> sectorDataMap = new LinkedHashMap<>();
@@ -140,7 +134,6 @@ public class VelocitySectorPlugin {
             e.printStackTrace();
         }
     }
-
 
     private void addSectorsToManager(Map<String, Map<String, Object>> sectors, String typeName) {
         List<String> loadedSectors = new ArrayList<>();
@@ -176,9 +169,6 @@ public class VelocitySectorPlugin {
         }
     }
 
-
-
-
     private void initRedisManager() {
         this.redisManager.initialize("127.0.0.1", 6379, "");
         this.redisManager.subscribe(PacketChannel.PACKET_CONFIGURATION_REQUEST, new PacketConfigurationRequestPacketListener(), PacketConfigurationRequest.class);
@@ -192,28 +182,23 @@ public class VelocitySectorPlugin {
         Logger.info("RedisManager initialized.");
     }
 
+    private void initListeners() {
+        server.getEventManager().register(this, new LastSectorConnectListener(this));
 
-        private void initListeners() {
-            server.getEventManager().register(this, new LastSectorConnectListener(this));
+        server.getEventManager().register(this, new Object() {
+            @Subscribe
+            public void onPlayerLogin(LoginEvent event) {
+                redisManager.addOnlinePlayer(event.getPlayer().getUsername());
+            }
 
-            server.getEventManager().register(this, new Object() {
-                @Subscribe
-                public void onPlayerLogin(LoginEvent event) {
-                    redisManager.addOnlinePlayer(event.getPlayer().getUsername());
-
-                }
-                @Subscribe
-                public void onPlayerDisconnect(DisconnectEvent event) {
-                    redisManager.removeOnlinePlayer(event.getPlayer().getUsername());
-                }
-            });
-        }
-
-
+            @Subscribe
+            public void onPlayerDisconnect(DisconnectEvent event) {
+                redisManager.removeOnlinePlayer(event.getPlayer().getUsername());
+            }
+        });
+    }
 
     public ProxyServer getServerInstance() {
         return server;
     }
-
 }
-

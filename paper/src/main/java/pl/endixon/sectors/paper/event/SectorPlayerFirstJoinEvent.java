@@ -1,29 +1,28 @@
 /*
- * 
- *  EndSectors  Non-Commercial License         
- *  (c) 2025 Endixon                             
- *                                              
- *  Permission is granted to use, copy, and    
- *  modify this software **only** for personal 
- *  or educational purposes.                   
- *                                              
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
  *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code     
- *  without explicit permission is strictly    
- *  prohibited.                                
- *                                              
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
  *  Visit https://github.com/Endixon/EndSectors
- *  for more info.                             
- * 
+ *  for more info.
+ *
  */
 
+package pl.endixon.sectors.paper.event;
 
-package pl.endixon.sectors.paper.event.sector;
-
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Event;
 import lombok.Getter;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 import pl.endixon.sectors.paper.sector.Sector;
 
 @Getter
@@ -48,4 +47,3 @@ public class SectorPlayerFirstJoinEvent extends Event {
         return handlers;
     }
 }
-

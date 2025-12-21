@@ -1,6 +1,6 @@
 package pl.endixon.sectors.paper.util;
 
-public interface Configuration {
+public interface ConfigurationUtil {
 
     int BORDER_MESSAGE_DISTANCE = 15;
     int BREAK_BORDER_DISTANCE = 15;
@@ -8,7 +8,6 @@ public interface Configuration {
     int EXPLOSION_BORDER_DISTANCE = 15;
     int BUCKET_BORDER_DISTANCE = 15;
     String SECTOR_CONNECTED_MESSAGE = "&#ff5555Połączono się na sektor &#f5c542{SECTOR}";
-
     String SECTOR_ERROR_TITLE = "&#ff5555Błąd";
     String SECTOR_FULL_SUBTITLE = "&#ef4444Sektor jest pełen graczy!";
     String BORDER_MESSAGE = "&#f5c542Zbliżasz się do granicy sektora &#4ade80{SECTOR} &#7dd3fc{DISTANCE}m";

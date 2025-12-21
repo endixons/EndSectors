@@ -1,33 +1,31 @@
 /*
- * 
- *  EndSectors  Non-Commercial License         
- *  (c) 2025 Endixon                             
- *                                              
- *  Permission is granted to use, copy, and    
- *  modify this software **only** for personal 
- *  or educational purposes.                   
- *                                              
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
  *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code     
- *  without explicit permission is strictly    
- *  prohibited.                                
- *                                              
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
  *  Visit https://github.com/Endixon/EndSectors
- *  for more info.                             
- * 
+ *  for more info.
+ *
  */
 
-
 package pl.endixon.sectors.proxy.manager;
-
-import lombok.Getter;
-import pl.endixon.sectors.common.sector.SectorData;
-import pl.endixon.sectors.common.sector.SectorType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import lombok.Getter;
+import pl.endixon.sectors.common.sector.SectorData;
+import pl.endixon.sectors.common.sector.SectorType;
 
 @Getter
 public class SectorManager {
@@ -48,7 +46,6 @@ public class SectorManager {
         return null;
     }
 
-
     public List<SectorData> getNonQueueSectors() {
         List<SectorData> list = new ArrayList<>();
         for (SectorData data : sectorsData) {
@@ -61,22 +58,14 @@ public class SectorManager {
 
     public Optional<SectorData> getRandomNonQueueSector() {
 
-        List<SectorData> allowedSectors = getNonQueueSectors().stream()
-                .filter(sector -> sector.getType() != SectorType.QUEUE
-                        && sector.getType() != SectorType.NETHER
-                        && sector.getType() != SectorType.END)
-                .toList();
+        List<SectorData> allowedSectors = getNonQueueSectors().stream().filter(sector -> sector.getType() != SectorType.QUEUE && sector.getType() != SectorType.NETHER && sector.getType() != SectorType.END).toList();
 
-        if (allowedSectors.isEmpty()) return Optional.empty();
+        if (allowedSectors.isEmpty())
+            return Optional.empty();
 
-        List<SectorData> onlineSectors = allowedSectors.stream()
-                .filter(SectorData::isOnline)
-                .toList();
+        List<SectorData> onlineSectors = allowedSectors.stream().filter(SectorData::isOnline).toList();
 
         List<SectorData> targetList = onlineSectors.isEmpty() ? allowedSectors : onlineSectors;
         return Optional.of(targetList.get(new Random().nextInt(targetList.size())));
     }
-
-
 }
-

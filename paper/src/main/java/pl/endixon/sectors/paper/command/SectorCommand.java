@@ -1,25 +1,37 @@
 /*
- * EndSectors - Non-Commercial License (2025)
- * (c) Endixon
+ *
+ * EndSectors – Non-Commercial License
+ * (c) 2025 Endixon
+ *
+ * Permission is granted to use, copy, and
+ * modify this software **only** for personal
+ * or educational purposes.
+ *
+ * Commercial use, redistribution, claiming
+ * this work as your own, or copying code
+ * without explicit permission is strictly
+ * prohibited.
+ *
+ * Visit https://github.com/Endixon/EndSectors
+ * for more info.
+ *
  */
 
 package pl.endixon.sectors.paper.command;
 
+import java.util.Arrays;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
 import org.bukkit.entity.Player;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.redis.RedisManager;
-import pl.endixon.sectors.paper.inventory.SectorShowWindow;
-import pl.endixon.sectors.paper.redis.packet.PacketExecuteCommand;
 import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.PaperSector;
-import pl.endixon.sectors.paper.sector.SectorManager;
-import pl.endixon.sectors.paper.user.UserManager;
-
-import java.util.Arrays;
+import pl.endixon.sectors.paper.inventory.SectorShowWindow;
+import pl.endixon.sectors.paper.manager.SectorManager;
+import pl.endixon.sectors.paper.redis.packet.PacketExecuteCommand;
+import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
 
 public class SectorCommand implements CommandExecutor {
 
@@ -40,7 +52,9 @@ public class SectorCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-        if (!checkPermission(sender)) return false;
+        if (!checkPermission(sender)) {
+            return false;
+        }
 
         SectorManager sm = plugin.getSectorManager();
         RedisManager redis = plugin.getRedisManager();
@@ -59,95 +73,67 @@ public class SectorCommand implements CommandExecutor {
 
         String sub = args[0].toLowerCase();
 
-        switch (sub) {
-
-            case "where": {
-                sender.sendMessage(ChatUtil.fixColors("&7Aktualny sektor: &6" + sm.getCurrentSectorName()));
-                break;
-            }
-
-            case "show": {
-                if (!(sender instanceof Player player)) return true;
-
+        if ("where".equals(sub)) {
+            sender.sendMessage(ChatUtil.fixColors("&7Aktualny sektor: &6" + sm.getCurrentSectorName()));
+        } else if ("show".equals(sub)) {
+            if (sender instanceof Player player) {
                 new SectorShowWindow(player, sm).open();
-                break;
+            }
+        } else if ("execute".equals(sub)) {
+            if (args.length < 2) {
+                sender.sendMessage(ChatUtil.fixColors("&cUżycie: &6/sector execute <komenda>"));
+                return true;
             }
 
-
-            case "execute": {
-                if (args.length < 2) {
-                    sender.sendMessage(ChatUtil.fixColors("&cUżycie: &6/sector execute <komenda>"));
-                    return true;
-                }
-
-                String commandToSend = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-                redis.publish(PacketChannel.PACKET_EXECUTE_COMMAND, new PacketExecuteCommand(commandToSend));
-
-                sender.sendMessage(ChatUtil.fixColors("&aWysłano komendę do sektorów."));
-                break;
+            String commandToSend = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+            redis.publish(PacketChannel.PACKET_EXECUTE_COMMAND, new PacketExecuteCommand(commandToSend));
+            sender.sendMessage(ChatUtil.fixColors("&aWysłano komendę do sektorów."));
+        } else if ("isonline".equals(sub)) {
+            if (args.length < 2) {
+                sender.sendMessage(ChatUtil.fixColors("&cPodaj nick: &6/sector isonline <nick>"));
+                return true;
             }
 
-            case "isonline": {
-                if (args.length < 2) {
-                    sender.sendMessage(ChatUtil.fixColors("&cPodaj nick: &6/sector isonline <nick>"));
-                    return true;
-                }
-                String nick = args[1];
-                sm.isPlayerOnline(nick, isOnline -> {
-                    sender.sendMessage(ChatUtil.fixColors(
-                            "&7Gracz &6" + nick + " &7jest: " + (isOnline ? "&aONLINE" : "&cOFFLINE")
-                    ));
+            String nick = args[1];
+            sm.isPlayerOnline(nick, isOnline -> {
+                sender.sendMessage(ChatUtil.fixColors(
+                        "&7Gracz &6" + nick + " &7jest: " + (isOnline ? "&aONLINE" : "&cOFFLINE")
+                ));
+            });
+        } else if ("who".equals(sub)) {
+            sm.getOnlinePlayers(online -> {
+                sender.sendMessage(ChatUtil.fixColors(
+                        "&7Online (&6" + online.size() + "&7): &6" + String.join("&7, &6", online)
+                ));
+            });
+        } else if ("inspect".equals(sub)) {
+            if (args.length < 2) {
+                sender.sendMessage(ChatUtil.fixColors("&cPodaj nick: &6/sector inspect <nick>"));
+                return true;
+            }
+
+            String targetName = args[1];
+            UserProfileRepository.getUserAsync(targetName).thenAccept(optionalUser -> {optionalUser.ifPresentOrElse(u -> {
+                    long now = System.currentTimeMillis();
+                    long cooldownRemaining = Math.max(0, u.getTransferOffsetUntil() - now);
+                    long lastTransferElapsed = u.getLastTransferTimestamp() == 0 ? 0 : now - u.getLastTransferTimestamp();
+
+                    sender.sendMessage(ChatUtil.fixHexColors("      &#00FFFFINFORMACJE O GRACZU            "));
+                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFNick: &#00FF00" + u.getName()));
+                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFSektor: &#00BFFF" + u.getSectorName()));
+                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFGamemode: &#FF69B4" + u.getPlayerGameMode()));
+                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFLevel: &#ADFF2F" + u.getExperienceLevel()));
+                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFExp: &#FFFF00" + u.getExperience()));
+                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFOstatnia zmiana sektora: &#FF8C00" + (u.getLastTransferTimestamp() == 0 ? "BRAK" : (lastTransferElapsed / 1000) + "s temu")));
+                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFpozostaly czas do zmiany sektora: &#FF4500" + (cooldownRemaining <= 0 ? "BRAK" : (cooldownRemaining / 1000) + "s")));
+                    sender.sendMessage(ChatUtil.fixHexColors("                                             "));
+                    },
+                    () -> {
+                    sender.sendMessage(ChatUtil.fixHexColors("&cNie znaleziono danych lub gracz jest offline."));
                 });
-
-                break;
-            }
-
-
-            case "who": {
-                sm.getOnlinePlayers(online -> {
-                    sender.sendMessage(ChatUtil.fixColors(
-                            "&7Online (&6" + online.size() + "&7): &6" + String.join("&7, &6", online)
-                    ));
-                });
-                break;
-            }
-
-
-                case "inspect": {
-                    if (args.length < 2) {
-                        sender.sendMessage(ChatUtil.fixColors("&cPodaj nick: &6/sector inspect <nick>"));
-                        return true;
-                    }
-                    String targetName = args[1];
-
-                    UserManager.getUserAsync(targetName).thenAccept(optionalUser -> {
-                        optionalUser.ifPresentOrElse(u -> {
-                            long now = System.currentTimeMillis();
-                            long cooldownRemaining = Math.max(0, u.getTransferOffsetUntil() - now);
-                            long lastTransferElapsed = (u.getLastTransferTimestamp() == 0 ? 0 : now - u.getLastTransferTimestamp());
-                            sender.sendMessage(ChatUtil.fixHexColors("      &#00FFFFINFORMACJE O GRACZU            "));
-                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFNick: &#00FF00" + u.getName()));
-                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFSektor: &#00BFFF" + u.getSectorName()));
-                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFGamemode: &#FF69B4" + u.getPlayerGameMode()));
-                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFLevel: &#ADFF2F" + u.getExperienceLevel()));
-                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFExp: &#FFFF00" + u.getExperience()));
-                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFOstatnia zmiana sektora: &#FF8C00" + (u.getLastTransferTimestamp() == 0 ? "BRAK" : (lastTransferElapsed / 1000) + "s temu")));
-                            sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFpozostaly czas do zmiany sektora: &#FF4500" + (cooldownRemaining <= 0 ? "BRAK" : (cooldownRemaining / 1000) + "s")));
-                            sender.sendMessage(ChatUtil.fixHexColors("                                             "));
-                        }, () -> {
-                            sender.sendMessage(ChatUtil.fixHexColors("&cNie znaleziono danych lub gracz jest offline."));
-                        });
-                    });
-
-
-
-                    break;
-                }
-
-                default: {
-                sender.sendMessage(ChatUtil.fixColors("&cNie ma takiej opcji."));
-                break;
-            }
+            });
+        } else {
+            sender.sendMessage(ChatUtil.fixColors("&cNie ma takiej opcji."));
         }
 
         return true;

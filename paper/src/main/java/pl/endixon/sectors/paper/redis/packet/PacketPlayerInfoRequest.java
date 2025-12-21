@@ -1,8 +1,27 @@
+/*
+ *
+ * EndSectors – Non-Commercial License
+ * (c) 2025 Endixon
+ *
+ * Permission is granted to use, copy, and
+ * modify this software **only** for personal
+ * or educational purposes.
+ *
+ * Commercial use, redistribution, claiming
+ * this work as your own, or copying code
+ * without explicit permission is strictly
+ * prohibited.
+ *
+ * Visit https://github.com/Endixon/EndSectors
+ * for more info.
+ *
+ */
+
 package pl.endixon.sectors.paper.redis.packet;
 
 import lombok.Getter;
 import pl.endixon.sectors.common.packet.Packet;
-import pl.endixon.sectors.paper.user.UserRedis;
+import pl.endixon.sectors.paper.user.profile.UserProfile;
 
 @Getter
 public class PacketPlayerInfoRequest implements Packet {
@@ -23,44 +42,11 @@ public class PacketPlayerInfoRequest implements Packet {
     private final String playerEnderChestData;
     private final String playerEffectsData;
 
-    public PacketPlayerInfoRequest(UserRedis user) {
-        this(
-                user.getName(),
-                user.getSectorName(),
-                user.isFirstJoin(),
-                user.getLastSectorTransfer(),
-                user.getLastTransferTimestamp(),
-
-                user.getFoodLevel(),
-                user.getExperience(),
-                user.getExperienceLevel(),
-                user.getFireTicks(),
-                user.isAllowFlight(),
-                user.isFlying(),
-                user.getPlayerGameMode(),
-                user.getPlayerInventoryData(),
-                user.getPlayerEnderChestData(),
-                user.getPlayerEffectsData()
-        );
+    public PacketPlayerInfoRequest(UserProfile user) {
+        this(user.getName(), user.getSectorName(), user.isFirstJoin(), user.getLastSectorTransfer(), user.getLastTransferTimestamp(), user.getFoodLevel(), user.getExperience(), user.getExperienceLevel(), user.getFireTicks(), user.isAllowFlight(), user.isFlying(), user.getPlayerGameMode(), user.getPlayerInventoryData(), user.getPlayerEnderChestData(), user.getPlayerEffectsData());
     }
 
-    public PacketPlayerInfoRequest(
-            String name,
-            String sectorName,
-            boolean firstJoin,
-            long lastSectorTransfer,
-            long lastTransferTimestamp,
-            int foodLevel,
-            int experience,
-            int experienceLevel,
-            int fireTicks,
-            boolean allowFlight,
-            boolean flying,
-            String playerGameMode,
-            String playerInventoryData,
-            String playerEnderChestData,
-            String playerEffectsData
-    ) {
+    public PacketPlayerInfoRequest(String name, String sectorName, boolean firstJoin, long lastSectorTransfer, long lastTransferTimestamp, int foodLevel, int experience, int experienceLevel, int fireTicks, boolean allowFlight, boolean flying, String playerGameMode, String playerInventoryData, String playerEnderChestData, String playerEffectsData) {
         this.name = name;
         this.sectorName = sectorName;
         this.firstJoin = firstJoin;
@@ -76,63 +62,5 @@ public class PacketPlayerInfoRequest implements Packet {
         this.playerInventoryData = playerInventoryData;
         this.playerEnderChestData = playerEnderChestData;
         this.playerEffectsData = playerEffectsData;
-    }
-
-    public String getSectorName() {
-        return sectorName;
-    }
-
-    public boolean isFirstJoin() {
-        return firstJoin;
-    }
-
-    public long getLastSectorTransfer() {
-        return lastSectorTransfer;
-    }
-
-    public long getLastTransferTimestamp() {
-        return lastTransferTimestamp;
-    }
-
-
-
-    public int getFoodLevel() {
-        return foodLevel;
-    }
-
-    public int getExperience() {
-        return experience;
-    }
-
-    public int getExperienceLevel() {
-        return experienceLevel;
-    }
-
-    public int getFireTicks() {
-        return fireTicks;
-    }
-
-    public boolean isAllowFlight() {
-        return allowFlight;
-    }
-
-    public boolean isFlying() {
-        return flying;
-    }
-
-    public String getPlayerGameMode() {
-        return playerGameMode;
-    }
-
-    public String getPlayerInventoryData() {
-        return playerInventoryData;
-    }
-
-    public String getPlayerEnderChestData() {
-        return playerEnderChestData;
-    }
-
-    public String getPlayerEffectsData() {
-        return playerEffectsData;
     }
 }

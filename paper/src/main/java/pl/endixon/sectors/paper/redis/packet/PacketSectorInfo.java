@@ -1,7 +1,9 @@
 package pl.endixon.sectors.paper.redis.packet;
 
+import lombok.Getter;
 import pl.endixon.sectors.common.packet.Packet;
 
+@Getter
 public class PacketSectorInfo implements Packet {
 
     private final String sector;
@@ -14,21 +16,5 @@ public class PacketSectorInfo implements Packet {
         this.tps = tps;
         this.playerCount = playerCount;
         this.maxPlayers = maxPlayers;
-    }
-
-    public String getSector() {
-        return sector;
-    }
-
-    public float getTPS() {
-        return tps;
-    }
-
-    public int getPlayerCount() {
-        return playerCount;
-    }
-
-    public int getMaxPlayers() {
-        return maxPlayers;
     }
 }

@@ -1,12 +1,30 @@
+/*
+ *
+ * EndSectors – Non-Commercial License
+ * (c) 2025 Endixon
+ *
+ * Permission is granted to use, copy, and
+ * modify this software **only** for personal
+ * or educational purposes.
+ *
+ * Commercial use, redistribution, claiming
+ * this work as your own, or copying code
+ * without explicit permission is strictly
+ * prohibited.
+ *
+ * Visit https://github.com/Endixon/EndSectors
+ * for more info.
+ *
+ */
+
 package pl.endixon.sectors.paper.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import pl.endixon.sectors.paper.PaperSector;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import pl.endixon.sectors.paper.PaperSector;
 
 public class ConfigLoader {
 
@@ -58,41 +76,13 @@ public class ConfigLoader {
         ConfigLoader config = new ConfigLoader();
         config.currentSector = "spawn01";
         config.ScoreboardEnabled = true;
-        config.scoreboard.put("SPAWN", Arrays.asList(
-                "§a📍 Sektor: {sectorName}",
-                "§e👤 Nick: {playerName}",
-                "                    ",
-                "§b⚡ TPS: {tps}",
-                "§c🟢 Online: {onlineCount}",
-                "                    ",
-                "§7Znajdujesz się na kanale: {sectorName}",
-                "§7Aby zmienić kanał użyj /ch"
-        ));
+        config.scoreboard.put("SPAWN", Arrays.asList("§a📍 Sektor: {sectorName}", "§e👤 Nick: {playerName}", "                    ", "§b⚡ TPS: {tps}", "§c🟢 Online: {onlineCount}", "                    ", "§7Znajdujesz się na kanale: {sectorName}", "§7Aby zmienić kanał użyj /ch"));
 
-        config.scoreboard.put("NETHER", Arrays.asList(
-                "§a📍 Sektor: {sectorName}",
-                "§e👤 Nick: {playerName}",
-                "                    ",
-                "                    ",
-                "§b⚡ TPS: {tps}",
-                "§c🟢 Online: {onlineCount}"
-        ));
+        config.scoreboard.put("NETHER", Arrays.asList("§a📍 Sektor: {sectorName}", "§e👤 Nick: {playerName}", "                    ", "                    ", "§b⚡ TPS: {tps}", "§c🟢 Online: {onlineCount}"));
 
-        config.scoreboard.put("END", Arrays.asList(
-                "§a📍 Sektor: {sectorName}",
-                "§e👤 Nick: {playerName}",
-                "                    ",
-                "                    ",
-                "§b⚡ TPS: {tps}",
-                "§c🟢 Online: {onlineCount}"
-        ));
+        config.scoreboard.put("END", Arrays.asList("§a📍 Sektor: {sectorName}", "§e👤 Nick: {playerName}", "                    ", "                    ", "§b⚡ TPS: {tps}", "§c🟢 Online: {onlineCount}"));
 
-        config.scoreboard.put("ADMIN", Arrays.asList(
-                "                    ",
-                "§b📶 Ping: {ping}ms",
-                "§d🖥 CPU: {cpu}%",
-                "§5💾 RAM: {freeRam}/{maxRam}MB"
-        ));
+        config.scoreboard.put("ADMIN", Arrays.asList("                    ", "§b📶 Ping: {ping}ms", "§d🖥 CPU: {cpu}%", "§5💾 RAM: {freeRam}/{maxRam}MB"));
 
         config.sectorTitles.put("SPAWN", "🏰 Spawn");
         config.sectorTitles.put("NETHER", "🔥 Nether");
@@ -101,6 +91,4 @@ public class ConfigLoader {
 
         return config;
     }
-
-
 }

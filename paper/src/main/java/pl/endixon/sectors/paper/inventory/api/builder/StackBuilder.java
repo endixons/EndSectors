@@ -19,18 +19,16 @@
 
 package pl.endixon.sectors.paper.inventory.api.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import pl.endixon.sectors.common.util.ChatUtil;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 
 public class StackBuilder {
 
@@ -95,13 +93,16 @@ public class StackBuilder {
 
     public StackBuilder lore(String line, int index) {
         ItemMeta meta = stack.getItemMeta();
-        if (meta == null) return this;
+        if (meta == null)
+            return this;
 
         List<String> lore = meta.getLore() != null ? new ArrayList<>(meta.getLore()) : new ArrayList<>();
         String coloredLine = ChatUtil.fixColors(line);
 
-        if (index >= 0 && index < lore.size()) lore.set(index, coloredLine);
-        else lore.add(coloredLine);
+        if (index >= 0 && index < lore.size())
+            lore.set(index, coloredLine);
+        else
+            lore.add(coloredLine);
 
         meta.setLore(lore);
         stack.setItemMeta(meta);
@@ -110,7 +111,8 @@ public class StackBuilder {
 
     public StackBuilder lores(List<String> lines) {
         ItemMeta meta = stack.getItemMeta();
-        if (meta == null) return this;
+        if (meta == null)
+            return this;
 
         List<String> colored = lines.stream().map(ChatUtil::fixColors).collect(Collectors.toList());
         meta.setLore(colored);
@@ -119,7 +121,8 @@ public class StackBuilder {
     }
 
     public StackBuilder glow(boolean enable) {
-        if (!enable) return this;
+        if (!enable)
+            return this;
 
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {

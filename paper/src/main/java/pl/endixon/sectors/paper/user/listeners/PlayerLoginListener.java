@@ -1,39 +1,37 @@
 /*
- * 
- *  EndSectors  Non-Commercial License         
- *  (c) 2025 Endixon                             
- *                                              
- *  Permission is granted to use, copy, and    
- *  modify this software **only** for personal 
- *  or educational purposes.                   
- *                                              
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
  *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code     
- *  without explicit permission is strictly    
- *  prohibited.                                
- *                                              
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
  *  Visit https://github.com/Endixon/EndSectors
- *  for more info.                             
- * 
+ *  for more info.
+ *
  */
 
+package pl.endixon.sectors.paper.user.listeners;
 
-package pl.endixon.sectors.paper.listener.player;
-
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import pl.endixon.sectors.paper.PaperSector;
-import pl.endixon.sectors.paper.sector.SectorManager;
+import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.util.ChatAdventureUtil;
-import pl.endixon.sectors.paper.util.Configuration;
+import pl.endixon.sectors.paper.util.ConfigurationUtil;
 
 public class PlayerLoginListener implements Listener {
 
     private final PaperSector paperSector;
+    private final ChatAdventureUtil CHAT = new ChatAdventureUtil();
 
     public PlayerLoginListener(PaperSector paperSector) {
         this.paperSector = paperSector;
@@ -46,11 +44,8 @@ public class PlayerLoginListener implements Listener {
 
         if (sectorManager.getSectors().isEmpty()) {
             paperSector.getLogger().warning("No sectors available. Kicking player %s".formatted(player.getName()));;
-            event.kickMessage(ChatAdventureUtil.toComponent(Configuration.SectorNotFoundMessage)
-            );
-
+            event.kickMessage(CHAT.toComponent(ConfigurationUtil.SectorNotFoundMessage));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
         }
     }
 }
-

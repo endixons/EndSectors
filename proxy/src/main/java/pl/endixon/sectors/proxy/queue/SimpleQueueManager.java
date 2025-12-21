@@ -17,7 +17,6 @@
  *
  */
 
-
 package pl.endixon.sectors.proxy.queue;
 
 import java.util.Map;
@@ -31,4 +30,3 @@ public class SimpleQueueManager<T, ID> {
         return this.map;
     }
 }
-

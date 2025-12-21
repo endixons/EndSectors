@@ -1,14 +1,13 @@
 package pl.endixon.sectors.proxy.redis.listener;
 
-import net.kyori.adventure.text.Component;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import java.util.Optional;
+import net.kyori.adventure.text.Component;
 import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.packet.object.PacketRequestTeleportSector;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.util.Logger;
-
-import java.util.Optional;
 
 public class TeleportToSectorListener implements PacketListener<PacketRequestTeleportSector> {
 

@@ -7,18 +7,15 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.async.RedisAsyncCommands;
 import io.lettuce.core.pubsub.RedisPubSubAdapter;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
-import io.lettuce.core.pubsub.api.async.RedisPubSubAsyncCommands;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import io.lettuce.core.resource.DefaultClientResources;
-import pl.endixon.sectors.common.packet.Packet;
-import pl.endixon.sectors.common.packet.PacketListener;
-import pl.endixon.sectors.common.util.Logger;
-
 import java.io.Serializable;
 import java.nio.CharBuffer;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import pl.endixon.sectors.common.packet.Packet;
+import pl.endixon.sectors.common.packet.PacketListener;
+import pl.endixon.sectors.common.util.Logger;
 
 public class RedisManager {
 
@@ -30,21 +27,12 @@ public class RedisManager {
 
     public void initialize(String host, int port, String password) {
 
-        RedisURI uri = RedisURI.builder()
-                .withHost(host)
-                .withPort(port)
-                .withPassword(CharBuffer.wrap(password))
-                .build();
+        RedisURI uri = RedisURI.builder().withHost(host).withPort(port).withPassword(CharBuffer.wrap(password)).build();
 
-        DefaultClientResources resources = DefaultClientResources.builder()
-                .ioThreadPoolSize(4)
-                .build();
+        DefaultClientResources resources = DefaultClientResources.builder().ioThreadPoolSize(4).build();
         redisClient = RedisClient.create(resources, uri);
 
-        ClientOptions options = ClientOptions.builder()
-                .autoReconnect(true)
-                .publishOnScheduler(true)
-                .build();
+        ClientOptions options = ClientOptions.builder().autoReconnect(true).publishOnScheduler(true).build();
         redisClient.setOptions(options);
         publishCommands = redisClient.connect().async();
         pubSubConnection = redisClient.connectPubSub();
@@ -73,50 +61,42 @@ public class RedisManager {
     public void addOnlinePlayer(String name) {
         if (name != null && !name.isEmpty()) {
             onlinePlayers.add(name);
-            publishCommands.sadd("online_players", name)
-                    .exceptionally(ex -> {
-                        Logger.info("Failed to add player to Redis online set: " + name, ex);
-                        return null;
-                    });
+            publishCommands.sadd("online_players", name).exceptionally(ex -> {
+                Logger.info("Failed to add player to Redis online set: " + name, ex);
+                return null;
+            });
         }
     }
 
     public void removeOnlinePlayer(String name) {
         if (name != null && !name.isEmpty()) {
             onlinePlayers.remove(name);
-            publishCommands.srem("online_players", name)
-                    .exceptionally(ex -> {
-                        Logger.info("Failed to remove player from Redis online set: " + name, ex);
-                        return null;
-                    });
+            publishCommands.srem("online_players", name).exceptionally(ex -> {
+                Logger.info("Failed to remove player from Redis online set: " + name, ex);
+                return null;
+            });
         }
     }
 
     public void getOnlinePlayers(Consumer<List<String>> callback) {
-        publishCommands.smembers("online_players")
-                .thenAccept(players -> callback.accept(new ArrayList<>(players)))
-                .exceptionally(ex -> {
-                    Logger.info("Failed to fetch online players from Redis", ex);
-                    callback.accept(Collections.emptyList());
-                    return null;
-                });
+        publishCommands.smembers("online_players").thenAccept(players -> callback.accept(new ArrayList<>(players))).exceptionally(ex -> {
+            Logger.info("Failed to fetch online players from Redis", ex);
+            callback.accept(Collections.emptyList());
+            return null;
+        });
     }
 
     public void isPlayerOnline(String name, Consumer<Boolean> callback) {
-        publishCommands.sismember("online_players", name)
-                .thenAccept(callback)
-                .exceptionally(ex -> {
-                    Logger.info("Failed to check if player is online in Redis: " + name, ex);
-                    callback.accept(false);
-                    return null;
-                });
+        publishCommands.sismember("online_players", name).thenAccept(callback).exceptionally(ex -> {
+            Logger.info("Failed to check if player is online in Redis: " + name, ex);
+            callback.accept(false);
+            return null;
+        });
     }
 
-
-
-
     public void hset(String key, Map<String, String> map) {
-        if (map == null || map.isEmpty()) return;
+        if (map == null || map.isEmpty())
+            return;
         publishCommands.hset(key, map);
     }
 
@@ -128,7 +108,6 @@ public class RedisManager {
             return Collections.emptyMap();
         }
     }
-
 
     public void del(String key) {
         publishCommands.del(key);
@@ -144,8 +123,11 @@ public class RedisManager {
     }
 
     public void shutdown() {
-        if (pubSubConnection != null) pubSubConnection.close();
-        if (publishCommands != null) publishCommands.getStatefulConnection().close();
-        if (redisClient != null) redisClient.shutdown();
+        if (pubSubConnection != null)
+            pubSubConnection.close();
+        if (publishCommands != null)
+            publishCommands.getStatefulConnection().close();
+        if (redisClient != null)
+            redisClient.shutdown();
     }
 }

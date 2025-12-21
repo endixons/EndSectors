@@ -17,22 +17,33 @@
  *
  */
 
-
 package pl.endixon.sectors.tools.utils;
 
+import java.util.Objects;
+import java.util.function.Supplier;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import pl.endixon.sectors.common.util.ChatUtil;
 
-import java.util.function.Supplier;
+public final class LoggerUtil {
 
-public class LoggerUtil {
+    private static final String PREFIX = "%M[EndSectors-Tools] %C";
 
-    private static final ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+    private static final ConsoleCommandSender CONSOLE = Bukkit.getServer().getConsoleSender();
 
-    public static void info(Object object) {
-        console.sendMessage(ChatUtil.fixColorsLogger("%M[EndSectors-Tools] %C" + object.toString()));
+    private LoggerUtil() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
-}
+    public static void info(Object message) {
+        Objects.requireNonNull(message, "message");
 
+        CONSOLE.sendMessage(ChatUtil.fixColorsLogger(PREFIX + message));
+    }
+
+    public static void info(Supplier<?> messageSupplier) {
+        Objects.requireNonNull(messageSupplier, "messageSupplier");
+
+        info(messageSupplier.get());
+    }
+}

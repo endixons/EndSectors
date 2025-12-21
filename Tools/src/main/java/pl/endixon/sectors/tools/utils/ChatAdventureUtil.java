@@ -1,11 +1,29 @@
-package pl.endixon.sectors.tools.utils;
+/*
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
+ *   Commercial use, redistribution, claiming
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
+ *  Visit https://github.com/Endixon/EndSectors
+ *  for more info.
+ *
+ */
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
-import pl.endixon.sectors.common.util.ChatUtil;
+package pl.endixon.sectors.tools.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import pl.endixon.sectors.common.util.ChatUtil;
 
 public class ChatAdventureUtil {
 
@@ -20,7 +38,8 @@ public class ChatAdventureUtil {
     }
 
     public Component toComponent(String message) {
-        if (message == null || message.isEmpty()) return Component.empty();
+        if (message == null || message.isEmpty())
+            return Component.empty();
 
         Matcher matcher = hexPattern.matcher(message);
         Component component = Component.empty();
@@ -34,7 +53,8 @@ public class ChatAdventureUtil {
             TextColor color = TextColor.fromHexString("#" + hex);
             int endIndex = matcher.end();
             int nextColor = message.indexOf("&#", endIndex);
-            if (nextColor == -1) nextColor = message.length();
+            if (nextColor == -1)
+                nextColor = message.length();
             String textAfterHex = message.substring(endIndex, nextColor);
             component = component.append(Component.text(textAfterHex, color));
             lastIndex = nextColor;

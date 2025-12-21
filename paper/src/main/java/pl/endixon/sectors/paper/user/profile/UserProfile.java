@@ -1,5 +1,26 @@
-package pl.endixon.sectors.paper.user;
+/*
+ *
+ * EndSectors – Non-Commercial License
+ * (c) 2025 Endixon
+ *
+ * Permission is granted to use, copy, and
+ * modify this software **only** for personal
+ * or educational purposes.
+ *
+ * Commercial use, redistribution, claiming
+ * this work as your own, or copying code
+ * without explicit permission is strictly
+ * prohibited.
+ *
+ * Visit https://github.com/Endixon/EndSectors
+ * for more info.
+ *
+ */
 
+package pl.endixon.sectors.paper.user.profile;
+
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -11,14 +32,11 @@ import org.bukkit.util.Vector;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
-import pl.endixon.sectors.paper.util.Logger;
-import pl.endixon.sectors.paper.util.PlayerDataSerializer;
-import java.util.HashMap;
-import java.util.Map;
+import pl.endixon.sectors.paper.util.PlayerDataSerializerUtil;
 
 @Getter
 @Setter
-public class UserRedis {
+public class UserProfile {
 
     private String name;
     private String sectorName;
@@ -39,7 +57,7 @@ public class UserRedis {
     private String playerEnderChestData;
     private String playerEffectsData;
 
-    private UserRedis() {
+    private UserProfile() {
         this.sectorName = "null";
         this.firstJoin = true;
         this.lastSectorTransfer = 0L;
@@ -51,27 +69,30 @@ public class UserRedis {
         this.fireTicks = 0;
         this.allowFlight = false;
         this.flying = false;
-        this.x = 0; this.y = 0; this.z = 0;
-        this.yaw = 0; this.pitch = 0;
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        this.yaw = 0;
+        this.pitch = 0;
         this.playerGameMode = "SURVIVAL";
         this.playerInventoryData = "";
         this.playerEnderChestData = "";
         this.playerEffectsData = "";
     }
 
-    public UserRedis(@NonNull Player player) {
+    public UserProfile(@NonNull Player player) {
         this();
         this.name = player.getName();
         Sector current = PaperSector.getInstance().getSectorManager().getCurrentSector();
         this.sectorName = (current != null && current.getType() != SectorType.QUEUE) ? current.getName() : "null";
     }
 
-    public UserRedis(@NonNull String name) {
+    public UserProfile(@NonNull String name) {
         this();
         this.name = name;
     }
 
-    public UserRedis(@NonNull Map<String, String> redisData) {
+    public UserProfile(@NonNull Map<String, String> redisData) {
         this();
         this.name = redisData.getOrDefault("name", "unknown");
         this.sectorName = redisData.getOrDefault("sectorName", sectorName);
@@ -102,8 +123,11 @@ public class UserRedis {
         long previousTransferOffsetUntil = this.transferOffsetUntil;
         this.name = player.getName();
         Location loc = player.getLocation();
-        this.x = loc.getX(); this.y = loc.getY(); this.z = loc.getZ();
-        this.yaw = loc.getYaw(); this.pitch = loc.getPitch();
+        this.x = loc.getX();
+        this.y = loc.getY();
+        this.z = loc.getZ();
+        this.yaw = loc.getYaw();
+        this.pitch = loc.getPitch();
         this.playerGameMode = player.getGameMode().name();
         this.foodLevel = player.getFoodLevel();
         this.experience = player.getTotalExperience();
@@ -111,9 +135,9 @@ public class UserRedis {
         this.fireTicks = player.getFireTicks();
         this.allowFlight = player.getAllowFlight();
         this.flying = player.isFlying();
-        this.playerInventoryData = PlayerDataSerializer.serializeItemStacksToBase64(player.getInventory().getContents());
-        this.playerEnderChestData = PlayerDataSerializer.serializeItemStacksToBase64(player.getEnderChest().getContents());
-        this.playerEffectsData = PlayerDataSerializer.serializeEffects(player);
+        this.playerInventoryData = PlayerDataSerializerUtil.serializeItemStacksToBase64(player.getInventory().getContents());
+        this.playerEnderChestData = PlayerDataSerializerUtil.serializeItemStacksToBase64(player.getEnderChest().getContents());
+        this.playerEffectsData = PlayerDataSerializerUtil.serializeEffects(player);
         this.sectorName = (currentSector != null && currentSector.getType() != SectorType.QUEUE) ? currentSector.getName() : "null";
         this.lastSectorTransfer = previousLastSectorTransfer;
         this.lastTransferTimestamp = previousLastTransferTimestamp;
@@ -128,8 +152,11 @@ public class UserRedis {
         map.put("lastSectorTransfer", String.valueOf(lastSectorTransfer));
         map.put("lastTransferTimestamp", String.valueOf(lastTransferTimestamp));
         map.put("transferOffsetUntil", String.valueOf(transferOffsetUntil));
-        map.put("x", String.valueOf(x)); map.put("y", String.valueOf(y)); map.put("z", String.valueOf(z));
-        map.put("yaw", String.valueOf(yaw)); map.put("pitch", String.valueOf(pitch));
+        map.put("x", String.valueOf(x));
+        map.put("y", String.valueOf(y));
+        map.put("z", String.valueOf(z));
+        map.put("yaw", String.valueOf(yaw));
+        map.put("pitch", String.valueOf(pitch));
         map.put("playerGameMode", playerGameMode);
         map.put("playerInventoryData", playerInventoryData);
         map.put("playerEnderChestData", playerEnderChestData);
@@ -145,30 +172,31 @@ public class UserRedis {
 
     public void updateAndSave(@NonNull Player player, @NonNull Sector currentSector) {
         updateFromPlayer(player, currentSector);
-        RedisUserCache.save(this);
+        UserProfileCache.save(this);
     }
 
     public Player getPlayer() {
         return Bukkit.getPlayer(name);
     }
 
-
     public void setLastSectorTransfer(boolean redirecting) {
         this.lastSectorTransfer = redirecting ? System.currentTimeMillis() : 0L;
-        RedisUserCache.save(this);
+        UserProfileCache.save(this);
     }
 
     public void activateTransferOffset() {
         this.transferOffsetUntil = System.currentTimeMillis() + 5000L;
-        RedisUserCache.save(this);
+        UserProfileCache.save(this);
     }
 
     public void applyPlayerData() {
         Player player = getPlayer();
-        if (player == null) return;
+        if (player == null)
+            return;
         Bukkit.getScheduler().runTask(PaperSector.getInstance(), () -> {
             Sector current = PaperSector.getInstance().getSectorManager().getCurrentSector();
-            if (current == null) return;
+            if (current == null)
+                return;
 
             Location defaultLoc = new Location(player.getWorld(), 0, 70, 0);
 
@@ -177,8 +205,10 @@ public class UserRedis {
                     if (player.teleport(defaultLoc)) {
                         player.setGameMode(GameMode.ADVENTURE);
                         Bukkit.getOnlinePlayers().forEach(online -> {
-                            if (!online.equals(player)) online.hidePlayer(PaperSector.getInstance(), player);
-                            if (!online.equals(player)) player.hidePlayer(PaperSector.getInstance(), online);
+                            if (!online.equals(player))
+                                online.hidePlayer(PaperSector.getInstance(), player);
+                            if (!online.equals(player))
+                                player.hidePlayer(PaperSector.getInstance(), online);
                         });
                     }
                 }
@@ -196,22 +226,22 @@ public class UserRedis {
     }
 
     private void loadPlayerData(@NonNull Player player) {
-            player.setGameMode(GameMode.valueOf(playerGameMode));
-            player.setFoodLevel(foodLevel);
-            player.setTotalExperience(experience);
-            player.setLevel(experienceLevel);
-            player.setFireTicks(fireTicks);
-            player.setAllowFlight(allowFlight);
-            player.setFlying(flying);
+        player.setGameMode(GameMode.valueOf(playerGameMode));
+        player.setFoodLevel(foodLevel);
+        player.setTotalExperience(experience);
+        player.setLevel(experienceLevel);
+        player.setFireTicks(fireTicks);
+        player.setAllowFlight(allowFlight);
+        player.setFlying(flying);
 
-            if (!playerInventoryData.isEmpty())
-                player.getInventory().setContents(PlayerDataSerializer.deserializeItemStacksFromBase64(playerInventoryData));
+        if (!playerInventoryData.isEmpty())
+            player.getInventory().setContents(PlayerDataSerializerUtil.deserializeItemStacksFromBase64(playerInventoryData));
 
-            if (!playerEnderChestData.isEmpty())
-                player.getEnderChest().setContents(PlayerDataSerializer.deserializeItemStacksFromBase64(playerEnderChestData));
+        if (!playerEnderChestData.isEmpty())
+            player.getEnderChest().setContents(PlayerDataSerializerUtil.deserializeItemStacksFromBase64(playerEnderChestData));
 
-            player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-            player.addPotionEffects(PlayerDataSerializer.deserializeEffects(playerEffectsData));
+        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+        player.addPotionEffects(PlayerDataSerializerUtil.deserializeEffects(playerEffectsData));
     }
 
     private void teleportPlayerToStoredLocation(@NonNull Player player) {
@@ -223,5 +253,4 @@ public class UserRedis {
         }
         player.teleport(targetLoc);
     }
-
 }

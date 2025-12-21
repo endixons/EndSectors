@@ -7,7 +7,7 @@
  *  modify this software **only** for personal
  *  or educational purposes.
  *
- *  Commercial use, redistribution, claiming
+ *   Commercial use, redistribution, claiming
  *  this work as your own, or copying code
  *  without explicit permission is strictly
  *  prohibited.
@@ -19,15 +19,14 @@
 
 package pl.endixon.sectors.tools.inventory.api.builder;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 @Setter
 @Getter

@@ -17,7 +17,7 @@
  *
  */
 
-package pl.endixon.sectors.paper.listener.player;
+package pl.endixon.sectors.paper.user.listeners;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,29 +28,42 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import pl.endixon.sectors.paper.inventory.api.builder.WindowHolder;
 
-public class InventoryInternactListener implements Listener {
+public class PlayerInventoryInteractListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        Inventory inv = event.getClickedInventory();
-        if (!isWindowInventory(inv) && !isWindowInventory(event.getInventory())) return;
+        Inventory clickedInventory = event.getClickedInventory();
+        Inventory topInventory = event.getInventory();
 
-        InventoryHolder rawHolder = event.getInventory().getHolder();
-        if (!(rawHolder instanceof WindowHolder holder)) return;
+        if (!isWindowInventory(clickedInventory) && !isWindowInventory(topInventory)) {
+            return;
+        }
+
+        InventoryHolder holder = topInventory.getHolder();
+
+        if (!(holder instanceof WindowHolder windowHolder)) {
+            return;
+        }
 
         event.setCancelled(true);
-        holder.processClick(event);
+        windowHolder.processClick(event);
     }
-
 
     @EventHandler
     public void onInteract(InventoryInteractEvent event) {
-        if (!isWindowInventory(event.getInventory())) return;
+
+        if (!isWindowInventory(event.getInventory())) {
+            return;
+        }
+
         event.setCancelled(true);
     }
 
     private boolean isWindowInventory(Inventory inventory) {
-        if (inventory == null || inventory.getType() != InventoryType.CHEST) return false;
+
+        if (inventory == null || inventory.getType() != InventoryType.CHEST) {
+            return false;
+        }
 
         InventoryHolder holder = inventory.getHolder();
         return holder instanceof WindowHolder && holder.getClass() == WindowHolder.class;

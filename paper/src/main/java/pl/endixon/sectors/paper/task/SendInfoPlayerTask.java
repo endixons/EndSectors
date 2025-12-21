@@ -1,3 +1,22 @@
+/*
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
+ *   Commercial use, redistribution, claiming
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
+ *  Visit https://github.com/Endixon/EndSectors
+ *  for more info.
+ *
+ */
+
 package pl.endixon.sectors.paper.task;
 
 import org.bukkit.Bukkit;
@@ -8,7 +27,7 @@ import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.redis.packet.PacketPlayerInfoRequest;
 import pl.endixon.sectors.paper.sector.Sector;
-import pl.endixon.sectors.paper.user.UserManager;
+import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
 
 public class SendInfoPlayerTask extends BukkitRunnable {
 
@@ -27,12 +46,9 @@ public class SendInfoPlayerTask extends BukkitRunnable {
         }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            UserManager.getUserAsync(player.getName()).thenAccept(optionalUser -> {
+            UserProfileRepository.getUserAsync(player.getName()).thenAccept(optionalUser -> {
                 optionalUser.ifPresent(user -> {
-                    paperSector.getRedisManager().publish(
-                            PacketChannel.PACKET_PLAYER_INFO_REQUEST,
-                            new PacketPlayerInfoRequest(user)
-                    );
+                    paperSector.getRedisManager().publish(PacketChannel.PACKET_PLAYER_INFO_REQUEST, new PacketPlayerInfoRequest(user));
                 });
             });
         }

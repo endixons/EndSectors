@@ -1,11 +1,29 @@
-package pl.endixon.sectors.paper.event.sector;
+/*
+ *
+ * EndSectors – Non-Commercial License
+ * (c) 2025 Endixon
+ *
+ * Permission is granted to use, copy, and
+ * modify this software **only** for personal
+ * or educational purposes.
+ *
+ * Commercial use, redistribution, claiming
+ * this work as your own, or copying code
+ * without explicit permission is strictly
+ * prohibited.
+ *
+ * Visit https://github.com/Endixon/EndSectors
+ * for more info.
+ *
+ */
 
-import org.bukkit.Bukkit;
+package pl.endixon.sectors.paper.event;
+
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import lombok.Getter;
 import pl.endixon.sectors.paper.sector.Sector;
 
 @Getter

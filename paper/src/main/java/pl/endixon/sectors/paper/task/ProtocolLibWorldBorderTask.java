@@ -1,3 +1,22 @@
+/*
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
+ *   Commercial use, redistribution, claiming
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
+ *  Visit https://github.com/Endixon/EndSectors
+ *  for more info.
+ *
+ */
+
 package pl.endixon.sectors.paper.task;
 
 import com.comphenix.protocol.PacketType;
@@ -5,16 +24,14 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import java.util.Arrays;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.sector.Sector;
-import pl.endixon.sectors.paper.sector.SectorManager;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 
 public class ProtocolLibWorldBorderTask extends BukkitRunnable {
 
@@ -30,23 +47,20 @@ public class ProtocolLibWorldBorderTask extends BukkitRunnable {
     @Override
     public void run() {
         Sector sector = sectorManager.getCurrentSector();
-        if (sector == null) return;
+        if (sector == null)
+            return;
 
         double borderSize = GROWTH * 2 + OFFSET;
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!player.getWorld().getName().equals(sector.getWorldName())) continue;
+            if (!player.getWorld().getName().equals(sector.getWorldName()))
+                continue;
 
-
-            List<Location> corners = Arrays.asList(
-                    new Location(player.getWorld(), sector.getFirstCorner().getPosX(), player.getLocation().getY(), sector.getFirstCorner().getPosZ()),
-                    new Location(player.getWorld(), sector.getSecondCorner().getPosX(), player.getLocation().getY(), sector.getFirstCorner().getPosZ()),
-                    new Location(player.getWorld(), sector.getFirstCorner().getPosX(), player.getLocation().getY(), sector.getSecondCorner().getPosZ()),
-                    new Location(player.getWorld(), sector.getSecondCorner().getPosX(), player.getLocation().getY(), sector.getSecondCorner().getPosZ())
-            );
+            List<Location> corners = Arrays.asList(new Location(player.getWorld(), sector.getFirstCorner().getPosX(), player.getLocation().getY(), sector.getFirstCorner().getPosZ()), new Location(player.getWorld(), sector.getSecondCorner().getPosX(), player.getLocation().getY(), sector.getFirstCorner().getPosZ()), new Location(player.getWorld(), sector.getFirstCorner().getPosX(), player.getLocation().getY(), sector.getSecondCorner().getPosZ()), new Location(player.getWorld(), sector.getSecondCorner().getPosX(), player.getLocation().getY(), sector.getSecondCorner().getPosZ()));
 
             Location nearestCorner = findNearestCorner(player, corners);
-            if (nearestCorner == null) continue;
+            if (nearestCorner == null)
+                continue;
 
             Location fixedCorner = fixNearestCorner(sector, nearestCorner);
 
@@ -85,22 +99,17 @@ public class ProtocolLibWorldBorderTask extends BukkitRunnable {
     }
 
     private Location fixNearestCorner(Sector sector, Location corner) {
-        if (corner == null) return null;
+        if (corner == null)
+            return null;
         Location clone = corner.clone();
-
         double centerX = (sector.getFirstCorner().getPosX() + sector.getSecondCorner().getPosX()) / 2.0;
         double centerZ = (sector.getFirstCorner().getPosZ() + sector.getSecondCorner().getPosZ()) / 2.0;
-
         boolean xNotNearCenter = clone.getX() < centerX;
         boolean zNotNearCenter = clone.getZ() < centerZ;
-
         double newX = clone.getX() + (xNotNearCenter ? GROWTH : -GROWTH);
         double newZ = clone.getZ() + (zNotNearCenter ? GROWTH : -GROWTH);
-
         clone.setX(newX + (xNotNearCenter ? -OFFSET : OFFSET));
         clone.setZ(newZ + (zNotNearCenter ? -OFFSET : OFFSET));
-
         return clone;
     }
-
 }

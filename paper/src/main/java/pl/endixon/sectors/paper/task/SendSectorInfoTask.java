@@ -21,8 +21,11 @@ package pl.endixon.sectors.paper.task;
 
 import org.bukkit.Bukkit;
 import pl.endixon.sectors.common.packet.PacketChannel;
+import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
+import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.redis.packet.PacketSectorInfo;
+import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.util.TpsUtil;
 
 public class SendSectorInfoTask implements Runnable {
@@ -35,12 +38,19 @@ public class SendSectorInfoTask implements Runnable {
 
     @Override
     public void run() {
+        Sector sector = PaperSector.getInstance().getSectorManager().getCurrentSector();
+
+        if (sector.getType() == SectorType.QUEUE) {
+            return;
+        }
+
         int online = Bukkit.getOnlinePlayers().size();
-        String sector = PaperSector.getInstance().getSectorManager().getCurrentSectorName();
+        boolean status = sector.isOnline();
         int max = Bukkit.getMaxPlayers();
         float tps = (float) TpsUtil.getTPS();
-        PacketSectorInfo info = new PacketSectorInfo(sector, tps, online, max);
+        PacketSectorInfo info = new PacketSectorInfo(sector.getName(), status, tps, online, max);
+
         paperSector.getRedisManager().publish(PacketChannel.PACKET_SECTOR_INFO, info);
-        paperSector.getRedisManager().publish(PacketChannel.PACKET_SECTOR_INFO_QUEUE, info);
     }
+
 }

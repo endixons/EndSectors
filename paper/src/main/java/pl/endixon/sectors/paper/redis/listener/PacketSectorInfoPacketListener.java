@@ -23,6 +23,7 @@ import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.redis.packet.PacketSectorInfo;
 import pl.endixon.sectors.paper.sector.Sector;
+import pl.endixon.sectors.paper.util.LoggerUtil;
 
 public class PacketSectorInfoPacketListener implements PacketListener<PacketSectorInfo> {
 
@@ -32,10 +33,20 @@ public class PacketSectorInfoPacketListener implements PacketListener<PacketSect
         Sector sector = PaperSector.getInstance().getSectorManager().getSector(packet.getSector());
 
         if (sector != null) {
+
             sector.setLastInfoPacket();
             sector.setTPS(packet.getTps());
             sector.setPlayerCount(packet.getPlayerCount());
             sector.setMaxPlayers(packet.getMaxPlayers());
+            sector.setOnline(packet.isStatus());
+            LoggerUtil.info(String.format(
+                    "[Heartbeat] Sektor: %s | TPS: %.2f | Gracze: %d/%d | Status: %b",
+                    packet.getSector(),
+                    packet.getTps(),
+                    packet.getPlayerCount(),
+                    packet.getMaxPlayers(),
+                    packet.isStatus()
+            ));
         }
     }
 }

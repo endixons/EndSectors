@@ -31,6 +31,7 @@ import pl.endixon.sectors.paper.PaperSector;
 public class ConfigLoader {
 
     public String currentSector = "spawn_1";
+
     public boolean ScoreboardEnabled = true;
     public Map<String, List<String>> scoreboard = new HashMap<>();
     public Map<String, String> sectorTitles = new HashMap<>();

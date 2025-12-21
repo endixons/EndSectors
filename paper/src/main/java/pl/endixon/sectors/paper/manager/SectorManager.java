@@ -158,27 +158,32 @@ public class SectorManager {
     }
 
     public Sector getBalancedRandomSpawnSector() {
-        List<Sector> onlineSpawns = new ArrayList<>(
-                sectors.values().stream()
-                        .filter(s -> s.getType() == SectorType.SPAWN)
-                        .filter(Sector::isOnline)
-                        .filter(s -> s.getTPS() > 0)
-                        .sorted(Comparator.comparingDouble(
-                                s -> ((double) s.getPlayerCount() / Math.max(s.getMaxPlayers(), 1)) / s.getTPS()
-                        ))
-                        .toList()
-        );
 
-        if (onlineSpawns.isEmpty()) {
-            LoggerUtil.info("No online spawn sectors available for balanced selection.");
+        List<Sector> allSpawns = sectors.values().stream()
+                .filter(s -> s.getType() == SectorType.SPAWN)
+                .toList();
+
+        List<Sector> healthySpawns = allSpawns.stream()
+                .filter(Sector::isOnline)
+                .filter(s -> s.getTPS() > 15.0)
+                .sorted(Comparator.comparingDouble(s -> {
+                    double occupancy = (double) s.getPlayerCount() / Math.max(s.getMaxPlayers(), 1);
+                    return occupancy / s.getTPS();
+                }))
+                .toList();
+
+        if (healthySpawns.isEmpty()) {
+            LoggerUtil.info(String.format("Błąd balansu! Wszystkie spawny (%d) są offline lub lagują!", allSpawns.size()));
             return null;
         }
 
-        Collections.reverse(onlineSpawns);
-        int topN = Math.min(3, onlineSpawns.size());
-        return onlineSpawns.get(ThreadLocalRandom.current().nextInt(topN));
-    }
+        int poolSize = Math.max(1, Math.min(5, (int) Math.ceil(healthySpawns.size() * 0.3)));
 
+        if (ThreadLocalRandom.current().nextInt(100) < 5) {
+            LoggerUtil.info(String.format("Balans Spawnów: Online: %d/%d | Losowanie z top: %d", healthySpawns.size(), allSpawns.size(), poolSize));
+        }
+        return healthySpawns.get(ThreadLocalRandom.current().nextInt(poolSize));
+    }
 
     public Sector getCurrentSector() {
         return this.getSector(currentSectorName);

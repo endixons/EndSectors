@@ -114,8 +114,7 @@ public class PaperSector extends JavaPlugin {
         this.userProfileRepository = new UserProfileRepository();
         this.redisManager.initialize("127.0.0.1", 6379, "");
         this.redisManager.subscribe(config.currentSector, new PacketConfigurationPacketListener(), PacketConfiguration.class);
-        this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_INFO_QUEUE, new PacketSectorInfoPacketListener(), PacketSectorInfo.class);
-        this.redisManager.subscribe(PacketChannel.PACKET_EXECUTE_COMMAND, new PacketExecuteCommandPacketListener(), PacketExecuteCommand.class);
+       this.redisManager.subscribe(PacketChannel.PACKET_EXECUTE_COMMAND, new PacketExecuteCommandPacketListener(), PacketExecuteCommand.class);
         this.redisManager.subscribe(PacketChannel.PACKET_PLAYER_INFO_REQUEST, new PacketPlayerInfoRequestPacketListener(), PacketPlayerInfoRequest.class);
         this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_CHAT_BROADCAST, new PacketSectorChatBroadcastPacketListener(), PacketSectorChatBroadcast.class);
         this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_INFO, new PacketSectorInfoPacketListener(), PacketSectorInfo.class);

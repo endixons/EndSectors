@@ -12,6 +12,7 @@ import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.util.ChatAdventureUtil;
 
 import com.sun.management.OperatingSystemMXBean;
+import pl.endixon.sectors.paper.util.CpuUtil;
 
 import javax.management.*;
 import java.lang.management.ManagementFactory;
@@ -66,7 +67,7 @@ public class SpawnScoreboardTask extends BukkitRunnable {
 
 
     private Component parseLine(String line, Player player, Sector sector) {
-        double cpuLoad = getProcessCpuLoad();
+        double cpuLoad = CpuUtil.getProcessCpuLoad();
         long freeMem = Runtime.getRuntime().freeMemory() / 1024 / 1024;
         long maxMem = Runtime.getRuntime().maxMemory() / 1024 / 1024;
         String cpuText = cpuLoad < 0 ? "N/A" : String.format("%.2f", cpuLoad * 100);
@@ -92,33 +93,4 @@ public class SpawnScoreboardTask extends BukkitRunnable {
         }
     }
 
-    public static double getProcessCpuLoad() {
-        try {
-            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            ObjectName name = ObjectName.getInstance("java.lang:type=OperatingSystem");
-            AttributeList list = mbs.getAttributes(name, new String[]{"ProcessCpuLoad"});
-
-            if (list.isEmpty()) {
-                return 0.0;
-            }
-
-            Attribute att = (Attribute) list.get(0);
-            Object valueObj = att.getValue();
-
-            if (!(valueObj instanceof Double)) {
-                return 0.0;
-            }
-
-            double value = (Double) valueObj;
-
-            if (value < 0.0) {
-                return 0.0;
-            }
-
-            return Math.round(value * 1000) / 10.0;
-
-        } catch (Exception e) {
-            return 0.0;
-        }
-    }
 }

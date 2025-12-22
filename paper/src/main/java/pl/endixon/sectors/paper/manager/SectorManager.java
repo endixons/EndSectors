@@ -200,7 +200,7 @@ public class SectorManager {
 
         if (sector.getName().equals(user.getSectorName())) {
             player.teleport(loc);
-            user.updateAndSave(player, sector);
+            user.updateAndSave(player, sector,false);
         } else {
             paperSector.getSectorTeleport().teleportToSector(player, user, sector, false, true);
         }

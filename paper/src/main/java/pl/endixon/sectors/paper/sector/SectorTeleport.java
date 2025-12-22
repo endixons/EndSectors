@@ -69,11 +69,10 @@ public class SectorTeleport {
             LoggerUtil.info(() -> String.format("[Transfer] Updating player data for %s", player.getName()));
 
             if (!preserveCoordinates) {
-                user.updateAndSave(player, sector);
+                user.updateAndSave(player, sector,false);
 
             } else {
-                user.setSectorName(sector.getName());
-                UserProfileCache.save(user);
+                user.updateAndSave(player, sector,true);
             }
 
             LoggerUtil.info(() -> String.format("[Transfer] Sending teleport packet for %s", player.getName()));

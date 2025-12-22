@@ -60,7 +60,7 @@ public class PlayerLocallyJoinListener implements Listener {
                 sendSectorTitle(player, currentSector);
                 user.setFirstJoin(false);
                 user.setLastSectorTransfer(false);
-                user.updateFromPlayer(player, currentSector);
+                user.updateFromPlayer(player, currentSector,false);
                 paperSector.getSectorManager().randomLocation(player, user);
             } else {
                 sendSectorTitle(player, currentSector);

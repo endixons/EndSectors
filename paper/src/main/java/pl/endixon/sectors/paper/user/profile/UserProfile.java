@@ -24,11 +24,15 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.eclipse.sisu.launch.Main;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
@@ -117,17 +121,20 @@ public class UserProfile {
         this.flying = Boolean.parseBoolean(redisData.getOrDefault("flying", String.valueOf(flying)));
     }
 
-    public void updateFromPlayer(@NonNull Player player, @NonNull Sector currentSector) {
+    public void updateFromPlayer(@NonNull Player player, @NonNull Sector currentSector, boolean preserveCoordinates) {
         long previousLastSectorTransfer = this.lastSectorTransfer;
         long previousLastTransferTimestamp = this.lastTransferTimestamp;
         long previousTransferOffsetUntil = this.transferOffsetUntil;
+
         this.name = player.getName();
-        Location loc = player.getLocation();
-        this.x = loc.getX();
-        this.y = loc.getY();
-        this.z = loc.getZ();
-        this.yaw = loc.getYaw();
-        this.pitch = loc.getPitch();
+        if (!preserveCoordinates) {
+            Location loc = player.getLocation();
+            this.x = loc.getX();
+            this.y = loc.getY();
+            this.z = loc.getZ();
+            this.yaw = loc.getYaw();
+            this.pitch = loc.getPitch();
+        }
         this.playerGameMode = player.getGameMode().name();
         this.foodLevel = player.getFoodLevel();
         this.experience = player.getTotalExperience();
@@ -138,6 +145,7 @@ public class UserProfile {
         this.playerInventoryData = PlayerDataSerializerUtil.serializeItemStacksToBase64(player.getInventory().getContents());
         this.playerEnderChestData = PlayerDataSerializerUtil.serializeItemStacksToBase64(player.getEnderChest().getContents());
         this.playerEffectsData = PlayerDataSerializerUtil.serializeEffects(player);
+
         this.sectorName = (currentSector != null && currentSector.getType() != SectorType.QUEUE) ? currentSector.getName() : "null";
         this.lastSectorTransfer = previousLastSectorTransfer;
         this.lastTransferTimestamp = previousLastTransferTimestamp;
@@ -170,11 +178,10 @@ public class UserProfile {
         return map;
     }
 
-    public void updateAndSave(@NonNull Player player, @NonNull Sector currentSector) {
-        updateFromPlayer(player, currentSector);
+    public void updateAndSave(@NonNull Player player, @NonNull Sector currentSector, boolean preserveCoordinates) {
+        updateFromPlayer(player, currentSector, preserveCoordinates);
         UserProfileCache.save(this);
     }
-
 
 
     public void setLocationAndSave(Location loc) {
@@ -255,13 +262,38 @@ public class UserProfile {
         player.addPotionEffects(PlayerDataSerializerUtil.deserializeEffects(playerEffectsData));
     }
 
-    private void teleportPlayerToStoredLocation(@NonNull Player player) {
+        private void teleportPlayerToStoredLocation(@NonNull Player player) {
         long now = System.currentTimeMillis();
+        int protectionSeconds = 10;
         Location targetLoc = new Location(player.getWorld(), x, y, z, yaw, pitch);
+
         if (now < transferOffsetUntil) {
             Vector direction = targetLoc.getDirection().setY(0).normalize();
             targetLoc = targetLoc.clone().add(direction.multiply(5.0));
         }
+
+        player.setInvulnerable(true);
         player.teleport(targetLoc);
+
+        new BukkitRunnable() {
+            int remaining = protectionSeconds * 20;
+
+            @Override
+            public void run() {
+                if (!player.isOnline() || remaining <= 0) {
+                    player.setInvulnerable(false);
+                    this.cancel();
+                    return;
+                }
+
+                if (remaining % 20 == 0) {
+                    int seconds = remaining / 20;
+                    player.sendActionBar(Component.text("🛡 Ochrona przed obrażeniami: " + seconds + "s")
+                            .color(NamedTextColor.YELLOW));
+                }
+
+                remaining--;
+            }
+        }.runTaskTimer(PaperSector.getInstance(), 0, 1);
     }
 }

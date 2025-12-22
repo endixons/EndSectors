@@ -142,7 +142,7 @@ public class HomeWindow {
 
         if (home.getSector().equals(user.getSectorName())) {
             player.teleport(loc);
-            user.updateAndSave(player, homeSector);
+            user.updateAndSave(player, homeSector,false);
             player.sendMessage(CHAT.toComponent("&#00FFAAPomyślnie przeteleportowano!"));
 
         } else {

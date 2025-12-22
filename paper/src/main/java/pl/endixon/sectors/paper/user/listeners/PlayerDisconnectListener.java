@@ -57,7 +57,7 @@ public class PlayerDisconnectListener implements Listener {
         }
 
         LoggerUtil.info(() -> "[Kick] Saving data for player: " + player.getName() + " in sector: " + currentSector.getName());
-        user.updateAndSave(player, currentSector);
+        user.updateAndSave(player, currentSector,false);
     }
 
     @EventHandler
@@ -79,6 +79,6 @@ public class PlayerDisconnectListener implements Listener {
 
         Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
         LoggerUtil.info(() -> String.format("[Quit] Saving player %s data for sector %s.", player.getName(), currentSector != null ? currentSector.getName() : "null"));
-        user.updateAndSave(player, currentSector);
+        user.updateAndSave(player, currentSector,false);
     }
 }

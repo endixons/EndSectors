@@ -57,7 +57,7 @@ public class PacketPlayerInfoRequestPacketListener implements PacketListener<Pac
                 player.getActivePotionEffects().forEach(e -> player.removePotionEffect(e.getType()));
                 PlayerDataSerializerUtil.deserializeEffects(dto.getPlayerEffectsData()).forEach(player::addPotionEffect);
 
-                user.updateAndSave(player, currentSector);
+                user.updateAndSave(player, currentSector,false);
             });
         }));
     }

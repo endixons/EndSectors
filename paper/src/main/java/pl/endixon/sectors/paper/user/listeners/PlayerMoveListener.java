@@ -162,7 +162,7 @@ public class PlayerMoveListener implements Listener {
         Sector spawnToTeleport = paperSector.getSectorManager().getBalancedRandomSpawnSector();
 
         if (spawnToTeleport == null) {
-            player.sendMessage(ConfigurationUtil.spawnSectorNotFoundMessage);
+            player.sendMessage(CHAT.toComponent(ConfigurationUtil.spawnSectorNotFoundMessage));
             player.showTitle(Title.title(CHAT.toComponent(ConfigurationUtil.SECTOR_ERROR_TITLE), CHAT.toComponent(ConfigurationUtil.spawnSectorNotFoundMessage), Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(2000), Duration.ofMillis(500))));
             currentSector.knockBorder(player, KNOCK_BORDER_FORCE);
             return;

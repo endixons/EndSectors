@@ -156,15 +156,15 @@ public class SectorManager {
 
 
 
+
+
     public Location randomLocation(@NonNull Player player, @NonNull UserProfile user) {
 
         Sector sector = getRandomSector();
-
         World world = Bukkit.getWorld(sector.getWorldName());
         if (world == null) {
             throw new IllegalStateException("World not loaded for sector " + sector.getName());
         }
-
 
         int margin = 30;
 
@@ -185,6 +185,7 @@ public class SectorManager {
             int y = findSafeY(world, x, z);
 
             Location test = new Location(world, x + 0.5, y, z + 0.5);
+            LoggerUtil.info(String.format("[RTP] Trying location: X=%d Z=%d Y=%d", x, z, y));
 
             if (sector.isInSector(test)) {
                 loc = test;
@@ -197,10 +198,11 @@ public class SectorManager {
         }
 
         user.setLocationAndSave(loc);
+         user.setTransferOffsetUntil(0);
 
         if (sector.getName().equals(user.getSectorName())) {
             player.teleport(loc);
-            user.updateAndSave(player, sector,false);
+            user.updateAndSave(player, sector, false);
         } else {
             paperSector.getSectorTeleport().teleportToSector(player, user, sector, false, true);
         }
@@ -208,41 +210,21 @@ public class SectorManager {
         return loc;
     }
 
-
     private int findSafeY(World world, int x, int z) {
-
-        int surfaceY = world.getHighestBlockYAt(x, z);
-
-        if (surfaceY <= world.getMinHeight()) {
-            return surfaceY + 1;
-        }
-
-        for (int y = surfaceY; y > surfaceY - 10 && y > world.getMinHeight(); y--) {
-
+        int maxY = Math.min(150, world.getMaxHeight() - 2);
+        int y = world.getHighestBlockYAt(x, z);
+        while (y <= maxY) {
             Block base = world.getBlockAt(x, y, z);
             Block above = world.getBlockAt(x, y + 1, z);
             Block above2 = world.getBlockAt(x, y + 2, z);
-
-            if (!isSafeBase(base)) {
-                continue;
+            if (base.getType().isSolid() && above.isPassable() && above2.isPassable()) {
+                return y + 1;
             }
-
-            if (!above.isPassable() || !above2.isPassable()) {
-                continue;
-            }
-
-            return y + 1;
+            y++;
         }
-        return surfaceY + 1;
+        return maxY;
     }
 
-    private boolean isSafeBase(Block block) {
-        return block.getType().isSolid()
-                && block.getType() != Material.LAVA
-                && block.getType() != Material.WATER
-                && block.getType() != Material.CACTUS
-                && block.getType() != Material.MAGMA_BLOCK;
-    }
 
 
     public Sector getBalancedRandomSpawnSector() {

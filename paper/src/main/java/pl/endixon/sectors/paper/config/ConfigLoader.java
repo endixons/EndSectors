@@ -31,8 +31,20 @@ import pl.endixon.sectors.paper.PaperSector;
 public class ConfigLoader {
 
     public String currentSector = "spawn_1";
+    public boolean scoreboardEnabled = true;
 
-    public boolean ScoreboardEnabled = true;
+    public int borderMessageDistance = 15;
+    public int breakBorderDistance = 15;
+    public int placeBorderDistance = 15;
+    public int explosionBorderDistance = 15;
+    public int bucketBorderDistance = 15;
+    public int dropItemBorderDistance = 15;
+
+    public long protectionAfterTransferMillis = 5000L;
+    public long transferDelayMillis = 5000L;
+    public double knockBorderForce = 1.35;
+    public int protectionSeconds = 5;
+
     public Map<String, List<String>> scoreboard = new HashMap<>();
     public Map<String, String> sectorTitles = new HashMap<>();
     private static final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
@@ -41,8 +53,7 @@ public class ConfigLoader {
     public static ConfigLoader load(File dataFolder) {
         try {
             if (!dataFolder.exists() && !dataFolder.mkdirs()) {
-                PaperSector.getInstance().getLogger().warning(
-                        "Nie udało się utworzyć folderu configu: " + dataFolder.getAbsolutePath()
+                PaperSector.getInstance().getLogger().warning("Failed to create configuration directory: " + dataFolder.getAbsolutePath()
                 );
             }
 
@@ -52,8 +63,7 @@ public class ConfigLoader {
                 try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
                     return mapper.readValue(reader, ConfigLoader.class);
                 } catch (IOException e) {
-                    PaperSector.getInstance().getLogger().warning(
-                            "Błąd podczas wczytywania config.json, używam default: " + e.getMessage()
+                    PaperSector.getInstance().getLogger().warning("Error while parsing config.json, rolling back to defaults: " + e.getMessage()
                     );
                     return defaultConfig();
                 }
@@ -65,18 +75,16 @@ public class ConfigLoader {
                     printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
 
                     mapper.writer(printer).writeValue(writer, defaultConfig);
-                    PaperSector.getInstance().getLogger().info("Utworzono domyślny config.json ");
+                    PaperSector.getInstance().getLogger().info("Default config.json has been generated successfully.");
                 } catch (IOException e) {
-                    PaperSector.getInstance().getLogger().warning(
-                            "Nie udało się zapisać domyślnego config.json: " + e.getMessage()
+                    PaperSector.getInstance().getLogger().warning("Failed to save default config.json: " + e.getMessage()
                     );
                 }
                 return defaultConfig;
             }
 
         } catch (Exception e) {
-            PaperSector.getInstance().getLogger().warning(
-                    "Nieoczekiwany błąd wczytywania configu: " + e.getMessage()
+            PaperSector.getInstance().getLogger().severe("Unexpected critical error during configuration load: " + e.getMessage()
             );
             return defaultConfig();
         }
@@ -86,56 +94,67 @@ public class ConfigLoader {
     private static ConfigLoader defaultConfig() {
         ConfigLoader config = new ConfigLoader();
         config.currentSector = "spawn_1";
-        config.ScoreboardEnabled = true;
+        config.scoreboardEnabled = true;
 
-        config.scoreboard.put("SPAWN", Arrays.asList(
-                "&#55FF55📍 Sektor: {sectorName}",
-                "&#FFD700👤 Nick: {playerName}",
+        config.borderMessageDistance = 15;
+        config.breakBorderDistance = 15;
+        config.placeBorderDistance = 15;
+        config.explosionBorderDistance = 15;
+        config.bucketBorderDistance = 15;
+        config.dropItemBorderDistance = 15;
+
+        config.protectionAfterTransferMillis = 5000L;
+        config.transferDelayMillis = 5000L;
+        config.knockBorderForce = 1.35;
+        config.protectionSeconds = 5;
+
+        config.scoreboard.put("SPAWN", List.of(
+                "<#55FF55>📍 Sektor: <white>{sectorName}",
+                "<#FFD700>👤 Nick: <white>{playerName}",
                 "                    ",
-                "&#00FFFF⚡ TPS: {tps}",
-                "&#FF5555🟢 Online: {onlineCount}",
+                "<#00FFFF>⚡ TPS: {tps}",
+                "<#FF5555>🟢 Online: <white>{onlineCount}",
                 "                    ",
-                "&#AAAAAAZnajdujesz się na kanale: {sectorName}",
-                "&#AAAAAAAby zmienić kanał użyj /ch"
+                "<#AAAAAA>Znajdujesz się na kanale: <white>{sectorName}",
+                "<#AAAAAA>Aby zmienić kanał użyj <#55FF55>/ch"
         ));
 
-        config.scoreboard.put("NETHER", Arrays.asList(
-                "&#FF5555📍 Sektor: {sectorName}",
-                "&#FFD700👤 Nick: {playerName}",
+        config.scoreboard.put("NETHER", List.of(
+                "<#FF5555>📍 Sektor: <white>{sectorName}",
+                "<#FFD700>👤 Nick: <white>{playerName}",
                 "                    ",
                 "                    ",
-                "&#00FFFF⚡ TPS: {tps}",
-                "&#FF5555🟢 Online: {onlineCount}"
+                "<#00FFFF>⚡ TPS: {tps}",
+                "<#FF5555>🟢 Online: <white>{onlineCount}"
         ));
 
-        config.scoreboard.put("END", Arrays.asList(
-                "&#AA88FF📍 Sektor: {sectorName}",
-                "&#FFD700👤 Nick: {playerName}",
+        config.scoreboard.put("END", List.of(
+                "<#AA88FF>📍 Sektor: <white>{sectorName}",
+                "<#FFD700>👤 Nick: <white>{playerName}",
                 "                    ",
                 "                    ",
-                "&#00FFFF⚡ TPS: {tps}",
-                "&#FF5555🟢 Online: {onlineCount}"
+                "<#00FFFF>⚡ TPS: {tps}",
+                "<#FF5555>🟢 Online: <white>{onlineCount}"
         ));
 
-        config.scoreboard.put("ADMIN", Arrays.asList(
-                "&#AA88FF📍 Sektor: {sectorName}",
-                "&#FFD700👤 Nick: {playerName}",
+        config.scoreboard.put("ADMIN", List.of(
+                "<#AA88FF>📍 Sektor: <white>{sectorName}",
+                "<#FFD700>👤 Nick: <white>{playerName}",
                 "                    ",
+                "<#00FFFF>⚡ TPS: {tps}",
+                "<#FF5555>🟢 Online: <white>{onlineCount}",
                 "                    ",
-                "&#00FFFF⚡ TPS: {tps}",
-                "&#FF5555🟢 Online: {onlineCount}",
-                "                    ",
-                "&#00AAFF📶 Ping: {ping}ms",
-                "&#FF00FF🖥 CPU: {cpu}%",
-                "&#AA00FF💾 RAM: {freeRam}/{maxRam}MB"
+                "<#00AAFF>📶 Ping: <white>{ping}ms",
+                "<#FF00FF>🖥 CPU: <white>{cpu}%",
+                "<#AA00FF>💾 RAM: <white>{freeRam}/{maxRam}MB"
         ));
 
-        config.sectorTitles.put("SPAWN", "&#55FF55🏰 Spawn");
-        config.sectorTitles.put("NETHER", "&#FF5555🔥 Nether");
-        config.sectorTitles.put("END", "&#AA88FF🌌 End");
-        config.sectorTitles.put("ADMIN", "&#AA88FF❓ Admin");
+        config.sectorTitles.put("SPAWN", "<#55FF55>🏰 Spawn");
+        config.sectorTitles.put("NETHER", "<#FF5555>🔥 Nether");
+        config.sectorTitles.put("END", "<#AA88FF>🌌 End");
+        config.sectorTitles.put("ADMIN", "<#AA88FF>❓ Admin");
+        config.sectorTitles.put("DEFAULT", "<#FFFFFF>❓ {sectorType}");
 
-        config.sectorTitles.put("DEFAULT", "&#FFFFFF❓ {sectorType}");
         return config;
     }
 }

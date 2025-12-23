@@ -33,6 +33,7 @@ import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.common.util.Corner;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.manager.SectorManager;
+
 import pl.endixon.sectors.paper.util.ChatAdventureUtil;
 import pl.endixon.sectors.paper.util.LoggerUtil;
 
@@ -95,16 +96,18 @@ public class Sector {
     }
 
     public String getTPSColored() {
-        double currentTps = getTPS();
-        String colorHex = "&#FF0000";
-        if (currentTps >= 19.0) colorHex = "&#00FF00";
-        else if (currentTps >= 16.0) colorHex = "&#FFFF00";
+        double currentTps = this.getTPS();
 
+        String colorTag = "<#FF0000>";
+
+        if (currentTps >= 19.0) {
+            colorTag = "<#00FF00>";
+        } else if (currentTps >= 16.0) {
+            colorTag = "<#FFFF00>";
+        }
         String tpsFormatted = String.format("%.2f", Math.min(currentTps, 20.0));
-
-        return colorHex + tpsFormatted;
+        return colorTag + tpsFormatted;
     }
-
 
 
     public void setTPS(float tps) {
@@ -161,7 +164,6 @@ public class Sector {
                 return sector;
             }
         }
-
         return null;
     }
 

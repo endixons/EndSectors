@@ -9,13 +9,10 @@ import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.config.ConfigLoader;
 import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.sector.Sector;
+
 import pl.endixon.sectors.paper.util.ChatAdventureUtil;
-
-import com.sun.management.OperatingSystemMXBean;
 import pl.endixon.sectors.paper.util.CpuUtil;
-
 import javax.management.*;
-import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,8 +61,6 @@ public class SpawnScoreboardTask extends BukkitRunnable {
         }
     }
 
-
-
     private Component parseLine(String line, Player player, Sector sector) {
         double cpuLoad = CpuUtil.getCpuLoad();
         long freeMem = Runtime.getRuntime().freeMemory() / 1024 / 1024;
@@ -83,7 +78,6 @@ public class SpawnScoreboardTask extends BukkitRunnable {
 
         return chatUtil.toComponent(replaced);
     }
-
 
     private void removeBoard(Player player) {
         FastBoard board = boards.remove(player.getUniqueId());

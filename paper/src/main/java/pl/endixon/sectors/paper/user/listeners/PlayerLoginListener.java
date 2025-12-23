@@ -25,13 +25,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.manager.SectorManager;
-import pl.endixon.sectors.paper.util.ChatAdventureUtil;
-import pl.endixon.sectors.paper.util.ConfigurationUtil;
+import pl.endixon.sectors.paper.util.MessagesUtil;
 
 public class PlayerLoginListener implements Listener {
 
     private final PaperSector paperSector;
-    private final ChatAdventureUtil CHAT = new ChatAdventureUtil();
 
     public PlayerLoginListener(PaperSector paperSector) {
         this.paperSector = paperSector;
@@ -44,7 +42,7 @@ public class PlayerLoginListener implements Listener {
 
         if (sectorManager.getSectors().isEmpty()) {
             paperSector.getLogger().warning("No sectors available. Kicking player %s".formatted(player.getName()));;
-            event.kickMessage(CHAT.toComponent(ConfigurationUtil.SectorNotFoundMessage));
+            event.kickMessage((MessagesUtil.SectorNotFoundMessage.get()));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
         }
     }

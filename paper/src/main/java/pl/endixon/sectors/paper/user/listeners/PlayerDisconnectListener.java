@@ -30,7 +30,6 @@ import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.profile.UserProfile;
 import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
-import pl.endixon.sectors.paper.util.LoggerUtil;
 
 public class PlayerDisconnectListener implements Listener {
 

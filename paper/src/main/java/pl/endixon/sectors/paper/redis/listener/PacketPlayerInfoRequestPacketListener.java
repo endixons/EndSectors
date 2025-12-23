@@ -43,7 +43,6 @@ public class PacketPlayerInfoRequestPacketListener implements PacketListener<Pac
             }
 
             Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
-
             Bukkit.getScheduler().runTask(PaperSector.getInstance(), () -> {
                 player.setGameMode(GameMode.valueOf(dto.getPlayerGameMode()));
                 player.setFoodLevel(dto.getFoodLevel());
@@ -56,7 +55,6 @@ public class PacketPlayerInfoRequestPacketListener implements PacketListener<Pac
                 player.getEnderChest().setContents(PlayerDataSerializerUtil.deserializeItemStacksFromBase64(dto.getPlayerEnderChestData()));
                 player.getActivePotionEffects().forEach(e -> player.removePotionEffect(e.getType()));
                 PlayerDataSerializerUtil.deserializeEffects(dto.getPlayerEffectsData()).forEach(player::addPotionEffect);
-
                 user.updateAndSave(player, currentSector,false);
             });
         }));

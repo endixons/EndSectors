@@ -38,6 +38,7 @@ import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.util.LoggerUtil;
+import pl.endixon.sectors.paper.util.MessagesUtil;
 import pl.endixon.sectors.paper.util.PlayerDataSerializerUtil;
 
 @Getter
@@ -266,9 +267,9 @@ public class UserProfile {
         player.setAllowFlight(allowFlight);
         player.setFlying(flying);
         if (!playerInventoryData.isEmpty())
-        player.getInventory().setContents(PlayerDataSerializerUtil.deserializeItemStacksFromBase64(playerInventoryData));
+            player.getInventory().setContents(PlayerDataSerializerUtil.deserializeItemStacksFromBase64(playerInventoryData));
         if (!playerEnderChestData.isEmpty())
-        player.getEnderChest().setContents(PlayerDataSerializerUtil.deserializeItemStacksFromBase64(playerEnderChestData));
+            player.getEnderChest().setContents(PlayerDataSerializerUtil.deserializeItemStacksFromBase64(playerEnderChestData));
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         player.addPotionEffects(PlayerDataSerializerUtil.deserializeEffects(playerEffectsData));
     }
@@ -285,27 +286,32 @@ public class UserProfile {
 
         player.setInvulnerable(true);
         player.teleport(targetLoc);
+        startProtectionTask(player);
+    }
+
+    public void startProtectionTask(Player player) {
+        int protectionSeconds = PaperSector.getInstance().getConfiguration().protectionSeconds;
+        player.setInvulnerable(true);
 
         new BukkitRunnable() {
-            int remaining = protectionSeconds * 20;
+            int remainingTicks = protectionSeconds * 20;
 
             @Override
             public void run() {
-                if (!player.isOnline() || remaining <= 0) {
+                if (!player.isOnline() || remainingTicks <= 0) {
                     player.setInvulnerable(false);
                     this.cancel();
                     return;
                 }
-
-                if (remaining % 20 == 0) {
-                    int seconds = remaining / 20;
-                    player.sendActionBar(Component.text("🛡 Ochrona przed obrażeniami: " + seconds + "s").color(NamedTextColor.YELLOW));
+                if (remainingTicks % 20 == 0) {
+                    int seconds = remainingTicks / 20;
+                    player.sendActionBar(MessagesUtil.PROTECTION_ACTIONBAR.get("{SECONDS}", String.valueOf(seconds)
+                    ));
                 }
 
-                remaining--;
+                remainingTicks--;
             }
         }.runTaskTimer(PaperSector.getInstance(), 0, 1);
     }
-
 }
 

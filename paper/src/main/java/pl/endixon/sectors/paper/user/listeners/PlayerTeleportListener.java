@@ -35,15 +35,12 @@ import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.profile.UserProfile;
 import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
 import pl.endixon.sectors.paper.util.ChatAdventureUtil;
-import pl.endixon.sectors.paper.util.ConfigurationUtil;
+import pl.endixon.sectors.paper.util.MessagesUtil;
 import pl.endixon.sectors.paper.util.LoggerUtil;
 
 public class PlayerTeleportListener implements Listener {
 
     private final PaperSector paperSector;
-    private static final long TRANSFER_DELAY = 5000L;
-    private static final double KNOCK_BORDER_FORCE = 1.35;
-    private final ChatAdventureUtil CHAT = new ChatAdventureUtil();
 
     public PlayerTeleportListener(PaperSector paperSector) {
         this.paperSector = paperSector;
@@ -54,6 +51,8 @@ public class PlayerTeleportListener implements Listener {
         if (event.isCancelled()) {
             return;
         }
+
+        var config = this.paperSector.getConfiguration();
 
         Sector queue = paperSector.getSectorManager().getCurrentSector();
 
@@ -93,26 +92,47 @@ public class PlayerTeleportListener implements Listener {
         }
 
         if (!targetSector.isOnline()) {
-            player.showTitle(Title.title(CHAT.toComponent(ConfigurationUtil.SECTOR_ERROR_TITLE), CHAT.toComponent(ConfigurationUtil.SECTOR_DISABLED_SUBTITLE), Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(2000), Duration.ofMillis(500))));
-            currentSector.knockBorder(player, KNOCK_BORDER_FORCE);
+            player.showTitle(Title.title(
+                    MessagesUtil.SECTOR_ERROR_TITLE.get(),
+                    MessagesUtil.SECTOR_DISABLED_SUBTITLE.get(),
+                    Title.Times.times(
+                            Duration.ofMillis(500),
+                            Duration.ofMillis(2000),
+                            Duration.ofMillis(500))
+            ));
+            currentSector.knockBorder(player, config.knockBorderForce);
             return;
         }
 
         if (Sector.isSectorFull(targetSector)) {
-            player.showTitle(Title.title(CHAT.toComponent(ConfigurationUtil.SECTOR_ERROR_TITLE), CHAT.toComponent(ConfigurationUtil.SECTOR_FULL_SUBTITLE), Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(2000), Duration.ofMillis(500))));
-            currentSector.knockBorder(player, KNOCK_BORDER_FORCE);
+            player.showTitle(Title.title(
+                    MessagesUtil.SECTOR_ERROR_TITLE.get(),
+                    MessagesUtil.SECTOR_FULL_SUBTITLE.get(),
+                    Title.Times.times(
+                            Duration.ofMillis(500),
+                            Duration.ofMillis(2000),
+                            Duration.ofMillis(500))
+            ));
+            currentSector.knockBorder(player, config.knockBorderForce);
             return;
         }
 
         boolean inTransfer = user.getLastSectorTransfer() > 0;
         if (System.currentTimeMillis() < user.getTransferOffsetUntil() && !inTransfer) {
             long remaining = user.getTransferOffsetUntil() - System.currentTimeMillis();
-            player.showTitle(Title.title(CHAT.toComponent(ConfigurationUtil.SECTOR_ERROR_TITLE), CHAT.toComponent(ConfigurationUtil.TITLE_WAIT_TIME.replace("{SECONDS}", String.valueOf(remaining / 1000 + 1))), Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(2000), Duration.ofMillis(500))));
-            currentSector.knockBorder(player, KNOCK_BORDER_FORCE);
+            player.showTitle(Title.title(
+                    MessagesUtil.SECTOR_ERROR_TITLE.get(),
+                    MessagesUtil.TITLE_WAIT_TIME.get("{SECONDS}", String.valueOf(remaining / 1000 + 1)),
+                    Title.Times.times(
+                            Duration.ofMillis(500),
+                            Duration.ofMillis(2000),
+                            Duration.ofMillis(500))
+            ));
+            currentSector.knockBorder(player, config.knockBorderForce);
             return;
         }
 
-        if (System.currentTimeMillis() - user.getLastSectorTransfer() < TRANSFER_DELAY) {
+        if (System.currentTimeMillis() - user.getLastSectorTransfer() < config.transferDelayMillis) {
             return;
         }
 

@@ -23,7 +23,6 @@ import java.time.Duration;
 import lombok.AllArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,14 +33,13 @@ import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.profile.UserProfile;
 import pl.endixon.sectors.paper.user.profile.UserProfileCache;
 import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
-import pl.endixon.sectors.paper.util.ChatAdventureUtil;
-import pl.endixon.sectors.paper.util.ConfigurationUtil;
+
+import pl.endixon.sectors.paper.util.MessagesUtil;
 
 @AllArgsConstructor
 public class PlayerLocallyJoinListener implements Listener {
 
     private final PaperSector paperSector;
-    private final ChatAdventureUtil CHAT = new ChatAdventureUtil();
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -73,15 +71,13 @@ public class PlayerLocallyJoinListener implements Listener {
     }
 
     private void sendSectorTitle(Player player, Sector sector) {
-        Component title = CHAT.toComponent("");
-        Component subtitle = CHAT.toComponent(ConfigurationUtil.SECTOR_CONNECTED_MESSAGE.replace("{SECTOR}", sector.getName())
-        );
+        Component title = Component.empty();
+        Component subtitle = MessagesUtil.SECTOR_CONNECTED_MESSAGE.get("{SECTOR}", sector.getName());
         Title.Times times = Title.Times.times(
                 Duration.ofMillis(500),
                 Duration.ofMillis(2000),
                 Duration.ofMillis(500)
         );
-
         player.showTitle(Title.title(title, subtitle, times));
     }
 

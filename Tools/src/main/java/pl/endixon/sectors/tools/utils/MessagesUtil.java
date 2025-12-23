@@ -1,36 +1,79 @@
-/*
- *
- *  EndSectors  Non-Commercial License
- *  (c) 2025 Endixon
- *
- *  Permission is granted to use, copy, and
- *  modify this software **only** for personal
- *  or educational purposes.
- *
- *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code
- *  without explicit permission is strictly
- *  prohibited.
- *
- *  Visit https://github.com/Endixon/EndSectors
- *  for more info.
- *
- */
-
 package pl.endixon.sectors.tools.utils;
 
 import net.kyori.adventure.text.Component;
+import pl.endixon.sectors.tools.Main;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public enum MessagesUtil {
-    CONSOLE_BLOCK("&#ef4444Ta komenda jest tylko dla gracza"), SPAWN_TITLE("&#ff5555Błąd"), PORTAL_COMBAT_TITLE("&#ff5555Błąd"), PORTAL_COMBAT_SUBTITLE("&#ef4444Nie możesz użyć portalu podczas walki"), SECTOR_COMBAT_TITLE("&#ff5555Błąd"), SECTOR_COMBAT_SUBTITLE("&#ef4444Nie możesz opuścić sektora podczas walki"), COMBAT_NO_COMMAND("&#ef4444Nie możesz używać komend w trakcie walki!"), SPAWN_OFFLINE("&#ef4444Ten sektor jest aktualnie wyłączony"), SPAWN_ALREADY("&#ef4444Już jesteś juz na spawnie"), RANDOM_TITLE("&#4ade80RandomTP"), RANDOM_START("&#9ca3afLosowanie sektora... &#4ade80proszę czekać"), PLAYERDATANOT_FOUND_MESSAGE("&#ef4444Profil użytkownika nie został znaleziony!"), RANDOM_SECTOR_NOTFOUND("&#FF5555Nie udało się znaleźć losowego sektora!"), RANDOM_SECTORSPAWN_NOTFOUND("&#ef4444Nie odnaleziono dostepnego sektora spawn");
+    CONSOLE_BLOCK,
+    PLAYERDATANOT_FOUND_MESSAGE,
+    PORTAL_COMBAT_TITLE,
+    PORTAL_COMBAT_SUBTITLE,
+    SECTOR_COMBAT_TITLE,
+    SECTOR_COMBAT_SUBTITLE,
+    COMBAT_NO_COMMAND,
+    SPAWN_TITLE,
+    SPAWN_OFFLINE,
+    SPAWN_ALREADY,
+    RANDOM_TITLE,
+    RANDOM_START,
+    RANDOM_SECTOR_NOTFOUND,
+    RANDOM_SECTORSPAWN_NOTFOUND,
+    HOME_CREATED_SUCCESS,
+    HOME_DELETED_SUCCESS,
+    HOME_TELEPORT_SUCCESS,
+    HOME_CANT_CREATE_SPAWN,
+    HOME_SECTOR_NOT_FOUND,
+    HOME_WORLD_NOT_LOADED,
+    HOME_GUI_TITLE,
+    HOME_NAME_FORMAT,
+    HOME_SET_LORE,
+    HOME_EMPTY_LORE;
 
-    private final String text;
+    private static final ChatAdventureUtil CHAT_HELPER = new ChatAdventureUtil();
 
-    MessagesUtil(String text) {
-        this.text = text;
+    public String getRaw() {
+        return Main.getInstance().getMessageLoader().getMessages()
+                .getOrDefault(this.name(), "<red>Missing message: " + this.name());
+    }
+
+    public String getText() {
+        return CHAT_HELPER.toLegacyString(getRaw());
+    }
+
+    public String getText(String... replacements) {
+        String raw = getRaw();
+        for (int i = 0; i < replacements.length; i += 2) {
+            if (i + 1 < replacements.length) {
+                raw = raw.replace(replacements[i], replacements[i + 1]);
+            }
+        }
+        return CHAT_HELPER.toLegacyString(raw);
     }
 
     public Component get() {
-        return new ChatAdventureUtil().toComponent(text);
+        return CHAT_HELPER.toComponent(getRaw());
+    }
+
+    public List<String> asLore(String... replacements) {
+        List<String> rawLore = Main.getInstance().getMessageLoader().getMessagesLore().get(this.name());
+
+        if (rawLore == null) {
+            return Collections.singletonList("§cMissing lore: " + this.name());
+        }
+
+        List<String> processedLore = new ArrayList<>();
+        for (String line : rawLore) {
+            String processedLine = line;
+            for (int i = 0; i < replacements.length; i += 2) {
+                if (i + 1 < replacements.length) {
+                    processedLine = processedLine.replace(replacements[i], replacements[i + 1]);
+                }
+            }
+            processedLore.add(CHAT_HELPER.toLegacyString(processedLine));
+        }
+        return processedLore;
     }
 }

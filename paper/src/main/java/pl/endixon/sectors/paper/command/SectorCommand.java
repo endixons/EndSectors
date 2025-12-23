@@ -1,22 +1,3 @@
-/*
- *
- * EndSectors – Non-Commercial License
- * (c) 2025 Endixon
- *
- * Permission is granted to use, copy, and
- * modify this software **only** for personal
- * or educational purposes.
- *
- * Commercial use, redistribution, claiming
- * this work as your own, or copying code
- * without explicit permission is strictly
- * prohibited.
- *
- * Visit https://github.com/Endixon/EndSectors
- * for more info.
- *
- */
-
 package pl.endixon.sectors.paper.command;
 
 import java.util.Arrays;
@@ -24,14 +5,16 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.redis.RedisManager;
-import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.inventory.SectorShowWindow;
 import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.redis.packet.PacketExecuteCommand;
+import pl.endixon.sectors.paper.user.profile.UserProfile;
 import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
+import pl.endixon.sectors.paper.util.MessagesUtil;
 
 public class SectorCommand implements CommandExecutor {
 
@@ -41,101 +24,108 @@ public class SectorCommand implements CommandExecutor {
         this.plugin = plugin;
     }
 
-    private boolean checkPermission(CommandSender sender) {
-        if (!sender.hasPermission("endsectors.command.sector")) {
-            sender.sendMessage(ChatUtil.fixColors("&cBrak permisji!"));
-            return false;
-        }
-        return true;
-    }
-
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-
-        if (!checkPermission(sender)) {
-            return false;
-        }
-
-        SectorManager sm = plugin.getSectorManager();
-        RedisManager redis = plugin.getRedisManager();
-
-        if (args.length == 0) {
-            sender.sendMessage(ChatUtil.fixColors("&8────────── &6&lSECTOR HELP &8──────────"));
-            sender.sendMessage(ChatUtil.fixColors("&6/sector where &8- &7Aktualny sektor"));
-            sender.sendMessage(ChatUtil.fixColors("&6/sector show &8- &7Lista sektorów"));
-            sender.sendMessage(ChatUtil.fixColors("&6/sector execute <cmd> &8- &7Komenda na wszystkie sektory"));
-            sender.sendMessage(ChatUtil.fixColors("&6/sector isonline <nick> &8- &7Sprawdza online gracza"));
-            sender.sendMessage(ChatUtil.fixColors("&6/sector who &8- &7Lista graczy online"));
-            sender.sendMessage(ChatUtil.fixColors("&6/sector inspect <nick> &8- &7Info o graczu"));
-            sender.sendMessage(ChatUtil.fixColors("&8──────────────────────────────────"));
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (!sender.hasPermission("endsectors.command.sector")) {
+            sender.sendMessage(MessagesUtil.NO_PERMISSION.get());
             return true;
         }
 
-        String sub = args[0].toLowerCase();
+        final SectorManager sm = plugin.getSectorManager();
+        final RedisManager redis = plugin.getRedisManager();
 
-        if ("where".equals(sub)) {
-            sender.sendMessage(ChatUtil.fixColors("&7Aktualny sektor: &6" + sm.getCurrentSectorName()));
-        } else if ("show".equals(sub)) {
-            if (sender instanceof Player player) {
-                new SectorShowWindow(player, sm).open();
-            }
-        } else if ("execute".equals(sub)) {
-            if (args.length < 2) {
-                sender.sendMessage(ChatUtil.fixColors("&cUżycie: &6/sector execute <komenda>"));
-                return true;
-            }
 
-            String commandToSend = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-            redis.publish(PacketChannel.PACKET_EXECUTE_COMMAND, new PacketExecuteCommand(commandToSend));
-            sender.sendMessage(ChatUtil.fixColors("&aWysłano komendę do sektorów."));
-        } else if ("isonline".equals(sub)) {
-            if (args.length < 2) {
-                sender.sendMessage(ChatUtil.fixColors("&cPodaj nick: &6/sector isonline <nick>"));
-                return true;
+        if (args.length == 0) {
+            MessagesUtil.HELP_MENU.asLore().forEach(sender::sendMessage);
+            return true;
+        }
+
+        final String sub = args[0].toLowerCase();
+        switch (sub) {
+
+            case "reload" -> {
+                this.plugin.loadFiles();
+                sender.sendMessage(MessagesUtil.RELOAD_SUCCESS.get());
             }
 
-            String nick = args[1];
-            sm.isPlayerOnline(nick, isOnline -> {
-                sender.sendMessage(ChatUtil.fixColors(
-                        "&7Gracz &6" + nick + " &7jest: " + (isOnline ? "&aONLINE" : "&cOFFLINE")
-                ));
-            });
-        } else if ("who".equals(sub)) {
-            sm.getOnlinePlayers(online -> {
-                sender.sendMessage(ChatUtil.fixColors(
-                        "&7Online (&6" + online.size() + "&7): &6" + String.join("&7, &6", online)
-                ));
-            });
-        } else if ("inspect".equals(sub)) {
-            if (args.length < 2) {
-                sender.sendMessage(ChatUtil.fixColors("&cPodaj nick: &6/sector inspect <nick>"));
-                return true;
+            case "where" -> sender.sendMessage(MessagesUtil.CURRENT_SECTOR.get(
+                    "{SECTOR}", sm.getCurrentSectorName()
+            ));
+
+            case "show" -> {
+                if (sender instanceof Player player) {
+                    new SectorShowWindow(player, sm).open();
+                }
+            }
+            case "execute" -> {
+                if (args.length < 2) {
+                    sender.sendMessage(MessagesUtil.USAGE_EXECUTE.get());
+                    return true;
+                }
+                String commandToSend = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+                redis.publish(PacketChannel.PACKET_EXECUTE_COMMAND, new PacketExecuteCommand(commandToSend));
+                sender.sendMessage(MessagesUtil.COMMAND_BROADCASTED.get());
             }
 
-            String targetName = args[1];
-            UserProfileRepository.getUserAsync(targetName).thenAccept(optionalUser -> {optionalUser.ifPresentOrElse(u -> {
-                    long now = System.currentTimeMillis();
-                    long cooldownRemaining = Math.max(0, u.getTransferOffsetUntil() - now);
-                    long lastTransferElapsed = u.getLastTransferTimestamp() == 0 ? 0 : now - u.getLastTransferTimestamp();
+            case "isonline" -> {
+                if (args.length < 2) {
+                    sender.sendMessage(MessagesUtil.SPECIFY_NICKNAME.get("{SUB}", "isonline <nick>"));
+                    return true;
+                }
+                String nick = args[1];
+                sm.isPlayerOnline(nick, isOnline -> sender.sendMessage(MessagesUtil.PLAYER_ONLINE_STATUS.get(
+                        "{NICK}", nick,
+                        "{STATUS}", isOnline ? "<#4ade80>ONLINE" : "<#ef4444>OFFLINE"
+                )));
+            }
 
-                    sender.sendMessage(ChatUtil.fixHexColors("      &#00FFFFINFORMACJE O GRACZU            "));
-                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFNick: &#00FF00" + u.getName()));
-                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFSektor: &#00BFFF" + u.getSectorName()));
-                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFGamemode: &#FF69B4" + u.getPlayerGameMode()));
-                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFLevel: &#ADFF2F" + u.getExperienceLevel()));
-                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFExp: &#FFFF00" + u.getExperience()));
-                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFOstatnia zmiana sektora: &#FF8C00" + (u.getLastTransferTimestamp() == 0 ? "BRAK" : (lastTransferElapsed / 1000) + "s temu")));
-                    sender.sendMessage(ChatUtil.fixHexColors(" &#FFFFFFpozostaly czas do zmiany sektora: &#FF4500" + (cooldownRemaining <= 0 ? "BRAK" : (cooldownRemaining / 1000) + "s")));
-                    sender.sendMessage(ChatUtil.fixHexColors("                                             "));
-                    },
-                    () -> {
-                    sender.sendMessage(ChatUtil.fixHexColors("&cNie znaleziono danych lub gracz jest offline."));
-                });
-            });
-        } else {
-            sender.sendMessage(ChatUtil.fixColors("&cNie ma takiej opcji."));
+            case "who" -> sm.getOnlinePlayers(online -> sender.sendMessage(MessagesUtil.GLOBAL_ONLINE.get(
+                    "{SIZE}", String.valueOf(online.size()),
+                    "{PLAYERS}", String.join("<gray>, <gold>", online)
+            )));
+
+            case "inspect" -> {
+                if (args.length < 2) {
+                    sender.sendMessage(MessagesUtil.SPECIFY_NICKNAME.get("{SUB}", "inspect <nick>"));
+                    return true;
+                }
+                this.handleInspect(sender, args[1]);
+            }
+
+            default -> sender.sendMessage(MessagesUtil.UNKNOWN_OPTION.get());
         }
 
         return true;
+    }
+
+    private void handleInspect(CommandSender sender, String targetName) {
+        UserProfileRepository.getIfPresent(targetName).ifPresentOrElse(
+                user -> this.sendInspectInfo(sender, user),
+                () -> UserProfileRepository.getUserAsync(targetName).thenAccept(opt ->
+                        opt.ifPresentOrElse(
+                                remoteUser -> this.sendInspectInfo(sender, remoteUser),
+                                () -> sender.sendMessage(MessagesUtil.PLAYER_NOT_FOUND_DB.get())
+                        )
+                )
+        );
+    }
+
+    private void sendInspectInfo(CommandSender sender, UserProfile u) {
+        final long now = System.currentTimeMillis();
+        final long cooldownRemaining = Math.max(0, u.getTransferOffsetUntil() - now);
+        final long lastTransferElapsed = u.getLastTransferTimestamp() == 0 ? 0 : now - u.getLastTransferTimestamp();
+
+        final String lastTransfer = (u.getLastTransferTimestamp() == 0) ? "NONE" : (lastTransferElapsed / 1000) + "s ago";
+        final String cooldown = (cooldownRemaining <= 0) ? "READY" : (cooldownRemaining / 1000) + "s";
+
+        MessagesUtil.INSPECT_FORMAT.asLore(
+                "{NICK}", u.getName(),
+                "{SECTOR}", u.getSectorName(),
+                "{GM}", u.getPlayerGameMode(),
+                "{LVL}", String.valueOf(u.getExperienceLevel()),
+                "{EXP}", String.valueOf(u.getExperience()),
+                "{LAST}", lastTransfer,
+                "{COOLDOWN}", cooldown
+        ).forEach(sender::sendMessage);
     }
 }

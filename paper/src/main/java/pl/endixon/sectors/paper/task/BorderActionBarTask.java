@@ -1,26 +1,8 @@
-/*
- *
- *  EndSectors  Non-Commercial License
- *  (c) 2025 Endixon
- *
- *  Permission is granted to use, copy, and
- *  modify this software **only** for personal
- *  or educational purposes.
- *
- *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code
- *  without explicit permission is strictly
- *  prohibited.
- *
- *  Visit https://github.com/Endixon/EndSectors
- *  for more info.
- *
- */
-
 package pl.endixon.sectors.paper.task;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -28,16 +10,15 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import pl.endixon.sectors.common.sector.SectorType;
-import pl.endixon.sectors.common.util.ChatUtil;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.sector.Sector;
-import pl.endixon.sectors.paper.util.ConfigurationUtil;
+import pl.endixon.sectors.paper.util.MessagesUtil;
 
 public class BorderActionBarTask extends BukkitRunnable {
 
     private final PaperSector paperSector;
-    private final Map<Player, BossBar> bossBars = new HashMap<>();
+    private final Map<UUID, BossBar> bossBars = new HashMap<>();
 
     public BorderActionBarTask(PaperSector paperSector) {
         this.paperSector = paperSector;
@@ -45,46 +26,69 @@ public class BorderActionBarTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            SectorManager sectorManager = paperSector.getSectorManager();
-            Sector currentSector = sectorManager.getCurrentSector();
-            if (currentSector == null)
-                continue;
+        SectorManager sectorManager = this.paperSector.getSectorManager();
+        Sector currentSector = sectorManager.getCurrentSector();
 
+        if (currentSector == null) {
+            return;
+        }
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
             int borderDistance = currentSector.getBorderDistance(player.getLocation());
             Sector nearestSector = currentSector.getNearestSector(player.getLocation());
 
-            if (nearestSector == null || borderDistance > ConfigurationUtil.BORDER_MESSAGE_DISTANCE) {
-                BossBar bar = bossBars.remove(player);
-                if (bar != null)
-                    bar.removePlayer(player);
+            if (nearestSector == null || borderDistance > this.paperSector.getConfiguration().borderMessageDistance) {
+                this.removeBossBar(player);
                 continue;
             }
 
             String displayName = nearestSector.getType() == SectorType.SPAWN ? "spawn" : nearestSector.getName();
+            String distanceStr = String.valueOf(borderDistance);
 
-            String message = ConfigurationUtil.BORDER_MESSAGE.replace("{SECTOR}", displayName).replace("{DISTANCE}", String.valueOf(borderDistance));
+            player.sendActionBar(MessagesUtil.BORDER_MESSAGE.get(
+                    "{SECTOR}", displayName,
+                    "{DISTANCE}", distanceStr
+            ));
 
-            player.sendActionBar(ChatUtil.fixHexColors(message));
-            double progress = 1.0 - ((double) borderDistance / ConfigurationUtil.BORDER_MESSAGE_DISTANCE);
+            String legacyMessage = MessagesUtil.BORDER_MESSAGE.getText(
+                    "{SECTOR}", displayName,
+                    "{DISTANCE}", distanceStr
+            );
+
+            double progress = 1.0 - ((double) borderDistance / this.paperSector.getConfiguration().borderMessageDistance);
             progress = Math.max(0.0, Math.min(1.0, progress));
 
-            BossBar bossBar = bossBars.computeIfAbsent(player, p -> {
-                BossBar newBar = Bukkit.createBossBar((message), BarColor.GREEN, BarStyle.SOLID);
+            BossBar bossBar = this.bossBars.computeIfAbsent(player.getUniqueId(), uuid -> {
+                BossBar newBar = Bukkit.createBossBar(legacyMessage, BarColor.GREEN, BarStyle.SOLID);
                 newBar.addPlayer(player);
                 return newBar;
             });
 
-            if (progress > 0.66)
-                bossBar.setColor(BarColor.GREEN);
-            else if (progress > 0.33)
-                bossBar.setColor(BarColor.YELLOW);
-            else
-                bossBar.setColor(BarColor.RED);
+            this.updateBarStyle(bossBar, progress);
 
-            bossBar.setTitle(ChatUtil.fixHexColors(message));
+            bossBar.setTitle(legacyMessage);
             bossBar.setProgress(progress);
-            bossBar.setVisible(progress > 0);
+            bossBar.setVisible(true);
+        }
+    }
+
+    private void updateBarStyle(BossBar bar, double progress) {
+        if (progress < 0.4) {
+            bar.setColor(BarColor.GREEN);
+            bar.setStyle(BarStyle.SOLID);
+        } else if (progress < 0.7) {
+            bar.setColor(BarColor.YELLOW);
+            bar.setStyle(BarStyle.SEGMENTED_10);
+        } else {
+            bar.setColor(BarColor.RED);
+            bar.setStyle(BarStyle.SEGMENTED_20);
+        }
+    }
+
+    private void removeBossBar(Player player) {
+        BossBar bar = this.bossBars.remove(player.getUniqueId());
+        if (bar != null) {
+            bar.removePlayer(player);
         }
     }
 }

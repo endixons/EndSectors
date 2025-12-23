@@ -46,7 +46,7 @@ import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.profile.UserProfile;
 import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
 import pl.endixon.sectors.paper.util.ChatAdventureUtil;
-import pl.endixon.sectors.paper.util.ConfigurationUtil;
+import pl.endixon.sectors.paper.util.MessagesUtil;
 import pl.endixon.sectors.paper.util.LoggerUtil;
 
 @AllArgsConstructor
@@ -54,7 +54,6 @@ public class PlayerSectorInteractListener implements Listener {
 
     private final SectorManager sectorManager;
     private final PaperSector PaperSector;
-    private final ChatAdventureUtil CHAT = new ChatAdventureUtil();
 
     @EventHandler
     public void onCommand(org.bukkit.event.player.PlayerCommandPreprocessEvent event) {
@@ -78,9 +77,9 @@ public class PlayerSectorInteractListener implements Listener {
         int dist = sector.getBorderDistance(loc);
         boolean allowed = p.hasPermission("endsectors.border.break");
 
-        if (!allowed && dist <= ConfigurationUtil.BREAK_BORDER_DISTANCE) {
+        if (!allowed && dist <= this.PaperSector.getConfiguration().breakBorderDistance) {
             event.setCancelled(true);
-            p.sendMessage(CHAT.toComponent(ConfigurationUtil.BREAK_BORDER_DISTANCE_MESSAGE));
+            p.sendMessage(MessagesUtil.BREAK_BORDER_DISTANCE_MESSAGE.get());
         }
     }
 
@@ -97,9 +96,9 @@ public class PlayerSectorInteractListener implements Listener {
         int distanceToBorder = sector.getBorderDistance(loc);
         boolean canPlace = player.hasPermission("endsectors.border.place");
 
-        if (!canPlace && distanceToBorder <= ConfigurationUtil.PLACE_BORDER_DISTANCE) {
+        if (!canPlace && distanceToBorder <= this.PaperSector.getConfiguration().placeBorderDistance) {
             event.setCancelled(true);
-            player.sendMessage(CHAT.toComponent(ConfigurationUtil.PLACE_BORDER_DISTANCE_MESSAGE));
+            player.sendMessage(MessagesUtil.PLACE_BORDER_DISTANCE_MESSAGE.get());
         }
     }
 
@@ -111,7 +110,7 @@ public class PlayerSectorInteractListener implements Listener {
             return;
         }
 
-        if (sectorManager.getCurrentSector().getBorderDistance(event.getBlock().getLocation()) <= ConfigurationUtil.EXPLOSION_BORDER_DISTANCE) {
+        if (sectorManager.getCurrentSector().getBorderDistance(event.getBlock().getLocation()) <= this.PaperSector.getConfiguration().explosionBorderDistance) {
             event.setCancelled(true);
         }
     }
@@ -124,7 +123,7 @@ public class PlayerSectorInteractListener implements Listener {
             return;
         }
 
-        if (sectorManager.getCurrentSector().getBorderDistance(event.getLocation()) <= ConfigurationUtil.EXPLOSION_BORDER_DISTANCE) {
+        if (sectorManager.getCurrentSector().getBorderDistance(event.getLocation()) <= this.PaperSector.getConfiguration().explosionBorderDistance) {
             event.setCancelled(true);
         }
     }
@@ -140,7 +139,7 @@ public class PlayerSectorInteractListener implements Listener {
         }
 
         Location loc = event.getBlockClicked().getLocation();
-        if (PaperSector.getSectorManager().getCurrentSector().getBorderDistance(loc) <= ConfigurationUtil.BUCKET_BORDER_DISTANCE) {
+        if (PaperSector.getSectorManager().getCurrentSector().getBorderDistance(loc) <= this.PaperSector.getConfiguration().bucketBorderDistance) {
             event.setCancelled(true);
             return;
         }
@@ -159,7 +158,7 @@ public class PlayerSectorInteractListener implements Listener {
         }
 
         Location loc = event.getBlockClicked().getLocation();
-        if (PaperSector.getSectorManager().getCurrentSector().getBorderDistance(loc) <= ConfigurationUtil.BUCKET_BORDER_DISTANCE) {
+        if (PaperSector.getSectorManager().getCurrentSector().getBorderDistance(loc) <= this.PaperSector.getConfiguration().bucketBorderDistance) {
             event.setCancelled(true);
             return;
         }
@@ -178,7 +177,7 @@ public class PlayerSectorInteractListener implements Listener {
             return;
         }
 
-        if (sectorManager.getCurrentSector().getBorderDistance(loc) <= ConfigurationUtil.BUCKET_BORDER_DISTANCE) {
+        if (sectorManager.getCurrentSector().getBorderDistance(loc) <= this.PaperSector.getConfiguration().dropItemBorderDistance) {
             event.setCancelled(true);
             return;
         }
@@ -196,7 +195,7 @@ public class PlayerSectorInteractListener implements Listener {
             return;
         }
 
-        if (sectorManager.getCurrentSector().getBorderDistance(loc) <= ConfigurationUtil.BUCKET_BORDER_DISTANCE) {
+        if (sectorManager.getCurrentSector().getBorderDistance(loc) <= this.PaperSector.getConfiguration().dropItemBorderDistance) {
             event.setCancelled(true);
             return;
         }
@@ -320,7 +319,7 @@ public class PlayerSectorInteractListener implements Listener {
 
         long timeSinceLastTransfer = System.currentTimeMillis() - user.getLastSectorTransfer();
 
-        if (timeSinceLastTransfer < 5000L) {
+        if (timeSinceLastTransfer < this.PaperSector.getConfiguration().protectionAfterTransferMillis) {
             event.setCancelled(true);
         }
 

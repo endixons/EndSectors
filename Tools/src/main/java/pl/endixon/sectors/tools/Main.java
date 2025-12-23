@@ -11,6 +11,7 @@ import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.tools.command.HomeCommand;
 import pl.endixon.sectors.tools.command.RandomTPCommand;
 import pl.endixon.sectors.tools.command.SpawnCommand;
+import pl.endixon.sectors.tools.config.MessageLoader;
 import pl.endixon.sectors.tools.manager.CombatManager;
 import pl.endixon.sectors.tools.manager.MongoManager;
 import pl.endixon.sectors.tools.user.listeners.CombatListener;
@@ -20,6 +21,8 @@ import pl.endixon.sectors.tools.user.profile.PlayerProfile;
 import pl.endixon.sectors.tools.user.profile.PlayerProfileRepository;
 import pl.endixon.sectors.tools.utils.LoggerUtil;
 
+import java.io.File;
+
 @Getter
 public class Main extends JavaPlugin {
 
@@ -28,90 +31,108 @@ public class Main extends JavaPlugin {
     private SectorsAPI sectorsAPI;
     private MongoManager mongoService;
     private PlayerProfileRepository repository;
+    private MessageLoader messageLoader;
 
     @Override
     public void onEnable() {
         instance = this;
-        if (!initSectorsAPI()) {
-            shutdown("Brak EndSectors – plugin wyłączony");
+        this.loadConfigs();
+        if (!this.initSectorsAPI()) {
+            this.shutdown("EndSectors API dependency not found or disabled! Shutting down.");
             return;
         }
-        initMongo();
-        initRepositories();
-        registerCommands();
-        combatManager = new CombatManager(this);
-        registerListeners();
-        LoggerUtil.info("EndSectors-Tools wystartował");
+        this.initMongo();
+        this.initRepositories();
+        this.combatManager = new CombatManager(this);
+        this.registerCommands();
+        this.registerListeners();
+        LoggerUtil.info("EndSectors-Tools successfully enabled and synchronized.");
     }
 
     @Override
     public void onDisable() {
-        shutdownMongo();
+        this.shutdownMongo();
+        LoggerUtil.info("EndSectors-Tools disabled. Resources released.");
+    }
+
+    private void loadConfigs() {
+        LoggerUtil.info("Loading JSON configuration files...");
+        File dataFolder = this.getDataFolder();
+        this.messageLoader = MessageLoader.load(dataFolder);
+        LoggerUtil.info("Externalized messages loaded successfully.");
     }
 
     private void initMongo() {
-        mongoService = new MongoManager();
-        mongoService.connect("mongodb://localhost:27017", "endsectors");
+        LoggerUtil.info("Connecting to MongoDB cluster...");
+        this.mongoService = new MongoManager();
+        this.mongoService.connect("mongodb://localhost:27017", "endsectors");
     }
 
     private void initRepositories() {
-        LoggerUtil.info("Inicjalizacja repozytoriów MongoDB...");
+        LoggerUtil.info("Initializing MongoDB repositories...");
         try {
-            MongoCollection<PlayerProfile> collection = mongoService.getDatabase().getCollection("players", PlayerProfile.class);
-            repository = new PlayerProfileRepository(collection);
-            long loaded = collection.countDocuments();
-            LoggerUtil.info("Repozytorium UserProfile załadowane (kolekcja: players, rekordy: " + loaded + ")");
+            MongoCollection<PlayerProfile> collection = this.mongoService.getDatabase()
+                    .getCollection("players", PlayerProfile.class);
+
+            this.repository = new PlayerProfileRepository(collection);
+            long recordCount = collection.countDocuments();
+
+            LoggerUtil.info("PlayerProfile repository initialized. (Collection: players, Records: " + recordCount + ")");
         } catch (Exception e) {
-            LoggerUtil.info("Błąd inicjalizacji repozytorium UserProfile: " + e.getMessage());
+            LoggerUtil.info("Failed to initialize PlayerProfile repository: " + e.getMessage());
             e.printStackTrace();
-            shutdown("Nie można zainicjalizować repozytoriów MongoDB");
+            this.shutdown("Database repository failure – check MongoDB connection.");
         }
     }
 
     private boolean initSectorsAPI() {
         var plugin = Bukkit.getPluginManager().getPlugin("EndSectors");
         if (plugin == null || !plugin.isEnabled()) {
+            LoggerUtil.info("EndSectors API is missing or disabled!");
             return false;
         }
         try {
-            sectorsAPI = SectorsAPI.getInstance();
-            return sectorsAPI != null;
+            this.sectorsAPI = SectorsAPI.getInstance();
+            return this.sectorsAPI != null;
         } catch (Exception e) {
-            LoggerUtil.info("Błąd przy inicjalizacji SectorsAPI: " + e.getMessage());
+            LoggerUtil.info("Critical error during SectorsAPI initialization: " + e.getMessage());
             return false;
         }
     }
 
     private void registerListeners() {
         PluginManager pm = Bukkit.getPluginManager();
-        pm.registerEvents(new ProfileListener(repository), this);
-        pm.registerEvents(new CombatListener(combatManager, sectorsAPI), this);
+        pm.registerEvents(new ProfileListener(this.repository), this);
+        pm.registerEvents(new CombatListener(this.combatManager, this.sectorsAPI), this);
         pm.registerEvents(new InventoryInternactListener(), this);
+        LoggerUtil.info("System event listeners registered.");
     }
 
     private void registerCommands() {
-        registerCommand("randomtp", new RandomTPCommand(sectorsAPI));
-        registerCommand("spawn", new SpawnCommand(sectorsAPI));
-        registerCommand("home", new HomeCommand(sectorsAPI));
+        this.registerCommand("randomtp", new RandomTPCommand(this.sectorsAPI));
+        this.registerCommand("spawn", new SpawnCommand(this.sectorsAPI));
+        this.registerCommand("home", new HomeCommand(this.sectorsAPI));
+        LoggerUtil.info("Command executors synchronized.");
     }
 
     private void registerCommand(String name, Object executor) {
-        PluginCommand command = getCommand(name);
+        PluginCommand command = this.getCommand(name);
         if (command == null) {
-            LoggerUtil.info("Komenda /" + name + " NIE jest w plugin.yml");
+            LoggerUtil.info("Command /" + name + " is missing from plugin.yml!");
             return;
         }
         command.setExecutor((CommandExecutor) executor);
     }
 
     private void shutdownMongo() {
-        if (mongoService != null) {
-            mongoService.disconnect();
+        if (this.mongoService != null) {
+            this.mongoService.disconnect();
+            LoggerUtil.info("MongoDB connection closed.");
         }
     }
 
     private void shutdown(String reason) {
-        LoggerUtil.info(reason);
+        LoggerUtil.info("Shutting down due to: " + reason);
         Bukkit.getPluginManager().disablePlugin(this);
     }
 

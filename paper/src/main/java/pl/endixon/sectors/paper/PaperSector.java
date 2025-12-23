@@ -15,6 +15,7 @@ import pl.endixon.sectors.common.redis.RedisManager;
 import pl.endixon.sectors.paper.command.ChannelCommand;
 import pl.endixon.sectors.paper.command.SectorCommand;
 import pl.endixon.sectors.paper.config.ConfigLoader;
+import pl.endixon.sectors.paper.config.MessageLoader;
 import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.redis.listener.*;
 import pl.endixon.sectors.paper.redis.packet.PacketExecuteCommand;
@@ -39,25 +40,35 @@ public class PaperSector extends JavaPlugin {
     private boolean inited = false;
     private final SectorTeleport sectorTeleport = new SectorTeleport(this);
     private final SendSectorInfoTask sectorInfoTask = new SendSectorInfoTask(this);
+    private ConfigLoader configuration;
+    private MessageLoader messageLoader;
+
 
     @Override
     public void onEnable() {
         instance = this;
 
         protocolManager = ProtocolLibrary.getProtocolManager();
-        ConfigLoader config = ConfigLoader.load(getDataFolder());
-
-        this.initManager(config);
+        this.loadFiles();
+        this.initManager(configuration);
         this.redisManager.publish(PacketChannel.PACKET_CONFIGURATION_REQUEST, new PacketConfigurationRequest(this.getSectorManager().getCurrentSectorName()));
 
         this.initListeners();
         this.initCommands();
-        this.scheduleTasks(config);
+        this.scheduleTasks(configuration);
 
         new SectorsAPI(this);
         this.loadAllPlayers();
 
         LoggerUtil.info("EndSectors enabled successfully.");
+    }
+
+
+    public void loadFiles() {
+        LoggerUtil.info("Loading system configurations...");
+        this.configuration = ConfigLoader.load(getDataFolder());
+        this.messageLoader = MessageLoader.load(getDataFolder());
+        LoggerUtil.info("Configuration and Messages synchronized.");
     }
 
     @Override
@@ -134,7 +145,7 @@ public class PaperSector extends JavaPlugin {
     }
 
     public void scheduleTasks(ConfigLoader config) {
-        if (config.ScoreboardEnabled) {
+        if (config.scoreboardEnabled) {
             new SpawnScoreboardTask(sectorManager, config).runTaskTimer(this, 20L, 20L);
         }
         new ProtocolLibWorldBorderTask(sectorManager).runTaskTimer(this, 20L, 20L);

@@ -28,8 +28,9 @@ public class PacketConfigurationPacketListener implements PacketListener<PacketC
 
     @Override
     public void handle(PacketConfiguration packet) {
-        LoggerUtil.info("Otrzymano pakiet konfiguracji od serwera proxy!");
+        LoggerUtil.info("Configuration packet received from proxy server!");
         PaperSector.getInstance().getSectorManager().loadSectorsData(packet.getSectorsData());
         PaperSector.getInstance().init();
+        LoggerUtil.info("Sectors data synchronized and system initialized.");
     }
 }

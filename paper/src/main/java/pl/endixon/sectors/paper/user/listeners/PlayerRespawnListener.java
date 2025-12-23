@@ -33,13 +33,12 @@ import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.profile.UserProfile;
 import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
 import pl.endixon.sectors.paper.util.ChatAdventureUtil;
-import pl.endixon.sectors.paper.util.ConfigurationUtil;
+import pl.endixon.sectors.paper.util.MessagesUtil;
 
 @AllArgsConstructor
 public class PlayerRespawnListener implements Listener {
 
     private final PaperSector paperSector;
-    private final ChatAdventureUtil CHAT = new ChatAdventureUtil();
 
     @EventHandler
     void onPlayerDeath(PlayerDeathEvent event) {
@@ -68,15 +67,14 @@ public class PlayerRespawnListener implements Listener {
         }
 
         if (user == null) {
-            player.kick(CHAT.toComponent(ConfigurationUtil.playerDataNotFoundMessage));
+            player.kick(MessagesUtil.playerDataNotFoundMessage.get());
             return;
         }
 
         if (spawnSector == null) {
-            player.kick(CHAT.toComponent(ConfigurationUtil.spawnSectorNotFoundMessage));
+            player.kick(MessagesUtil.spawnSectorNotFoundMessage.get());
             return;
         }
-
         paperSector.getSectorTeleport().teleportToSector(player, user, spawnSector, false, false);
     }
 }

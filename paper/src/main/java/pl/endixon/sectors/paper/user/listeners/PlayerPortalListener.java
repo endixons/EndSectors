@@ -34,15 +34,14 @@ import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.profile.UserProfile;
 import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
 import pl.endixon.sectors.paper.util.ChatAdventureUtil;
-import pl.endixon.sectors.paper.util.ConfigurationUtil;
+import pl.endixon.sectors.paper.util.MessagesUtil;
 import pl.endixon.sectors.paper.util.LoggerUtil;
 
 @RequiredArgsConstructor
 public class PlayerPortalListener implements Listener {
 
     private final PaperSector paperSector;
-    private static final long TRANSFER_DELAY = 5000L;
-    private static final double KNOCK_BORDER_FORCE = 1.35;
+
     private final ChatAdventureUtil CHAT = new ChatAdventureUtil();
 
     @EventHandler
@@ -66,6 +65,7 @@ public class PlayerPortalListener implements Listener {
     private void processPortalTransfer(Player player, UserProfile userProfile) {
         SectorManager sectorManager = paperSector.getSectorManager();
         Sector currentSector = sectorManager.getCurrentSector();
+        var config = this.paperSector.getConfiguration();
 
         if (currentSector == null) {
             LoggerUtil.info(String.format("[PortalTransfer] Player '%s' attempted portal transfer but current sector is null.", player.getName()));
@@ -91,26 +91,47 @@ public class PlayerPortalListener implements Listener {
             return;
 
         if (!targetSector.isOnline()) {
-            player.showTitle(Title.title(CHAT.toComponent(ConfigurationUtil.SECTOR_ERROR_TITLE), CHAT.toComponent(ConfigurationUtil.SECTOR_DISABLED_SUBTITLE), Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(2000), Duration.ofMillis(500))));
-            currentSector.knockBorder(player, KNOCK_BORDER_FORCE);
+            player.showTitle(Title.title(
+                    MessagesUtil.SECTOR_ERROR_TITLE.get(),
+                    MessagesUtil.SECTOR_DISABLED_SUBTITLE.get(),
+                    Title.Times.times(
+                            Duration.ofMillis(500),
+                            Duration.ofMillis(2000),
+                            Duration.ofMillis(500))
+            ));
+            currentSector.knockBorder(player, config.knockBorderForce);
             return;
         }
 
         if (Sector.isSectorFull(targetSector)) {
-            player.showTitle(Title.title(CHAT.toComponent(ConfigurationUtil.SECTOR_ERROR_TITLE), CHAT.toComponent(ConfigurationUtil.SECTOR_FULL_SUBTITLE), Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(2000), Duration.ofMillis(500))));
-            currentSector.knockBorder(player, KNOCK_BORDER_FORCE);
+            player.showTitle(Title.title(
+                    MessagesUtil.SECTOR_ERROR_TITLE.get(),
+                    MessagesUtil.SECTOR_FULL_SUBTITLE.get(),
+                    Title.Times.times(
+                            Duration.ofMillis(500),
+                            Duration.ofMillis(2000),
+                            Duration.ofMillis(500))
+            ));
+            currentSector.knockBorder(player, config.knockBorderForce);
             return;
         }
 
         boolean inTransfer = userProfile.getLastSectorTransfer() > 0;
         if (System.currentTimeMillis() < userProfile.getTransferOffsetUntil() && !inTransfer) {
             long remaining = userProfile.getTransferOffsetUntil() - System.currentTimeMillis();
-            player.showTitle(Title.title(CHAT.toComponent(ConfigurationUtil.SECTOR_ERROR_TITLE), CHAT.toComponent(ConfigurationUtil.TITLE_WAIT_TIME.replace("{SECONDS}", String.valueOf(remaining / 1000 + 1))), Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(2000), Duration.ofMillis(500))));
-            currentSector.knockBorder(player, KNOCK_BORDER_FORCE);
+            player.showTitle(Title.title(
+                    MessagesUtil.SECTOR_ERROR_TITLE.get(),
+                    MessagesUtil.TITLE_WAIT_TIME.get("{SECONDS}", String.valueOf(remaining / 1000 + 1)),
+                    Title.Times.times(
+                            Duration.ofMillis(500),
+                            Duration.ofMillis(2000),
+                            Duration.ofMillis(500))
+            ));
+            currentSector.knockBorder(player, config.knockBorderForce);
             return;
         }
 
-        if (System.currentTimeMillis() - userProfile.getLastSectorTransfer() < TRANSFER_DELAY) {
+        if (System.currentTimeMillis() - userProfile.getLastSectorTransfer() < config.transferDelayMillis) {
             return;
         }
 

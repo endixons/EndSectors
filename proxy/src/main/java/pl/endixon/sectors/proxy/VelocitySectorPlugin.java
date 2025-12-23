@@ -22,6 +22,8 @@ package pl.endixon.sectors.proxy;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+import com.velocitypowered.api.command.CommandManager;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
@@ -40,6 +42,7 @@ import pl.endixon.sectors.common.redis.RedisManager;
 import pl.endixon.sectors.common.sector.SectorData;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.common.util.Corner;
+import pl.endixon.sectors.proxy.command.SectorsCommand;
 import pl.endixon.sectors.proxy.config.ConfigCreator;
 import pl.endixon.sectors.proxy.listener.LastSectorConnectListener;
 import pl.endixon.sectors.proxy.manager.SectorManager;
@@ -92,6 +95,7 @@ public class VelocitySectorPlugin {
         this.loadSectors();
         this.initRedisManager();
         this.initListeners();
+        this.initCommands();
         this.getServer().getScheduler().buildTask(this, new QueueRunnable()).repeat(2, TimeUnit.SECONDS).schedule();
         Logger.info("EndSectors-Proxy started successfully.");
     }
@@ -101,7 +105,7 @@ public class VelocitySectorPlugin {
         this.redisManager.shutdown();
     }
 
-    private void loadSectors() {
+    public void loadSectors() {
         Path configPath = getDataDirectory().resolve("config.json");
 
         if (!Files.exists(configPath)) {
@@ -142,6 +146,16 @@ public class VelocitySectorPlugin {
         }
     }
 
+    private void initCommands() {
+        CommandManager commandManager = server.getCommandManager();
+        CommandMeta meta = commandManager.metaBuilder("sectors")
+                .aliases("proxysectors", "sreload")
+                .plugin(this)
+                .build();
+        commandManager.register(meta, new SectorsCommand(this));
+        Logger.info("Command /sectors has been registered.");
+    }
+
     private void addSectorsToManager(Map<String, Map<String, Object>> sectors, String typeName) {
         List<String> loadedSectors = new ArrayList<>();
 
@@ -175,6 +189,9 @@ public class VelocitySectorPlugin {
             Logger.info("No sectors to load for type " + typeName + ".");
         }
     }
+
+
+
 
     private void initRedisManager() {
         this.redisManager.initialize("127.0.0.1", 6379, "");

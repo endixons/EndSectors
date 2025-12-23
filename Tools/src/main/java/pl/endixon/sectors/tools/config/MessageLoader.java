@@ -80,6 +80,11 @@ public class MessageLoader {
         m.put("RANDOM_SECTOR_NOTFOUND", "<#ff5555>Nie udało się znaleźć losowego sektora!");
         m.put("RANDOM_SECTORSPAWN_NOTFOUND", "<#ef4444>Nie odnaleziono dostepnego sektora spawn");
 
+        m.put("TELEPORT_COUNTDOWN_TITLE", "<#FFD700>Teleportacja za...");
+        m.put("TELEPORT_COUNTDOWN_SUBTITLE", "<#FFA500>{TIME} <#FFD700>sekund");
+        m.put("TELEPORT_CANCELLED_TITLE", "<#FF5555>Teleportacja przerwana!");
+        m.put("TELEPORT_CANCELLED_SUBTITLE", "<#FF4444>Wykryto ruch gracza");
+
         m.put("HOME_GUI_TITLE", "<gray>Twoje Domki");
         m.put("HOME_NAME_FORMAT", "<#4ade80>{NAME}");
         m.put("HOME_CREATED_SUCCESS", "<#00ffaa>Pomyślnie utworzono Domek");

@@ -109,6 +109,7 @@ public class ConfigLoader {
         config.protectionSeconds = 5;
 
         config.scoreboard.put("SPAWN", List.of(
+                "                    ",
                 "<#55FF55>📍 Sektor: <white>{sectorName}",
                 "<#FFD700>👤 Nick: <white>{playerName}",
                 "                    ",
@@ -116,16 +117,19 @@ public class ConfigLoader {
                 "<#FF5555>🟢 Online: <white>{onlineCount}",
                 "                    ",
                 "<#AAAAAA>Znajdujesz się na kanale: <white>{sectorName}",
-                "<#AAAAAA>Aby zmienić kanał użyj <#55FF55>/ch"
+                "<#AAAAAA>Aby zmienić kanał użyj <#55FF55>/ch",
+                "                    "
         ));
 
         config.scoreboard.put("NETHER", List.of(
+                "                    ",
                 "<#FF5555>📍 Sektor: <white>{sectorName}",
                 "<#FFD700>👤 Nick: <white>{playerName}",
                 "                    ",
                 "                    ",
                 "<#00FFFF>⚡ TPS: {tps}",
-                "<#FF5555>🟢 Online: <white>{onlineCount}"
+                "<#FF5555>🟢 Online: <white>{onlineCount}",
+                "                    "
         ));
 
         config.scoreboard.put("END", List.of(
@@ -134,10 +138,12 @@ public class ConfigLoader {
                 "                    ",
                 "                    ",
                 "<#00FFFF>⚡ TPS: {tps}",
-                "<#FF5555>🟢 Online: <white>{onlineCount}"
+                "<#FF5555>🟢 Online: <white>{onlineCount}",
+                "                    "
         ));
 
         config.scoreboard.put("ADMIN", List.of(
+                "                    ",
                 "<#AA88FF>📍 Sektor: <white>{sectorName}",
                 "<#FFD700>👤 Nick: <white>{playerName}",
                 "                    ",
@@ -146,7 +152,8 @@ public class ConfigLoader {
                 "                    ",
                 "<#00AAFF>📶 Ping: <white>{ping}ms",
                 "<#FF00FF>🖥 CPU: <white>{cpu}%",
-                "<#AA00FF>💾 RAM: <white>{freeRam}/{maxRam}MB"
+                "<#AA00FF>💾 RAM: <white>{freeRam}/{maxRam}MB",
+                "                    "
         ));
 
         config.sectorTitles.put("SPAWN", "<#55FF55>🏰 Spawn");

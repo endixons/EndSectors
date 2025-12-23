@@ -1,22 +1,3 @@
-/*
- *
- *  EndSectors  Non-Commercial License
- *  (c) 2025 Endixon
- *
- *  Permission is granted to use, copy, and
- *  modify this software **only** for personal
- *  or educational purposes.
- *
- *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code
- *  without explicit permission is strictly
- *  prohibited.
- *
- *  Visit https://github.com/Endixon/EndSectors
- *  for more info.
- *
- */
-
 package pl.endixon.sectors.tools.utils;
 
 import java.time.Duration;
@@ -28,8 +9,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import pl.endixon.sectors.tools.Main;
 
 public class TeleportUtil {
-
-    private static final ChatAdventureUtil CHAT = new ChatAdventureUtil();
 
     public static void startTeleportCountdown(Player player, int seconds, Runnable onFinish) {
         Location startLocation = player.getLocation().clone();
@@ -45,17 +24,28 @@ public class TeleportUtil {
                 }
 
                 if (!player.getLocation().getBlock().equals(startLocation.getBlock())) {
-                    player.showTitle(Title.title(CHAT.toComponent("&#FF5555Teleport anulowany!"), CHAT.toComponent("&#FF4444Ruszyłeś się!"), Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(2), Duration.ofMillis(200))));
+                    player.showTitle(Title.title(
+                            MessagesUtil.TELEPORT_CANCELLED_TITLE.get(),
+                            MessagesUtil.TELEPORT_CANCELLED_SUBTITLE.get(),
+                            Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(2), Duration.ofMillis(200))
+                    ));
 
                     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 0.8f);
-
                     cancel();
                     return;
                 }
 
                 if (countdown > 0) {
-                    player.showTitle(Title.title(CHAT.toComponent("&#FFD700Teleport za..."), CHAT.toComponent("&#FFA500" + countdown + " &#FFD700sekund"), Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(1), Duration.ofMillis(200))));
+                    String subtitleRaw = MessagesUtil.TELEPORT_COUNTDOWN_SUBTITLE.getRaw()
+                            .replace("{TIME}", String.valueOf(countdown));
 
+                    player.showTitle(Title.title(
+                            MessagesUtil.TELEPORT_COUNTDOWN_TITLE.get(),
+                            new ChatAdventureUtil().toComponent(subtitleRaw),
+                            Title.Times.times(Duration.ofMillis(100), Duration.ofMillis(800), Duration.ofMillis(100))
+                    ));
+
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.5f);
                     countdown--;
                     return;
                 }

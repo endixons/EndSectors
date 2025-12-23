@@ -36,6 +36,10 @@ public class SectorManager {
         this.sectorsData.add(sectorData);
     }
 
+    public void clear() {
+        this.sectorsData.clear();
+    }
+
     public SectorData getSectorData(String sectorName) {
         for (SectorData sectorData : this.sectorsData) {
             if (sectorData.getName().equalsIgnoreCase(sectorName)) {
@@ -45,7 +49,6 @@ public class SectorManager {
 
         return null;
     }
-
 
 
     public List<SectorData> getNonQueueSectors() {

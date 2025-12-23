@@ -54,6 +54,7 @@ public class MessageLoader {
         m.put("SECTOR_ERROR_TITLE", "<#ff5555>Błąd");
         m.put("SECTOR_FULL_SUBTITLE", "<#ef4444>Sektor jest pełen graczy!");
         m.put("BORDER_MESSAGE", "<#f5c542>Zbliżasz się do granicy sektora <#4ade80>{SECTOR} <#7dd3fc>{DISTANCE}m");
+        m.put("BORDER_REFRESHED", "<#4ade80><b>BORDER</b> <#888888>» <#f2f2f2>Wysłano żądanie synchronizacji granic do Proxy. Oczekiwanie na pakiety zwrotne...");
         m.put("BREAK_BORDER_DISTANCE_MESSAGE", "<#ef4444>Nie możesz niszczyć bloków przy granicy sektora!");
         m.put("PLACE_BORDER_DISTANCE_MESSAGE", "<#ef4444>Nie możesz stawiać bloków przy granicy sektora!");
         m.put("SECTOR_DISABLED_SUBTITLE", "<#ef4444>Ten sektor jest aktualnie wyłączony");

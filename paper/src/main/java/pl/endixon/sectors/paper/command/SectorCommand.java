@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import pl.endixon.sectors.common.packet.PacketChannel;
+import pl.endixon.sectors.common.packet.object.PacketConfigurationRequest;
 import pl.endixon.sectors.common.redis.RedisManager;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.inventory.SectorShowWindow;
@@ -14,6 +15,7 @@ import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.redis.packet.PacketExecuteCommand;
 import pl.endixon.sectors.paper.user.profile.UserProfile;
 import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
+import pl.endixon.sectors.paper.util.LoggerUtil;
 import pl.endixon.sectors.paper.util.MessagesUtil;
 
 public class SectorCommand implements CommandExecutor {
@@ -46,6 +48,15 @@ public class SectorCommand implements CommandExecutor {
             case "reload" -> {
                 this.plugin.loadFiles();
                 sender.sendMessage(MessagesUtil.RELOAD_SUCCESS.get());
+            }
+
+            case "border" -> {
+                sender.sendMessage(MessagesUtil.BORDER_REFRESHED.get());
+                this.plugin.getRedisManager().publish(
+                        PacketChannel.PACKET_CONFIGURATION_REQUEST,
+                        new PacketConfigurationRequest(sm.getCurrentSectorName())
+                );
+                LoggerUtil.info("Requesting new sector configuration from Proxy (triggered by " + sender.getName() + ")");
             }
 
             case "where" -> sender.sendMessage(MessagesUtil.CURRENT_SECTOR.get(

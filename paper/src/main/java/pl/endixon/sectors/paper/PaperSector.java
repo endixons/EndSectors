@@ -16,6 +16,7 @@ import pl.endixon.sectors.paper.command.ChannelCommand;
 import pl.endixon.sectors.paper.command.SectorCommand;
 import pl.endixon.sectors.paper.config.ConfigLoader;
 import pl.endixon.sectors.paper.config.MessageLoader;
+
 import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.redis.listener.*;
 import pl.endixon.sectors.paper.redis.packet.PacketExecuteCommand;
@@ -47,6 +48,7 @@ public class PaperSector extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "lunar:apollo");
 
         protocolManager = ProtocolLibrary.getProtocolManager();
         this.loadFiles();

@@ -65,6 +65,7 @@ public class PlayerLocallyJoinListener implements Listener {
             } else {
                 sendSectorTitle(player, currentSector);
                 user.applyPlayerData();
+
                 user.setLastSectorTransfer(false);
             }
 

@@ -1,42 +1,52 @@
-/*
- *
- * EndSectors – Non-Commercial License
- * (c) 2025 Endixon
- *
- * Permission is granted to use, copy, and
- * modify this software **only** for personal
- * or educational purposes.
- *
- * Commercial use, redistribution, claiming
- * this work as your own, or copying code
- * without explicit permission is strictly
- * prohibited.
- *
- * Visit https://github.com/Endixon/EndSectors
- * for more info.
- *
- */
-
 package pl.endixon.sectors.paper.user.profile;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 
-public class UserProfileRepository {
+public final class UserProfileRepository {
+
+
+    private static final Map<String, UserProfile> LOCAL_CACHE = new ConcurrentHashMap<>();
+
+    private UserProfileRepository() {}
 
     public static Optional<UserProfile> getUser(@NonNull Player player) {
-        return UserProfileCache.load(player.getName().toLowerCase()).map(UserProfile::new);
+        return getUser(player.getName());
     }
 
-    public static Optional<UserProfile> getUser(@NonNull String player) {
-        return UserProfileCache.load(player.toLowerCase()).map(UserProfile::new);
+    public static Optional<UserProfile> getUser(@NonNull String name) {
+        final String lowerName = name.toLowerCase();
+
+        if (LOCAL_CACHE.containsKey(lowerName)) {
+            return Optional.of(LOCAL_CACHE.get(lowerName));
+        }
+
+        return UserProfileCache.load(lowerName)
+                .map(data -> {
+                    final UserProfile profile = new UserProfile(data);
+                    LOCAL_CACHE.put(lowerName, profile);
+                    return profile;
+                });
     }
 
     public static CompletableFuture<Optional<UserProfile>> getUserAsync(@NonNull String name) {
-        return CompletableFuture.supplyAsync(() -> UserProfileCache.load(name.toLowerCase()).map(UserProfile::new));
+        return CompletableFuture.supplyAsync(() -> getUser(name));
     }
 
 
+    public static void addToCache(UserProfile profile) {
+        LOCAL_CACHE.put(profile.getName().toLowerCase(), profile);
+    }
+
+    public static void removeFromCache(String name) {
+        LOCAL_CACHE.remove(name.toLowerCase());
+    }
+
+    public static void clearCache() {
+        LOCAL_CACHE.clear();
+    }
 }

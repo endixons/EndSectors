@@ -182,6 +182,7 @@ public class UserProfile {
     public void updateAndSave(@NonNull Player player, @NonNull Sector currentSector, boolean preserveCoordinates) {
         updateFromPlayer(player, currentSector, preserveCoordinates);
         UserProfileCache. save(this);
+        UserProfileRepository.addToCache(this);
     }
 
 
@@ -192,6 +193,7 @@ public class UserProfile {
         this.yaw = loc.getYaw();
         this.pitch = loc.getPitch();
         UserProfileCache.save(this);
+        UserProfileRepository.addToCache(this);
     }
 
     public Player getPlayer() {
@@ -201,11 +203,13 @@ public class UserProfile {
     public void setLastSectorTransfer(boolean redirecting) {
         this.lastSectorTransfer = redirecting ? System.currentTimeMillis() : 0L;
         UserProfileCache.save(this);
+        UserProfileRepository.addToCache(this);
     }
 
     public void activateTransferOffset() {
         this.transferOffsetUntil = System.currentTimeMillis() + 5000L;
         UserProfileCache.save(this);
+        UserProfileRepository.addToCache(this);
     }
 
     public void applyPlayerData() {

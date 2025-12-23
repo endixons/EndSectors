@@ -111,7 +111,6 @@ public class PaperSector extends JavaPlugin {
     private void initManager(ConfigLoader config) {
         LoggerUtil.info("Initializing managers...");
         this.sectorManager = new SectorManager(this, config.currentSector);
-        this.userProfileRepository = new UserProfileRepository();
         this.redisManager.initialize("127.0.0.1", 6379, "");
         this.redisManager.subscribe(config.currentSector, new PacketConfigurationPacketListener(), PacketConfiguration.class);
         this.redisManager.subscribe(PacketChannel.PACKET_EXECUTE_COMMAND, new PacketExecuteCommandPacketListener(), PacketExecuteCommand.class);

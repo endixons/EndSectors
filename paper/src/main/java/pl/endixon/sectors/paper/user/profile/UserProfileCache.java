@@ -54,20 +54,4 @@ public final class UserProfileCache {
         }
     }
 
-    private static void runSafely(Runnable action, Supplier<String> error) {
-        try {
-            action.run();
-        } catch (Exception e) {
-            LoggerUtil.info(String.format("%s (%s): %s", error.get(), e.getClass().getSimpleName(), e.getMessage()));
-        }
-    }
-
-    private static <T> Optional<T> supplySafely(Supplier<T> action, Supplier<String> error) {
-        try {
-            return Optional.ofNullable(action.get());
-        } catch (Exception e) {
-            LoggerUtil.info(String.format("%s (%s): %s", error.get(), e.getClass().getSimpleName(), e.getMessage()));
-            return Optional.empty();
-        }
-    }
 }

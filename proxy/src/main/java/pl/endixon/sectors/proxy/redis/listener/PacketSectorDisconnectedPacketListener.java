@@ -28,5 +28,6 @@ public class PacketSectorDisconnectedPacketListener implements PacketListener<Pa
     @Override
     public void handle(PacketSectorDisconnected packet) {
         VelocitySectorPlugin.getInstance().getSectorManager().getSectorData(packet.getSector()).setOnline(false);
+
     }
 }

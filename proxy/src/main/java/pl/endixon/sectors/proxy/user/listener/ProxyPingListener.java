@@ -1,3 +1,22 @@
+/*
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
+ *   Commercial use, redistribution, claiming
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
+ *  Visit https://github.com/Endixon/EndSectors
+ *  for more info.
+ *
+ */
+
 package pl.endixon.sectors.proxy.user.listener;
 
 import com.velocitypowered.api.event.Subscribe;
@@ -6,7 +25,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+
 import pl.endixon.sectors.common.sector.SectorData;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.manager.SectorManager;
@@ -16,18 +35,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Enterprise Proxy Ping Listener.
- * Optimized for high-performance hover formatting.
- */
 public class ProxyPingListener {
 
-    private static final MiniMessage MM = MiniMessage.miniMessage();
-    // Używamy LegacySerializer, bo SamplePlayer w protokole Minecrafta najlepiej radzi sobie z §
-    private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.builder()
-            .hexColors()
-            .useUnusualXRepeatedCharacterHexFormat()
-            .build();
+    private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
+
 
     private final ProxyServer proxyServer = VelocitySectorPlugin.getInstance().getServer();
     private final SectorManager sectorManager = VelocitySectorPlugin.getInstance().getSectorManager();
@@ -47,26 +58,36 @@ public class ProxyPingListener {
             }
         }
 
-        final Component motd = MM.deserialize(
-                "<gradient:#00d2ff:#3a7bd5><bold>ENDSECTORS</bold></gradient> <white>•</white> <gradient:#f6d365:#fda085>FRAMEWORK PREVIEW</gradient>\n" +
-                        "<gradient:#e2ebf0:#cfd9df>Innowacyjny system sektorow</gradient> <dark_gray>»</dark_gray> <gradient:#00b09b:#96c93d>ONLINE</gradient>"
+        final Component motd = MINI_MESSAGE.deserialize(
+                "<bold><gradient:#2afcff:#00bfff>ENDSECTORS</gradient></bold> <gray>•</gray> " +
+                        "<gradient:#ffe259:#ffa751>FRAMEWORK</gradient>\n" +
+                        "<gray>Status systemu: </gray><gradient:#56ab2f:#a8e063>ONLINE</gradient>"
         );
 
+
         final List<ServerPing.SamplePlayer> hover = new ArrayList<>();
+
         final double cpuLoad = CpuUtil.getCpuLoad();
         final String formattedCpu = String.format("%.1f%%", cpuLoad);
 
-        hover.add(this.createSample("<gradient:#00d2ff:#3a7bd5><bold>ENDSECTORS FRAMEWORK REVEAL</bold></gradient>"));
-        hover.add(this.createSample("<gradient:#84fab0:#8fd3f4>Status systemu: TESTOWY</gradient>"));
-        hover.add(this.createSample(""));
-        hover.add(this.createSample("<gradient:#f6d365:#fda085>Aktywne sektory: " + activeSectors + "</gradient>"));
-        hover.add(this.createSample("<gradient:#a1c4fd:#c2e9fb>Użytkownicy na proxy: " + proxyOnline + "</gradient>"));
+        hover.add(sample("§b§lENDSECTORS FRAMEWORK"));
+        hover.add(sample("§7Status systemu: §eTESTOWY"));
+        hover.add(sample(""));
+        hover.add(sample("§7Aktywne sektory: §a" + activeSectors));
+        hover.add(sample("§7Gracze na proxy: §a" + proxyOnline));
+        hover.add(sample(""));
+        hover.add(sample("§e§l» KLIKNIJ ABY PRZETESTOWAĆ SYSTEM «"));
 
-        final String cpuGradient = cpuLoad > 70.0 ? "<gradient:#ff0844:#ffb199>" : "<gradient:#fa709a:#fee140>";
-        hover.add(this.createSample("<gradient:#e2ebf0:#cfd9df>Obciążenie CPU: </gradient>" + cpuGradient + formattedCpu + "</gradient>"));
+        String cpuColor;
+        if (cpuLoad >= 70.0) {
+            cpuColor = "§c";
+        } else if (cpuLoad >= 40.0) {
+            cpuColor = "§e";
+        } else {
+            cpuColor = "§a";
+        }
 
-        hover.add(this.createSample(""));
-        hover.add(this.createSample("<gradient:#00d2ff:#3a7bd5:#00d2ff><bold>» KLIKNIJ ABY PRZETESTOWAĆ SYSTEM «</bold></gradient>"));
+        hover.add(sample("§7Obciążenie CPU: " + cpuColor + formattedCpu));
 
         final ServerPing.Builder builder = ping.asBuilder()
                 .description(motd)
@@ -77,12 +98,7 @@ public class ProxyPingListener {
         event.setPing(builder.build());
     }
 
-    private ServerPing.SamplePlayer createSample(final String content) {
-        if (content.isEmpty()) {
-            return new ServerPing.SamplePlayer("", UUID.randomUUID());
-        }
-        final Component component = MM.deserialize(content);
-        final String legacyContent = LEGACY.serialize(component);
-        return new ServerPing.SamplePlayer(legacyContent, UUID.randomUUID());
+    private static ServerPing.SamplePlayer sample(final String text) {
+        return new ServerPing.SamplePlayer(text, UUID.randomUUID());
     }
 }

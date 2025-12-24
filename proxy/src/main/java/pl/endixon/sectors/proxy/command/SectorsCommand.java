@@ -3,7 +3,7 @@ package pl.endixon.sectors.proxy.command;
 import com.velocitypowered.api.command.SimpleCommand;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
-import pl.endixon.sectors.proxy.util.Logger;
+import pl.endixon.sectors.proxy.util.LoggerUtil;
 
 public class SectorsCommand implements SimpleCommand {
 
@@ -37,6 +37,6 @@ public class SectorsCommand implements SimpleCommand {
                 ? player.getUsername()
                 : "Console";
 
-        Logger.info("Configuration reloaded by " + senderName);
+        LoggerUtil.info("Configuration reloaded by " + senderName);
     }
 }

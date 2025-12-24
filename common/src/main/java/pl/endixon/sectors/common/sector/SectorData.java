@@ -19,6 +19,10 @@ public class SectorData implements Serializable {
     private final Corner center;
 
     private boolean online;
+    private double tps;
+    private int playerCount;
+    private int maxPlayers;
+
 
     @JsonCreator
     public SectorData(@JsonProperty("name") String name, @JsonProperty("firstCorner") Corner firstCorner, @JsonProperty("secondCorner") Corner secondCorner, @JsonProperty("world") String world, @JsonProperty("type") SectorType type) {

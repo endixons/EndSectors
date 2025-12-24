@@ -8,7 +8,7 @@ import pl.endixon.sectors.proxy.queue.Queue;
 import pl.endixon.sectors.proxy.queue.QueueManager;
 import pl.endixon.sectors.proxy.manager.SectorManager;
 import pl.endixon.sectors.proxy.user.RedisUserService;
-import pl.endixon.sectors.proxy.util.Logger;
+import pl.endixon.sectors.proxy.util.LoggerUtil;
 import pl.endixon.sectors.common.sector.SectorData;
 
 public class PacketUserCheckProxyListener implements PacketListener<PacketUserCheck> {
@@ -29,7 +29,7 @@ public class PacketUserCheckProxyListener implements PacketListener<PacketUserCh
         final UserFlagCache cache = UserFlagCache.getInstance();
 
         if (packet.getExists() == null || !packet.getExists()) {
-            Logger.info("[PacketUserCheck] Player " + username + " does not exist in database.");
+            LoggerUtil.error("[PacketUserCheck] Player " + username + " does not exist in database.");
             return;
         }
 
@@ -48,7 +48,7 @@ public class PacketUserCheckProxyListener implements PacketListener<PacketUserCh
         }
 
         if (resolvedSector == null) {
-            Logger.info("[CRITICAL] No available sectors for player: " + username);
+            LoggerUtil.error("[CRITICAL] No available sectors for player: " + username);
             return;
         }
 

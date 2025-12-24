@@ -6,7 +6,7 @@ import pl.endixon.sectors.common.packet.object.PacketConfigurationRequest;
 import pl.endixon.sectors.common.sector.SectorData;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.manager.SectorManager;
-import pl.endixon.sectors.proxy.util.Logger;
+import pl.endixon.sectors.proxy.util.LoggerUtil;
 
 import java.util.Collection;
 
@@ -27,11 +27,11 @@ public class PacketConfigurationRequestPacketListener implements PacketListener<
 
         final Collection<SectorData> sectorsData = sectorManager.getSectorsData();
         if (sectorsData == null || sectorsData.isEmpty()) {
-            Logger.info("[CRITICAL] Configuration request failed for " + targetSector + ". Sector data is missing.");
+            LoggerUtil.error("[CRITICAL] Configuration request failed for " + targetSector + ". Sector data is missing.");
             return;
         }
 
-        Logger.info("Received configuration packet request from sector: " + targetSector);
+        LoggerUtil.info("Received configuration packet request from sector: " + targetSector);
 
         final PacketConfiguration responsePacket = new PacketConfiguration(sectorsData.toArray(new SectorData[0]));
 

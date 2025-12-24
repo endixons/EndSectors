@@ -74,4 +74,7 @@ public class SectorManager {
         List<SectorData> targetList = onlineSectors.isEmpty() ? allowedSectors : onlineSectors;
         return Optional.of(targetList.get(new Random().nextInt(targetList.size())));
     }
+
+
+
 }

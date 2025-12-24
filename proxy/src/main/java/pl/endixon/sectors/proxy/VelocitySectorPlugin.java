@@ -51,7 +51,7 @@ import pl.endixon.sectors.proxy.queue.QueueManager;
 import pl.endixon.sectors.proxy.queue.runnable.QueueRunnable;
 import pl.endixon.sectors.proxy.redis.listener.*;
 import pl.endixon.sectors.proxy.user.RedisUserService;
-import pl.endixon.sectors.proxy.util.Logger;
+import pl.endixon.sectors.proxy.util.LoggerUtil;
 
 @Plugin(id = "endsectors-proxy", name = "EndSectorsProxy", version = "1.0")
 @Getter
@@ -86,7 +86,7 @@ public class VelocitySectorPlugin {
     @Subscribe
     public void onProxyInitialize(com.velocitypowered.api.event.proxy.ProxyInitializeEvent event) {
         instance = this;
-        Logger.info("Starting EndSectors-Proxy...");
+        LoggerUtil.info("Starting EndSectors-Proxy...");
         System.setProperty("io.netty.transport.noNative", "true");
         this.sectorManager = new SectorManager();
         this.teleportationManager = new TeleportationManager();
@@ -97,7 +97,7 @@ public class VelocitySectorPlugin {
         this.initListeners();
         this.initCommands();
         this.getServer().getScheduler().buildTask(this, new QueueRunnable()).repeat(2, TimeUnit.SECONDS).schedule();
-        Logger.info("EndSectors-Proxy started successfully.");
+        LoggerUtil.info("EndSectors-Proxy started successfully.");
     }
 
     @Subscribe
@@ -109,7 +109,7 @@ public class VelocitySectorPlugin {
         Path configPath = getDataDirectory().resolve("config.json");
 
         if (!Files.exists(configPath)) {
-            Logger.info("config.json not found in the plugin directory! Creating default configuration...");
+            LoggerUtil.error("config.json not found in the plugin directory! Creating default configuration...");
             ConfigCreator.createDefaultConfig(getDataDirectory());
             return;
         }
@@ -119,7 +119,7 @@ public class VelocitySectorPlugin {
             Map<String, Object> root = mapper.readValue(Files.newBufferedReader(configPath), typeRef);
             Object sectorsObj = root.get("sectors");
             if (!(sectorsObj instanceof Map)) {
-                Logger.info("Section 'sectors' was not found in config.json!");
+                LoggerUtil.error("Section 'sectors' was not found in config.json!");
                 return;
             }
             Map<String, Object> sectors = (Map<String, Object>) sectorsObj;
@@ -153,7 +153,7 @@ public class VelocitySectorPlugin {
                 .plugin(this)
                 .build();
         commandManager.register(meta, new SectorsCommand(this));
-        Logger.info("Command /sectors has been registered.");
+        LoggerUtil.info("Command /sectors has been registered.");
     }
 
     private void addSectorsToManager(Map<String, Map<String, Object>> sectors, String typeName) {
@@ -179,14 +179,14 @@ public class VelocitySectorPlugin {
                 loadedSectors.add(sectorName + " (" + sectorType + ")");
 
             } catch (Exception e) {
-                Logger.info("Failed to save sector '" + sectorName + "': " + e.getMessage());
+                LoggerUtil.error("Failed to save sector '" + sectorName + "': " + e.getMessage());
             }
         }
 
         if (!loadedSectors.isEmpty()) {
-            Logger.info("Loaded sectors of type " + typeName + ": " + String.join(", ", loadedSectors));
+            LoggerUtil.info("Loaded sectors of type " + typeName + ": " + String.join(", ", loadedSectors));
         } else {
-            Logger.info("No sectors to load for type " + typeName + ".");
+            LoggerUtil.error("No sectors to load for type " + typeName + ".");
         }
     }
 
@@ -203,7 +203,9 @@ public class VelocitySectorPlugin {
         this.redisManager.subscribe(PacketChannel.PACKET_TELEPORT_TO_SECTOR, new TeleportToSectorListener(), PacketRequestTeleportSector.class);
         this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_CONNECTED, new PacketSectorConnectedPacketListener(), PacketSectorConnected.class);
         this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_DISCONNECTED, new PacketSectorDisconnectedPacketListener(), PacketSectorDisconnected.class);
-        Logger.info("RedisManager initialized.");
+        this.redisManager.subscribe(PacketChannel.PACKET_SECTOR_INFO, new PacketSectorInfoPacketListener(), PacketSectorInfo.class);
+
+        LoggerUtil.info("RedisManager initialized.");
     }
 
     private void initListeners() {

@@ -3,7 +3,7 @@ package pl.endixon.sectors.proxy.user;
 import java.util.Map;
 import java.util.Optional;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
-import pl.endixon.sectors.proxy.util.Logger;
+import pl.endixon.sectors.proxy.util.LoggerUtil;
 
 
 public class RedisUserService {
@@ -40,7 +40,7 @@ public class RedisUserService {
 
             return Optional.of(sector.trim());
         } catch (Exception exception) {
-            Logger.info("[CRITICAL] Failed to retrieve sector data for " + playerName + ": " + exception.getMessage());
+            LoggerUtil.info("[CRITICAL] Failed to retrieve sector data for " + playerName + ": " + exception.getMessage());
             return Optional.empty();
         }
     }
@@ -61,7 +61,7 @@ public class RedisUserService {
         try {
             this.plugin.getRedisService().hset(key, Map.of(FIELD_SECTOR, sanitizedSector));
         } catch (Exception exception) {
-            Logger.info("[CRITICAL] Failed to persist sector '" + sanitizedSector + "' for " + playerName + ": " + exception.getMessage());
+            LoggerUtil.info("[CRITICAL] Failed to persist sector '" + sanitizedSector + "' for " + playerName + ": " + exception.getMessage());
         }
     }
 

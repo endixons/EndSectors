@@ -42,6 +42,10 @@ public class QueueRunnable implements Runnable {
             final SectorData sectorData = this.sectorManager.getSectorData(sectorName);
             final boolean isOnline = sectorData != null && sectorData.isOnline();
 
+            final boolean isMaxPlayer = sectorData != null
+                    && sectorData.getPlayerCount() >= sectorData.getMaxPlayers();
+
+
             final int initialSize = allPlayers.size();
             final List<Player> admins = new ArrayList<>(initialSize / 10);
             final List<Player> vips = new ArrayList<>(initialSize / 4);
@@ -74,32 +78,37 @@ public class QueueRunnable implements Runnable {
                 final Player player = sortedQueue.get(i);
                 final int position = i + 1;
 
-                if (isOnline && released < MAX_RELEASE_PER_TICK) {
+                if (isOnline && !isMaxPlayer && released < MAX_RELEASE_PER_TICK) {
                     this.proxyServer.getServer(sectorName).ifPresent(server ->
                             player.createConnectionRequest(server).fireAndForget()
                     );
                     released++;
                 }
 
-                this.dispatchTitle(player, sectorName, isOnline, position, total);
+                this.dispatchTitle(player, sectorName, isOnline, position, total,isMaxPlayer);
             }
         }
     }
 
-    private void dispatchTitle(Player player, String sector, boolean online, int pos, int total) {
+    private void dispatchTitle(Player player, String sector, boolean online, int pos, int total,boolean full) {
+
         if (pos < 300 && online) {
             final String cacheKey = "on_" + pos + "_" + total;
-            final Component subtitle = SUBTITLE_CACHE.computeIfAbsent(cacheKey, k -> this.buildSubtitle(sector, true, pos, total));
+            final Component subtitle = SUBTITLE_CACHE.computeIfAbsent(cacheKey, k -> this.buildSubtitle(sector, true, pos, total,full));
             player.showTitle(Title.title(TITLE_CACHE, subtitle));
             return;
         }
 
-        player.showTitle(Title.title(TITLE_CACHE, this.buildSubtitle(sector, online, pos, total)));
+        player.showTitle(Title.title(TITLE_CACHE, this.buildSubtitle(sector, online, pos, total, full)));
     }
 
-    private Component buildSubtitle(String sector, boolean online, int pos, int total) {
+    private Component buildSubtitle(String sector, boolean online, int pos, int total,boolean full) {
         if (!online) {
             return MM.deserialize("<red>Sektor <white>" + sector + "</white> jest <bold>OFFLINE</bold></red>");
+        }
+        if (!full) {
+            return   MM.deserialize("<red>Sektor <white>" + sector + "</white> jest <bold>PELNY</bold></red>");
+
         }
         return MM.deserialize("<gray>Pozycja: <#00d2ff>" + pos + "</#00d2ff><dark_gray>/</dark_gray><#3a7bd5>" + total + "</#3a7bd5>");
     }

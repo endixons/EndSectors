@@ -150,6 +150,9 @@ public class PaperSector extends JavaPlugin {
         if (config.scoreboardEnabled) {
             new SpawnScoreboardTask(sectorManager, config).runTaskTimer(this, 0L, 20L);
         }
+
+       // new FakeWorldBorderShrinkTask(sectorManager, 1000, 50, 200L).runTaskTimer(this, 0L, 1L);
+
         new ProtocolLibWorldBorderTask(sectorManager).runTaskTimer(this, 20L, 20L);
         new BorderActionBarTask(this).runTaskTimer(this, 20L, 20L);
         new SendInfoPlayerTask(this).runTaskTimer(this, 12000L, 12000L);

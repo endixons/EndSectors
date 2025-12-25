@@ -1,58 +1,58 @@
 # EndSectors
 
-**EndSectors** — experimental Minecraft sector framework for **Paper 1.24.1** with **Redis** 🗄️
+**EndSectors** — experimental Minecraft sector framework for **Paper 1.24.1** with **NATS & Redis** 🗄️⚡
 
-EndSectors allows you to split a single large Minecraft world into multiple **sectors** on one Paper server.  
-Players can move seamlessly between sectors, chat globally, and have their data synced in real-time.
+EndSectors splits a large Minecraft world into multiple **sectors** running on a single Paper server.  
+Players move seamlessly between sectors, chat globally, and have their data synced in real-time.
 
-🎬 **See it in action:** [YouTube Demo](https://www.youtube.com/watch?v=U_wk1nABo_M)
-
+🎬 **See it in action:** [YouTube Demo](https://www.youtube.com/watch?v=U_wk1nABo_M)  
 Check out an **interactive sector map example**: [Sectors Generator](https://oski646.github.io/sectors-generator/)
 
 > [!WARNING]
-> This project is **experimental** and **not intended for production use**.  
-> It serves as a learning and testing framework for sector-based world mechanics.
+> This project is **experimental** and **not production-ready**.  
+> Intended for learning and testing sector-based world mechanics.
 
 ---
 
 ## 🔹 About
 
-- Built using **Redis** for real-time player data synchronization.
-- The project is **educational and experimental**, created to explore sector-based world mechanics.
-- While some ideas were inspired by other public GitHub projects, **all code is original**.
+- **NATS** handles inter-server messaging and packet communication.  
+- **Redis** stores player data (inventory, stats, etc.), no longer used for messaging.  
+- Built for experimentation, education, and testing sector mechanics.  
+- All code is original and tailored for sector-based Minecraft worlds.
 
 ---
 
 ## ⚙️ Requirements
 
-- Minimum Minecraft version: 1.20
-- Tested on PaperMC 1.24.1
-- Redis
+- Minecraft 1.20+ (tested on PaperMC 1.24.1)  
+- Redis (player data cache)  
+- NATS server for messaging  
+
 ---
 
 ## ✨ Features
 
-- 🚪 **Smooth teleportation** between sectors on border crossing
-- 🔄 **Real-time player data synchronization** (inventory, enderchest, gamemode, fly status, etc.)
-- 💬 **Global chat** synchronized across all sectors
-- 🎯 **Advanced sector sectorQueue system** – players are sent to their last sector or a random one for load balancing
-- ⚡ **Plug-and-play** – configure JSON and sector management works automatically
+- 🚪 **Seamless teleportation** across sectors on border crossing  
+- 🔄 **Real-time player data sync** (inventory, enderchest, gamemode, fly status, etc.)  
+- 💬 **Global chat** synchronized across sectors  
+- 🎯 **Sector queue system** – players are sent to last known sector or load-balanced sector  
+- ⚡ **Plug-and-play** – sector configuration via JSON, automatic management  
 
 ---
 
 ## 🛠️ Quick Start
 
-1. Install **Paper 1.20+** (tested on 1.24.1)
-2. Configure **Redis** in `config.json`
-3. Define your sectors in JSON
-4. Start the server and let **EndSectors** handle teleportation, syncing, and queues automatically
+1. Install **Paper 1.20+** (tested on 1.24.1)  
+2. Start a **NATS server** and configure `config.json`  
+3. Configure **Redis** for player data caching  
+4. Define your sectors in JSON  
+5. Launch the server – **EndSectors** handles teleportation, syncing, and queues automatically  
 
 ---
 
-
 ## 📌 TODO
 
-- General improvements to sector functionality and stability
-- Enhance communication and synchronization between sectors
-- Optimize performance for larger player counts
-- Add optional experimental features
+- Improve sector synchronization and messaging reliability  
+- Enhance performance for high player counts  
+- Add optional experimental features for sector behavior  

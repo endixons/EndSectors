@@ -30,7 +30,6 @@ public final class NatsManager {
                     .build();
 
             this.connection = Nats.connect(options);
-            Logger.info("NatsManager initialized successfully.");
         } catch (Exception e) {
             Logger.info("NATS initialization failed: " + e.getMessage());
         }
@@ -38,7 +37,6 @@ public final class NatsManager {
 
     public <T extends Packet> void subscribe(String subject, PacketListener<T> listener, Class<T> type) {
         if (this.connection == null) {
-            Logger.info("NATS not initialized, cannot subscribe.");
             return;
         }
 

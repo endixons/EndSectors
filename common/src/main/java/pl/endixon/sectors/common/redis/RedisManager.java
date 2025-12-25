@@ -64,39 +64,11 @@ public class RedisManager {
             this.syncCommands = connection.sync();
             this.asyncCommands = connection.async();
             this.pubSubConnection = redisClient.connectPubSub();
-
-            Logger.info("RedisManager initialized successfully (Sync/Async).");
         } catch (Exception e) {
             Logger.info("Redis initialization failed: " + e.getMessage());
         }
     }
 
-    public <T extends Serializable> void subscribe(String channel, PacketListener<T> listener, Class<T> type) {
-        if (pubSubConnection == null) return;
-        try {
-            pubSubConnection.addListener(new RedisPubSubAdapter<>() {
-                @Override
-                public void message(String ch, String msg) {
-                    if (ch.equals(channel)) {
-                        try {
-                            T packet = gson.fromJson(msg, type);
-                            listener.handle(packet);
-                        } catch (Exception e) {
-                            Logger.info("PubSub listener error: " + e.getMessage());
-                        }
-                    }
-                }
-            });
-            pubSubConnection.async().subscribe(channel);
-        } catch (Exception e) {
-            Logger.info("Redis subscription failed: " + e.getMessage());
-        }
-    }
-
-    public void publish(String channel, Packet packet) {
-        if (asyncCommands == null) return;
-        asyncCommands.publish(channel, gson.toJson(packet));
-    }
 
     public void hset(String key, Map<String, String> map) {
         if (key == null || map == null || syncCommands == null) return;

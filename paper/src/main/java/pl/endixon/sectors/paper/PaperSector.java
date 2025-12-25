@@ -1,22 +1,3 @@
-/*
- *
- * EndSectors – Non-Commercial License
- * (c) 2025 Endixon
- *
- * Permission is granted to use, copy, and
- * modify this software **only** for personal
- * or educational purposes.
- *
- * Commercial use, redistribution, claiming
- * this work as your own, or copying code
- * without explicit permission is strictly
- * prohibited.
- *
- * Visit https://github.com/Endixon/EndSectors
- * for more info.
- *
- */
-
 package pl.endixon.sectors.paper;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -27,10 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.object.*;
-import pl.endixon.sectors.common.nats.NatsManager;
-import pl.endixon.sectors.common.redis.RedisManager;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.command.ChannelCommand;
 import pl.endixon.sectors.paper.command.SectorCommand;
@@ -40,7 +20,6 @@ import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.nats.listener.*;
 import pl.endixon.sectors.paper.nats.packet.PacketExecuteCommand;
 import pl.endixon.sectors.paper.nats.packet.PacketPlayerInfoRequest;
-import pl.endixon.sectors.paper.nats.packet.PacketSectorInfo;
 import pl.endixon.sectors.paper.sector.SectorTeleport;
 import pl.endixon.sectors.paper.task.*;
 import pl.endixon.sectors.paper.user.listeners.*;
@@ -54,110 +33,95 @@ public class PaperSector extends JavaPlugin {
     private static PaperSector instance;
     private ProtocolManager protocolManager;
     private SectorManager sectorManager;
-    public final RedisManager redisManager = new RedisManager();
-    public final NatsManager natsManager = new NatsManager();
-    private final SectorTeleport sectorTeleport = new SectorTeleport(this);
-    private final SendSectorInfoTask sectorInfoTask = new SendSectorInfoTask(this);
+    private SectorTeleport sectorTeleport;
     private ConfigLoader configuration;
     private MessageLoader messageLoader;
-
 
     @Override
     public void onEnable() {
         instance = this;
-        protocolManager = ProtocolLibrary.getProtocolManager();
         this.loadFiles();
-        this.initRedisManager();
-        this.initNatsManager(configuration);
-        this.natsManager.publish(PacketChannel.PACKET_CONFIGURATION_REQUEST.getSubject(), new PacketConfigurationRequest(this.getSectorManager().getCurrentSectorName()));
+        this.protocolManager = ProtocolLibrary.getProtocolManager();
+        this.sectorManager = new SectorManager(this, configuration.currentSector);
+        Common.initInstance();
+        Common.getInstance().initializeRedis("127.0.0.1", 6379, "");
+        Common.getInstance().initializeNats("nats://127.0.0.1:4222", configuration.currentSector);
+        Common.getInstance().getNatsManager().publish(PacketChannel.PACKET_CONFIGURATION_REQUEST.getSubject(), new PacketConfigurationRequest(sectorManager.getCurrentSectorName()));
+        this.initNatsSubscriptions(configuration);
         this.initListeners();
         this.initCommands();
         this.scheduleTasks(configuration);
-        new SectorsAPI(this);
         this.loadAllPlayers();
-        LoggerUtil.info("EndSectors enabled successfully.");
+        new SectorsAPI(this);
+        LoggerUtil.info("EndSectors-Paper enabled successfully.");
     }
 
+    @Override
+    public void onDisable() {
+        PacketSectorDisconnected packet = new PacketSectorDisconnected(this.sectorManager.getCurrentSectorName());
+        Common.getInstance().getNatsManager().publish(PacketChannel.PACKET_SECTOR_DISCONNECTED.getSubject(), packet);
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.kickPlayer("§cSektor " + sectorManager.getCurrentSectorName() + " §czostał zamknięty i jest niedostępny!");
+        }
+        Common.getInstance().shutdown();
+    }
 
     public void loadFiles() {
         this.configuration = ConfigLoader.load(getDataFolder());
         this.messageLoader = MessageLoader.load(getDataFolder());
     }
 
-    @Override
-    public void onDisable() {
-        PacketSectorDisconnected packet = new PacketSectorDisconnected(this.getSectorManager().getCurrentSectorName());
-        this.natsManager.publish(PacketChannel.PACKET_SECTOR_DISCONNECTED.getSubject(), packet);
-        this.natsManager.shutdown();
-        this.redisManager.shutdown();
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            player.kickPlayer("§cSektor " + sectorManager.getCurrentSectorName() + " §czostał zamknięty i jest niedostępny!");
-        }
-    }
-
-
     private void loadAllPlayers() {
         UserProfileCache.warmup();
     }
 
-    private void initRedisManager() {
-        this.redisManager.initialize("127.0.0.1", 6379, "");
-        LoggerUtil.info("RedisManager initialized.");
-    }
-
-    private void initNatsManager(ConfigLoader config) {
-        this.sectorManager = new SectorManager(this, config.currentSector);
-        this.natsManager.initialize(
-                "nats://127.0.0.1:4222",
-                config.currentSector
-        );
-        LoggerUtil.info("NatsManager initialized for sector: " + config.currentSector);
-        this.natsManager.subscribe(
+    private void initNatsSubscriptions(ConfigLoader config) {
+        var nats = Common.getInstance().getNatsManager();
+        nats.subscribe(
                 config.currentSector,
                 new PacketConfigurationPacketListener(),
                 PacketConfiguration.class
         );
 
-        this.natsManager.subscribe(
+        nats.subscribe(
                 PacketChannel.PACKET_EXECUTE_COMMAND.getSubject(),
                 new PacketExecuteCommandPacketListener(),
                 PacketExecuteCommand.class
         );
 
-        this.natsManager.subscribe(
+        nats.subscribe(
                 PacketChannel.PACKET_PLAYER_INFO_REQUEST.getSubject(),
                 new PacketPlayerInfoRequestPacketListener(),
                 PacketPlayerInfoRequest.class
         );
 
-        this.natsManager.subscribe(
+        nats.subscribe(
                 PacketChannel.PACKET_SECTOR_CHAT_BROADCAST.getSubject(),
                 new PacketSectorChatBroadcastPacketListener(),
                 PacketSectorChatBroadcast.class
         );
 
-        this.natsManager.subscribe(
+        nats.subscribe(
                 PacketChannel.PACKET_SECTOR_INFO.getSubject(),
                 new PacketSectorInfoPacketListener(),
-                PacketSectorInfo.class
+                pl.endixon.sectors.paper.nats.packet.PacketSectorInfo.class
         );
 
-        this.natsManager.subscribe(
+        nats.subscribe(
                 PacketChannel.PACKET_SECTOR_CONNECTED.getSubject(),
                 new PacketSectorConnectedPacketListener(),
                 PacketSectorConnected.class
         );
 
-        this.natsManager.subscribe(
+        nats.subscribe(
                 PacketChannel.PACKET_SECTOR_DISCONNECTED.getSubject(),
                 new PacketSectorDisconnectedPacketListener(),
                 PacketSectorDisconnected.class
         );
 
-
         if (SectorType.isQueueSector(config.currentSector)) {
-            this.natsManager.subscribe(
+            nats.subscribe(
                     PacketChannel.USER_CHECK_REQUEST.getSubject(),
                     new PacketUserCheckListener(),
                     PacketUserCheck.class
@@ -165,7 +129,7 @@ public class PaperSector extends JavaPlugin {
         }
     }
 
-        private void initListeners() {
+    private void initListeners() {
         List<Listener> listeners = List.of(
                 new PlayerRespawnListener(this),
                 new PlayerDisconnectListener(),
@@ -183,7 +147,7 @@ public class PaperSector extends JavaPlugin {
 
     private void initCommands() {
         getCommand("sector").setExecutor(new SectorCommand(this));
-        getCommand("channel").setExecutor(new ChannelCommand(sectorManager, sectorTeleport));
+        getCommand("channel").setExecutor(new ChannelCommand(sectorManager,sectorTeleport));
     }
 
     public void scheduleTasks(ConfigLoader config) {
@@ -193,9 +157,5 @@ public class PaperSector extends JavaPlugin {
         new ProtocolLibWorldBorderTask(sectorManager).runTaskTimer(this, 20L, 20L);
         new BorderActionBarTask(this).runTaskTimer(this, 20L, 20L);
         new SendInfoPlayerTask(this).runTaskTimer(this, 12000L, 12000L);
-    }
-
-    public RedisManager getRedisService() {
-        return redisManager;
     }
 }

@@ -17,7 +17,7 @@
  *
  */
 
-package pl.endixon.sectors.paper.util;
+package pl.endixon.sectors.common.util;
 
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 public final class LoggerUtil {
 
     private static final org.slf4j.Logger LOGGER =
-            LoggerFactory.getLogger("EndSectors-Paper");
+            LoggerFactory.getLogger("EndSectors-Common");
 
     private LoggerUtil() {
     }

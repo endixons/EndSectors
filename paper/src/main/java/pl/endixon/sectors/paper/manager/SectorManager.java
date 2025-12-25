@@ -30,6 +30,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.sector.SectorData;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
@@ -202,10 +203,10 @@ public class SectorManager {
     }
 
     public void getOnlinePlayers(Consumer<List<String>> callback) {
-        paperSector.getRedisManager().getOnlinePlayers(callback);
+        Common.getInstance().getRedisManager().getOnlinePlayers(callback);
     }
 
     public void isPlayerOnline(String playerName, Consumer<Boolean> callback) {
-        paperSector.getRedisManager().isPlayerOnline(playerName, callback);
+        Common.getInstance().getRedisManager().isPlayerOnline(playerName, callback);
     }
 }

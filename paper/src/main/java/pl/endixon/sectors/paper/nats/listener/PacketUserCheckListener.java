@@ -19,6 +19,7 @@
 
 package pl.endixon.sectors.paper.nats.listener;
 
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.packet.object.PacketUserCheck;
@@ -44,7 +45,6 @@ public class PacketUserCheckListener implements PacketListener<PacketUserCheck> 
         if (currentSector == null || currentSector.getType() != SectorType.QUEUE) {
             return;
         }
-
-        PaperSector.getInstance().getNatsManager().publish(PacketChannel.USER_CHECK_RESPONSE.getSubject(), response);
+        Common.getInstance().getNatsManager().publish(PacketChannel.USER_CHECK_RESPONSE.getSubject(), response);
     }
 }

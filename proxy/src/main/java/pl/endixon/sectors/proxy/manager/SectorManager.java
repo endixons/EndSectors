@@ -52,8 +52,6 @@ public class SectorManager {
         return null;
     }
 
-
-
     public Optional<SectorData> getRandomNonQueueSector() {
         final List<SectorData> allowedSectors = this.sectorsData.stream()
                 .filter(sector -> sector.getType() != SectorType.QUEUE

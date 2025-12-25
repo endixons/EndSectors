@@ -19,21 +19,26 @@
 
 package pl.endixon.sectors.proxy.user.profile;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.util.LoggerUtil;
 
 
-public class ProfileCache {
+public class UserProfileCache {
 
     private static final String KEY_PREFIX = "user:";
     private static final String FIELD_SECTOR = "sectorName";
     private static final String VALUE_UNKNOWN = "unknown";
+    private static final Map<String, Map<String, Object>> LOCAL_CACHE = new ConcurrentHashMap<>();
 
     private final VelocitySectorPlugin plugin;
 
-    public ProfileCache(VelocitySectorPlugin plugin) {
+    public UserProfileCache(VelocitySectorPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -45,7 +50,7 @@ public class ProfileCache {
         final String key = buildKey(playerName);
 
         try {
-            final Map<String, String> data = this.plugin.getRedisService().hgetAll(key);
+            final Map<String, String> data = Common.getInstance().getRedisManager().hgetAll(key);
 
             if (data == null || data.isEmpty()) {
                 return Optional.empty();
@@ -64,6 +69,8 @@ public class ProfileCache {
         }
     }
 
+
+
     public void setSectorName(String playerName, String sectorName) {
         if (playerName == null || playerName.isBlank() || sectorName == null || sectorName.isBlank()) {
             return;
@@ -78,11 +85,13 @@ public class ProfileCache {
         final String key = buildKey(playerName);
 
         try {
-            this.plugin.getRedisService().hset(key, Map.of(FIELD_SECTOR, sanitizedSector));
+            Common.getInstance().getRedisManager().hset(key, Map.of(FIELD_SECTOR, sanitizedSector));
         } catch (Exception exception) {
             LoggerUtil.info("[CRITICAL] Failed to persist sector '" + sanitizedSector + "' for " + playerName + ": " + exception.getMessage());
         }
     }
+
+
 
     private String buildKey(String playerName) {
         return KEY_PREFIX + playerName.toLowerCase();

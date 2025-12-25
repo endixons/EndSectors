@@ -277,7 +277,6 @@ public class UserProfile {
 
     private void teleportPlayerToStoredLocation(@NonNull Player player) {
         long now = System.currentTimeMillis();
-        int protectionSeconds = 10;
         Location targetLoc = new Location(player.getWorld(), x, y, z, yaw, pitch);
 
         if (now < transferOffsetUntil) {

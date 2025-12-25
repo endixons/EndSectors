@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.NonNull;
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.paper.PaperSector;
 import pl.endixon.sectors.paper.util.LoggerUtil;
 
@@ -41,15 +42,15 @@ public final class UserProfileCache {
 
     public static void save(@NonNull UserProfile user) {
         try {
-            PaperSector.getInstance().getRedisService().hset(getKey(user.getName()), user.toRedisMap());
+            Common.getInstance().getRedisManager().hset(getKey(user.getName()), user.toRedisMap());
         } catch (Exception e) {
-            LoggerUtil.info(String.format("[ProfileCache] Critical failure during save for user '%s': %s", user.getName(), e.getMessage()));
+            LoggerUtil.error(String.format("[ProfileCache] Critical failure during save for user '%s': %s", user.getName(), e.getMessage()));
         }
     }
 
     public static long getRemoteVersion(@NonNull String name) {
         try {
-            String version = PaperSector.getInstance().getRedisService().hget(getKey(name), "dataVersion");
+            String version = Common.getInstance().getRedisManager().hget(getKey(name), "dataVersion");
 
             if (version == null) {
                 return -1L;
@@ -57,23 +58,23 @@ public final class UserProfileCache {
 
             return Long.parseLong(version);
         } catch (NumberFormatException e) {
-            LoggerUtil.info(String.format("[ProfileCache] Corrupted dataVersion for '%s'. Value is not a valid Long.", name));
+            LoggerUtil.warn(String.format("[ProfileCache] Corrupted dataVersion for '%s'. Value is not a valid Long.", name));
             return 0L;
         } catch (Exception e) {
-            LoggerUtil.info(String.format("[ProfileCache] Redis connection error during version check for '%s'", name));
+            LoggerUtil.error(String.format("[ProfileCache] Redis connection error during version check for '%s'", name));
             return -2L;
         }
     }
 
     public static Optional<Map<String, String>> load(@NonNull String name) {
         try {
-            Map<String, String> data = PaperSector.getInstance().getRedisService().hgetAll(getKey(name));
+            Map<String, String> data = Common.getInstance().getRedisManager().hgetAll(getKey(name));
             if (data == null || data.isEmpty()) {
                 return Optional.empty();
             }
             return Optional.of(data);
         } catch (Exception e) {
-            LoggerUtil.info(String.format("[ProfileCache] Critical failure during load for user '%s': %s", name, e.getMessage()));
+            LoggerUtil.error(String.format("[ProfileCache] Critical failure during load for user '%s': %s", name, e.getMessage()));
             return Optional.empty();
         }
     }
@@ -83,7 +84,7 @@ public final class UserProfileCache {
         long start = System.currentTimeMillis();
 
         try {
-            List<String> keys = PaperSector.getInstance().getRedisService().getKeys(PREFIX + "*");
+            List<String> keys = Common.getInstance().getRedisManager().getKeys(PREFIX + "*");
 
             if (keys == null || keys.isEmpty()) {
                 LoggerUtil.info("[ProfileCache] Warmup aborted: No profile data found in Redis.");
@@ -97,7 +98,7 @@ public final class UserProfileCache {
 
             LoggerUtil.info(String.format("[ProfileCache] Warmup completed. Loaded %d profiles in %dms.", LOCAL_CACHE.size(), (System.currentTimeMillis() - start)));
         } catch (Exception e) {
-            LoggerUtil.info("[ProfileCache] Critical failure during database warmup: " + e.getMessage());
+            LoggerUtil.error("[ProfileCache] Critical failure during database warmup: " + e.getMessage());
         }
     }
 

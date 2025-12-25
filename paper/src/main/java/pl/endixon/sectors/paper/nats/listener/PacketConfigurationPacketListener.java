@@ -20,6 +20,7 @@
 package pl.endixon.sectors.paper.nats.listener;
 
 import org.bukkit.Bukkit;
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.packet.object.PacketConfiguration;
@@ -35,7 +36,7 @@ public class PacketConfigurationPacketListener implements PacketListener<PacketC
 
     @Override
     public void handle(PacketConfiguration packet) {
-        LoggerUtil.info("Configuration packet received from proxy server!");
+
         PaperSector.getInstance().getSectorManager().loadSectorsData(packet.getSectorsData());
         Sector currentSector = PaperSector.getInstance().getSectorManager().getCurrentSector();
         String currentSectorName = PaperSector.getInstance().getSectorManager().getCurrentSectorName();
@@ -52,7 +53,7 @@ public class PacketConfigurationPacketListener implements PacketListener<PacketC
             inited = true;
             Bukkit.getScheduler().runTaskTimerAsynchronously(PaperSector.getInstance(), new SendSectorInfoTask(PaperSector.getInstance()), 0L, 20L * 5);
         }
-        PaperSector.getInstance().getNatsManager().publish(PacketChannel.PACKET_SECTOR_CONNECTED.getSubject(), new PacketSectorConnected(currentSectorName));
+        Common.getInstance().getNatsManager().publish(PacketChannel.PACKET_SECTOR_CONNECTED.getSubject(), new PacketSectorConnected(currentSectorName));
         LoggerUtil.info("Sectors data synchronized and system initialized.");
     }
 }

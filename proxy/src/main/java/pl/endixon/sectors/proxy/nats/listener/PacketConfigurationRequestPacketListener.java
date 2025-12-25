@@ -20,6 +20,7 @@
 package pl.endixon.sectors.proxy.nats.listener;
 
 
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.common.packet.object.PacketConfiguration;
 import pl.endixon.sectors.common.packet.object.PacketConfigurationRequest;
@@ -55,6 +56,6 @@ public class PacketConfigurationRequestPacketListener implements PacketListener<
 
         final PacketConfiguration responsePacket = new PacketConfiguration(sectorsData.toArray(new SectorData[0]));
 
-        VelocitySectorPlugin.getInstance().getNatsManager().publish(targetSector, responsePacket);
+        Common.getInstance().getNatsManager().publish(targetSector, responsePacket);
     }
 }

@@ -21,6 +21,7 @@ package pl.endixon.sectors.paper.sector;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.object.PacketRequestTeleportSector;
 import pl.endixon.sectors.common.sector.SectorType;
@@ -69,7 +70,7 @@ public class SectorTeleport {
 
             LoggerUtil.info(() -> String.format("[Transfer] Sending teleport packet for %s", player.getName()));
             PacketRequestTeleportSector packet = new PacketRequestTeleportSector(player.getName(), sector.getName());
-            PaperSector.getInstance().getNatsManager().publish(PacketChannel.PACKET_TELEPORT_TO_SECTOR.getSubject(), packet);
+            Common.getInstance().getNatsManager().publish(PacketChannel.PACKET_TELEPORT_TO_SECTOR.getSubject(), packet);
             long duration = System.currentTimeMillis() - startTime;
             LoggerUtil.info(() -> String.format("[Transfer] Teleport process finished for %s (ms: %d)", player.getName(), duration));
         });

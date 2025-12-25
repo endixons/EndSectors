@@ -26,6 +26,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.object.PacketSectorChatBroadcast;
 import pl.endixon.sectors.common.sector.SectorType;
@@ -55,6 +56,6 @@ public class PlayerChatListener implements Listener {
         String plainMessage = PlainTextComponentSerializer.plainText().serialize(messageComponent);
 
         PacketSectorChatBroadcast packet = new PacketSectorChatBroadcast(player.getName(), plainMessage);
-        paperSector.getNatsManager().publish(PacketChannel.PACKET_SECTOR_CHAT_BROADCAST.getSubject(), packet);
+        Common.getInstance().getNatsManager().publish(PacketChannel.PACKET_SECTOR_CHAT_BROADCAST.getSubject(), packet);
     }
 }

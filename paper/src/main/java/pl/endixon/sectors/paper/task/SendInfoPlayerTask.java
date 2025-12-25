@@ -22,6 +22,7 @@ package pl.endixon.sectors.paper.task;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
@@ -48,7 +49,7 @@ public class SendInfoPlayerTask extends BukkitRunnable {
         for (Player player : Bukkit.getOnlinePlayers()) {
             UserProfileRepository.getUserAsync(player.getName()).thenAccept(optionalUser -> {
                 optionalUser.ifPresent(user -> {
-                    paperSector.getNatsManager().publish(PacketChannel.PACKET_PLAYER_INFO_REQUEST.getSubject(), new PacketPlayerInfoRequest(user));
+                    Common.getInstance().getNatsManager().publish(PacketChannel.PACKET_PLAYER_INFO_REQUEST.getSubject(), new PacketPlayerInfoRequest(user));
                 });
             });
         }

@@ -12,7 +12,7 @@ import io.nats.client.*;
 import java.time.Duration;
 import pl.endixon.sectors.common.packet.Packet;
 import pl.endixon.sectors.common.packet.PacketListener;
-import pl.endixon.sectors.common.util.Logger;
+import pl.endixon.sectors.common.util.LoggerUtil;
 
 public final class NatsManager {
 
@@ -31,7 +31,7 @@ public final class NatsManager {
 
             this.connection = Nats.connect(options);
         } catch (Exception e) {
-            Logger.info("NATS initialization failed: " + e.getMessage());
+            LoggerUtil.error("NATS initialization failed: " + e.getMessage());
         }
     }
 
@@ -45,7 +45,7 @@ public final class NatsManager {
                 T packet = gson.fromJson(new String(msg.getData()), type);
                 listener.handle(packet);
             } catch (Exception e) {
-                Logger.info("NATS listener error on subject " + subject + ": " + e.getMessage());
+                LoggerUtil.error("NATS listener error on subject " + subject + ": " + e.getMessage());
             }
         });
 
@@ -54,14 +54,14 @@ public final class NatsManager {
 
     public void publish(String subject, Packet packet) {
         if (this.connection == null) {
-            Logger.info("NATS not initialized, cannot publish.");
+            LoggerUtil.error("NATS not initialized, cannot publish.");
             return;
         }
 
         try {
             this.connection.publish(subject, gson.toJson(packet).getBytes());
         } catch (Exception e) {
-            Logger.info("NATS publish failed for subject " + subject + ": " + e.getMessage());
+            LoggerUtil.error("NATS publish failed for subject " + subject + ": " + e.getMessage());
         }
     }
 
@@ -71,7 +71,7 @@ public final class NatsManager {
                 this.connection.close();
             }
         } catch (InterruptedException e) {
-            Logger.info("Error while closing NATS connection: " + e.getMessage());
+            LoggerUtil.error("Error while closing NATS connection: " + e.getMessage());
             Thread.currentThread().interrupt();
         }
     }

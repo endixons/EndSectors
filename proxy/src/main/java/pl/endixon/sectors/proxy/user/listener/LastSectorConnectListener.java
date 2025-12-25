@@ -26,6 +26,8 @@ import com.velocitypowered.api.proxy.Player;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.object.PacketUserCheck;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
@@ -57,7 +59,7 @@ public class LastSectorConnectListener {
         String username = player.getUsername();
         scheduler.schedule(() -> {
             PacketUserCheck packet = new PacketUserCheck(username);
-            plugin.getNatsManager().publish(PacketChannel.USER_CHECK_REQUEST.getSubject(), packet);
+            Common.getInstance().getNatsManager().publish(PacketChannel.USER_CHECK_REQUEST.getSubject(), packet);
         }, 250, TimeUnit.MILLISECONDS);
     }
 }

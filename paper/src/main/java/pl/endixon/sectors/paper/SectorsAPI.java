@@ -44,8 +44,7 @@ public class SectorsAPI {
         this.sectorManager = plugin.getSectorManager();
         this.teleportService = new SectorTeleport(plugin);
         instance = this;
-
-        LoggerUtil.info("SectorsAPI zainicjowane");
+        LoggerUtil.info("SectorsAPI initialized");
     }
 
     public static SectorsAPI getInstance() {

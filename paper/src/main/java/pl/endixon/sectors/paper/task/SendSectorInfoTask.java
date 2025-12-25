@@ -20,6 +20,7 @@
 package pl.endixon.sectors.paper.task;
 
 import org.bukkit.Bukkit;
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.PaperSector;
@@ -49,7 +50,7 @@ public class SendSectorInfoTask implements Runnable {
         float tps = (float) TpsUtil.getTPS();
         PacketSectorInfo info = new PacketSectorInfo(sector.getName(), status, tps, online, max);
 
-        paperSector.getNatsManager().publish(PacketChannel.PACKET_SECTOR_INFO.getSubject(), info);
+        Common.getInstance().getNatsManager().publish(PacketChannel.PACKET_SECTOR_INFO.getSubject(), info);
     }
 
 }

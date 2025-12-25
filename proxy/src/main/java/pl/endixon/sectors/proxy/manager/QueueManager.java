@@ -25,7 +25,6 @@ import pl.endixon.sectors.proxy.sector.SectorQueueRegistry;
 
 import java.util.Optional;
 
-
 public class QueueManager extends SectorQueueRegistry<String, SectorQueue> {
 
     public Optional<SectorQueue> findQueueByPlayer(Player player) {

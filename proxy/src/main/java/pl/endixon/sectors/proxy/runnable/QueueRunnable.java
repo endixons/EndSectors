@@ -25,7 +25,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import pl.endixon.sectors.common.sector.SectorData;
-import pl.endixon.sectors.common.util.Logger;
+
+import pl.endixon.sectors.common.util.LoggerUtil;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.sector.SectorQueue;
 import pl.endixon.sectors.proxy.manager.QueueManager;
@@ -127,7 +128,6 @@ public class QueueRunnable implements Runnable {
 
     private void sendPlayerToSector(final Player player, final String sectorName) {
         this.proxyServer.getServer(sectorName).ifPresent(server -> {
-            Logger.info(String.format("[SectorQueue] Release: %s -> %s", player.getUsername(), sectorName));
             player.resetTitle();
             player.createConnectionRequest(server).fireAndForget();
         });

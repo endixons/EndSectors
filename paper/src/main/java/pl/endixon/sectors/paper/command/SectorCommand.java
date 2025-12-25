@@ -25,6 +25,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.object.PacketConfigurationRequest;
 import pl.endixon.sectors.common.redis.RedisManager;
@@ -53,7 +54,6 @@ public class SectorCommand implements CommandExecutor {
         }
 
         final SectorManager sm = plugin.getSectorManager();
-        final RedisManager redis = plugin.getRedisManager();
 
 
         if (args.length == 0) {
@@ -71,9 +71,7 @@ public class SectorCommand implements CommandExecutor {
 
             case "border" -> {
                 sender.sendMessage(MessagesUtil.BORDER_REFRESHED.get());
-                this.plugin.getNatsManager().publish(
-                        PacketChannel.PACKET_CONFIGURATION_REQUEST.getSubject(),
-                        new PacketConfigurationRequest(sm.getCurrentSectorName())
+                Common.getInstance().getNatsManager().publish(PacketChannel.PACKET_CONFIGURATION_REQUEST.getSubject(), new PacketConfigurationRequest(sm.getCurrentSectorName())
                 );
                 LoggerUtil.info("Requesting new sector configuration from Proxy (triggered by " + sender.getName() + ")");
             }
@@ -93,7 +91,7 @@ public class SectorCommand implements CommandExecutor {
                     return true;
                 }
                 String commandToSend = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-                plugin.getNatsManager().publish(PacketChannel.PACKET_EXECUTE_COMMAND.getSubject(), new PacketExecuteCommand(commandToSend));
+                Common.getInstance().getNatsManager().publish(PacketChannel.PACKET_EXECUTE_COMMAND.getSubject(), new PacketExecuteCommand(commandToSend));
                 sender.sendMessage(MessagesUtil.COMMAND_BROADCASTED.get());
             }
 

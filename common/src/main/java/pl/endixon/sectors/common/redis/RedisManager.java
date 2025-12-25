@@ -26,16 +26,12 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
 import io.lettuce.core.api.sync.RedisCommands;
-import io.lettuce.core.pubsub.RedisPubSubAdapter;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.DefaultClientResources;
-import java.io.Serializable;
 import java.nio.CharBuffer;
 import java.util.*;
 import java.util.function.Consumer;
-import pl.endixon.sectors.common.packet.Packet;
-import pl.endixon.sectors.common.packet.PacketListener;
-import pl.endixon.sectors.common.util.Logger;
+import pl.endixon.sectors.common.util.LoggerUtil;
 
 public class RedisManager {
 
@@ -44,7 +40,6 @@ public class RedisManager {
     private StatefulRedisPubSubConnection<String, String> pubSubConnection;
     private RedisCommands<String, String> syncCommands;
     private RedisAsyncCommands<String, String> asyncCommands;
-    private final Gson gson = new Gson();
     private final Set<String> onlinePlayers = Collections.synchronizedSet(new HashSet<>());
 
     public void initialize(String host, int port, String password) {
@@ -65,7 +60,7 @@ public class RedisManager {
             this.asyncCommands = connection.async();
             this.pubSubConnection = redisClient.connectPubSub();
         } catch (Exception e) {
-            Logger.info("Redis initialization failed: " + e.getMessage());
+            LoggerUtil.error("Redis initialization failed: " + e.getMessage());
         }
     }
 
@@ -75,7 +70,7 @@ public class RedisManager {
         try {
             syncCommands.hset(key, map);
         } catch (Exception e) {
-            Logger.info("Critical Sync HSET failure: " + e.getMessage());
+            LoggerUtil.error("Critical Sync HSET failure: " + e.getMessage());
         }
     }
 
@@ -84,7 +79,7 @@ public class RedisManager {
         try {
             return syncCommands.keys(pattern);
         } catch (Exception e) {
-            Logger.info("Redis getKeys failed for pattern " + pattern + ": " + e.getMessage());
+            LoggerUtil.info("Redis getKeys failed for pattern " + pattern + ": " + e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -94,7 +89,7 @@ public class RedisManager {
         try {
             return syncCommands.hget(key, field);
         } catch (Exception e) {
-            Logger.info("Redis hget failed for key " + key + ": " + e.getMessage());
+            LoggerUtil.info("Redis hget failed for key " + key + ": " + e.getMessage());
             return null;
         }
     }
@@ -105,7 +100,7 @@ public class RedisManager {
             Map<String, String> result = syncCommands.hgetall(key);
             return (result == null) ? Collections.emptyMap() : result;
         } catch (Exception e) {
-            Logger.info("Redis hgetAll failed for key " + key + ": " + e.getMessage());
+            LoggerUtil.info("Redis hgetAll failed for key " + key + ": " + e.getMessage());
             return Collections.emptyMap();
         }
     }
@@ -124,8 +119,7 @@ public class RedisManager {
 
     public void getOnlinePlayers(Consumer<List<String>> callback) {
         if (asyncCommands == null) return;
-        asyncCommands.smembers("online_players")
-                .thenAccept(players -> callback.accept(new ArrayList<>(players)));
+        asyncCommands.smembers("online_players").thenAccept(players -> callback.accept(new ArrayList<>(players)));
     }
 
     public void isPlayerOnline(String name, Consumer<Boolean> callback) {
@@ -134,8 +128,23 @@ public class RedisManager {
     }
 
     public void shutdown() {
-        if (pubSubConnection != null) pubSubConnection.close();
-        if (connection != null) connection.close();
-        if (redisClient != null) redisClient.shutdown();
+        try {
+            if (pubSubConnection != null) pubSubConnection.close();
+        } catch (Exception e) {
+            LoggerUtil.error("[RedisManager] Failed to close pubSubConnection: " + e.getMessage());
+        }
+
+        try {
+            if (connection != null) connection.close();
+        } catch (Exception e) {
+            LoggerUtil.error("[RedisManager] Failed to close connection: " + e.getMessage());
+        }
+
+        try {
+            if (redisClient != null) redisClient.shutdown();
+        } catch (Exception e) {
+            LoggerUtil.error("[RedisManager] Failed to shutdown redisClient: " + e.getMessage());
+        }
     }
+
 }

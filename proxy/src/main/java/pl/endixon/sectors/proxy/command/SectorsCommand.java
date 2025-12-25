@@ -48,7 +48,7 @@ public class SectorsCommand implements SimpleCommand {
 
 
         this.plugin.getSectorManager().clear();
-        this.plugin.loadSectors();
+        this.plugin.loadFiles();
 
         invocation.source().sendMessage(mm.deserialize("<#4ade80><b>SYSTEM</b> <#888888>» <#f2f2f2>Sektory zostały pomyślnie przeładowane z <gold>config.json<#f2f2f2>."));
 

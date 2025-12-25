@@ -49,7 +49,6 @@ public class SectorQueue {
     }
 
     public boolean hasPlayer(final Player player) {
-        return this.players.stream()
-                .anyMatch(p -> p.getUniqueId().equals(player.getUniqueId()));
+        return this.players.stream().anyMatch(p -> p.getUniqueId().equals(player.getUniqueId()));
     }
 }

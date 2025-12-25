@@ -26,7 +26,7 @@ import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.sector.SectorQueue;
 import pl.endixon.sectors.proxy.manager.QueueManager;
 import pl.endixon.sectors.proxy.manager.SectorManager;
-import pl.endixon.sectors.proxy.user.profile.ProfileCache;
+import pl.endixon.sectors.proxy.user.profile.UserProfileCache;
 import pl.endixon.sectors.proxy.util.LoggerUtil;
 import pl.endixon.sectors.common.sector.SectorData;
 
@@ -44,7 +44,7 @@ public class PacketUserCheckProxyListener implements PacketListener<PacketUserCh
         }
 
         final String username = packet.getUsername().toLowerCase();
-        final ProfileCache profileCache = VelocitySectorPlugin.getInstance().getProfileCache();
+        final UserProfileCache userProfileCache = VelocitySectorPlugin.getInstance().getUserProfileCache();
         final UserFlagCache cache = UserFlagCache.getInstance();
 
         if (packet.getExists() == null || !packet.getExists()) {
@@ -54,7 +54,7 @@ public class PacketUserCheckProxyListener implements PacketListener<PacketUserCh
 
         cache.setExists(username, true);
 
-        String resolvedSector = this.resolveSector(username, cache, profileCache);
+        String resolvedSector = this.resolveSector(username, cache, userProfileCache);
 
         if (resolvedSector == null) {
             resolvedSector = this.sectorManager.getRandomNonQueueSector()
@@ -62,7 +62,7 @@ public class PacketUserCheckProxyListener implements PacketListener<PacketUserCh
                     .orElse(null);
 
             if (resolvedSector != null) {
-                this.updateStorages(username, resolvedSector, cache, profileCache);
+                this.updateStorages(username, resolvedSector, cache, userProfileCache);
             }
         }
 
@@ -79,7 +79,7 @@ public class PacketUserCheckProxyListener implements PacketListener<PacketUserCh
                 .ifPresent(sectorQueue::addPlayer);
     }
 
-    private String resolveSector(String username, UserFlagCache cache, ProfileCache redis) {
+    private String resolveSector(String username, UserFlagCache cache, UserProfileCache redis) {
         final String cached = cache.getLastSector(username);
         if (this.isValid(cached)) {
             return cached;
@@ -97,7 +97,7 @@ public class PacketUserCheckProxyListener implements PacketListener<PacketUserCh
         return sector != null && !sector.isBlank() && !sector.trim().equalsIgnoreCase(UNKNOWN_VAL);
     }
 
-    private void updateStorages(String username, String sector, UserFlagCache cache, ProfileCache redis) {
+    private void updateStorages(String username, String sector, UserFlagCache cache, UserProfileCache redis) {
         cache.setLastSector(username, sector);
         redis.setSectorName(username, sector);
     }

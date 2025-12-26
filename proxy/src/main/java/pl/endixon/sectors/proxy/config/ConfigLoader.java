@@ -133,6 +133,11 @@ public class ConfigLoader {
         sectors.put("SPAWN", spawn);
 
 
+        Map<String, Object> queue = new LinkedHashMap<>();
+        queue.put("queue", createSectorMap(-200, -200, 200, 200, "QUEUE", "world"));
+        sectors.put("QUEUE", queue);
+
+
         Map<String, Object> sector = new LinkedHashMap<>();
         sector.put("s1", createSectorMap(-200, 200, 5000, 5000, "SECTOR", "world"));
         sector.put("w1", createSectorMap(-5000, -200, -200, 5000, "SECTOR", "world"));

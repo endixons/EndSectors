@@ -19,8 +19,12 @@
 
 package pl.endixon.sectors.common.app;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.util.AppLogger;
+
+import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.util.logging.Level;
@@ -29,12 +33,11 @@ import java.util.logging.Logger;
 public final class AppBootstrap {
 
     public static void main(String[] args) {
-        suppressLettuceLogging();
+        System.setProperty("io.lettuce.core.epoll", "false");
         Common.initInstance();
         Common app = Common.getInstance();
         AppLogger logger = app.getLogger();
         AppConfig config = loadConfig(logger);
-        app.setAppBootstrap(true);
 
         logger.info("  ");
         logger.info("  ");
@@ -46,14 +49,24 @@ public final class AppBootstrap {
         logger.info("  ");
 
         try {
+            app.setAppBootstrap(true);
             logger.info(">> [1/5] Connecting to NATS Infrastructure...");
             logger.info("  ");
-            app.initializeNats("nats://127.0.0.1:4222", "common-app");
+            app.initializeNats(
+                    config.getNatsUrl(),
+                    config.getNatsClientName()
+            );
 
             logger.info("  ");
             logger.info(">> [2/5] Connecting to Redis...");
             logger.info("  ");
-            app.initializeRedis("127.0.0.1", 6379, "");
+            app.initializeRedis(
+                    config.getRedisHost(),
+                    config.getRedisPort(),
+                    config.getRedisPassword()
+            );
+
+
             logger.info("  ");
 
 
@@ -158,14 +171,9 @@ public final class AppBootstrap {
     }
 
 
-    public static void suppressLettuceLogging() {
-        Logger lettuceLogger = Logger.getLogger("io.lettuce");
-        lettuceLogger.setLevel(Level.OFF);
-    }
-
     private static AppConfig loadConfig(AppLogger logger) {
-        java.io.File configFile = new java.io.File("config.json");
-        com.google.gson.Gson gson = new com.google.gson.GsonBuilder().setPrettyPrinting().create();
+        File configFile = new java.io.File("config.json");
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         try {
             if (!configFile.exists()) {

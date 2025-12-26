@@ -1,27 +1,10 @@
-/*
- *
- * EndSectors – Non-Commercial License
- * (c) 2025 Endixon
- *
- * Permission is granted to use, copy, and
- * modify this software **only** for personal
- * or educational purposes.
- *
- * Commercial use, redistribution, claiming
- * this work as your own, or copying code
- * without explicit permission is strictly
- * prohibited.
- *
- * Visit https://github.com/Endixon/EndSectors
- * for more info.
- *
- */
-
 package pl.endixon.sectors.common.app;
 
 import pl.endixon.sectors.common.Common;
-import pl.endixon.sectors.common.packet.object.*;
 import pl.endixon.sectors.common.util.AppLogger;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 
 public final class AppBootstrap {
 
@@ -29,15 +12,19 @@ public final class AppBootstrap {
         Common.initInstance();
         Common app = Common.getInstance();
         AppLogger logger = app.getLogger();
+
+        logger.info("  ");
         logger.info("  ");
         logger.info("========================================");
         logger.info("    EndSectors - Common App Service     ");
         logger.info("           Status: STARTING             ");
         logger.info("========================================");
         logger.info("  ");
+        logger.info("  ");
 
         try {
             app.setAppBootstrap(true);
+
             logger.info(">> [1/3] Connecting to NATS Infrastructure...");
             logger.info("  ");
             app.initializeNats("nats://127.0.0.1:4222", "common-app");
@@ -51,6 +38,28 @@ public final class AppBootstrap {
             logger.info(">> [3/3] Activating Heartbeat Responder...");
             logger.info("  ");
             app.startHeartbeat();
+
+            new Thread(() -> {
+                OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+                Runtime runtime = Runtime.getRuntime();
+
+                while (true) {
+                    try {
+                        long usedMemory = (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024;
+                        long maxMemory = runtime.maxMemory() / 1024 / 1024;
+                        double cpuLoad = -1;
+
+                        if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
+                            cpuLoad = ((com.sun.management.OperatingSystemMXBean) osBean).getProcessCpuLoad() * 100;
+                        }
+
+                        logger.info(String.format("SYSTEM STATS | RAM: %d/%d MB | CPU: %.2f%%",
+                                usedMemory, maxMemory, cpuLoad));
+
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ignored) {}
+                }
+            }, "System-Monitor-Thread").start();
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 logger.info("  ");
@@ -68,10 +77,12 @@ public final class AppBootstrap {
             }, "Common-Shutdown-Thread"));
 
             logger.info("  ");
+            logger.info("  ");
             logger.info("----------------------------------------");
             logger.info(">>> Common App is READY and LISTENING   ");
             logger.info(">>> System is stable and operational.   ");
             logger.info("----------------------------------------");
+            logger.info("  ");
             logger.info("  ");
 
             Thread.currentThread().join();
@@ -95,7 +106,4 @@ public final class AppBootstrap {
             System.exit(1);
         }
     }
-
-
-
 }

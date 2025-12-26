@@ -25,11 +25,8 @@ import pl.endixon.sectors.common.Common;
 public final class PacketFlowLoggerUtil {
 
     private static final String RESET = "\u001B[0m";
-    private static final String PURPLE = "\u001B[35m";
     private static final String CYAN = "\u001B[36m";
     private static final String GREY = "\u001B[90m";
-    private static final String GREEN = "\u001B[32m";
-
     @Getter
     private boolean enabled = false;
 
@@ -39,6 +36,7 @@ public final class PacketFlowLoggerUtil {
 
         if (activateSniffer) {
             Common.getInstance().getNatsManager().enableNetworkSniffer();
+            Common.getInstance().getLogger().info("PacketFlowLogger sniffer activated.");
         }
     }
 
@@ -48,10 +46,7 @@ public final class PacketFlowLoggerUtil {
             return;
         }
         String preview = rawJson.length() > 150 ? rawJson.substring(0, 150) + "... (trimmed)" : rawJson;
-        String logMessage = PURPLE + "[NATS SPY] 🕵️" + RESET +
-                String.format(" %-45s", CYAN + subject + RESET) +
-                GREY + "| " + preview + RESET;
-
+        String logMessage = CYAN + subject + RESET + GREY + " | " + preview + RESET;
         Common.getInstance().getLogger().info(logMessage);
     }
 }

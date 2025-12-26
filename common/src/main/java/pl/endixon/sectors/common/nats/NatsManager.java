@@ -114,7 +114,6 @@ public final class NatsManager {
         });
 
         snifferDispatcher.subscribe(">");
-        Common.getInstance().getLogger().info("NATS Network Sniffer activated on channel '>'");
     }
 
     public void publish(String subject, Packet packet) {
@@ -136,7 +135,6 @@ public final class NatsManager {
                 this.connection.drain(Duration.ofSeconds(5));
                 this.connection.close();
             }
-
             this.processingExecutor.shutdown();
             if (!this.processingExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
                 this.processingExecutor.shutdownNow();

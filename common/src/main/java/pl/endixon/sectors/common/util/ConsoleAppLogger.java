@@ -20,8 +20,6 @@ public final class ConsoleAppLogger implements AppLogger {
     @Override
     public void error(String message) { log("ERROR", message); }
 
-    private void log(String level, String msg) {
-        System.out.printf("[%s] [%s] %s - %s%n",
-                LocalTime.now().format(timeFormat), level, name, msg);
+    private void log(String level, String msg) {System.out.printf("[%s] [%s] %s - %s%n", LocalTime.now().format(timeFormat), level, name, msg);
     }
 }

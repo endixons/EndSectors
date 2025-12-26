@@ -36,15 +36,10 @@ public class PacketConfigurationRequestPacketListener implements PacketListener<
     @Override
     public void handle(PacketConfigurationRequest packet) {
         final String targetSector = packet.getSector();
-
-        if (targetSector == null || targetSector.isEmpty()) {
-            return;
-        }
+        if (targetSector == null || targetSector.isEmpty()) return;
 
         final SectorManager sectorManager = VelocitySectorPlugin.getInstance().getSectorManager();
-        if (sectorManager == null) {
-            return;
-        }
+        if (sectorManager == null) return;
 
         final Collection<SectorData> sectorsData = sectorManager.getSectorsData();
         if (sectorsData == null || sectorsData.isEmpty()) {
@@ -55,7 +50,6 @@ public class PacketConfigurationRequestPacketListener implements PacketListener<
         LoggerUtil.info("Received configuration packet request from sector: " + targetSector);
 
         final PacketConfiguration responsePacket = new PacketConfiguration(sectorsData.toArray(new SectorData[0]));
-
         Common.getInstance().getNatsManager().publish(targetSector, responsePacket);
     }
 }

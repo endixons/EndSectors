@@ -26,10 +26,13 @@ import io.nats.client.Nats;
 import io.nats.client.Options;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.nats.listener.NatsErrorListener;
 import pl.endixon.sectors.common.packet.Packet;
 import pl.endixon.sectors.common.packet.PacketListener;
@@ -40,6 +43,7 @@ public final class NatsManager {
 
     private final Gson gson = new Gson();
     private final ExecutorService processingExecutor = Executors.newFixedThreadPool(4);
+    private final Map<String, Dispatcher> dispatchers = new ConcurrentHashMap<>();
     private Connection connection;
 
     public void initialize(String url, String connectionName) {
@@ -74,6 +78,11 @@ public final class NatsManager {
                     String json = new String(msg.getData(), StandardCharsets.UTF_8);
                     T packet = this.gson.fromJson(json, packetType);
                     listener.handle(packet);
+
+                    if(Common.getInstance().isAppBootstrap()) {
+                        Common.getInstance().getFlowLogger().logIncoming(subject, packet);
+                    }
+
                 } catch (Exception exception) {
                     LoggerUtil.error("Error processing packet on subject " + subject + ": " + exception.getMessage());
                 }
@@ -81,6 +90,7 @@ public final class NatsManager {
         });
 
         dispatcher.subscribe(subject);
+        dispatchers.put(subject, dispatcher);
     }
 
     public void publish(String subject, Packet packet) {
@@ -92,10 +102,18 @@ public final class NatsManager {
         try {
             byte[] data = this.gson.toJson(packet).getBytes(StandardCharsets.UTF_8);
             this.connection.publish(subject, data);
+
+
+            if (Common.getInstance().isAppBootstrap()) {
+                Common.getInstance().getFlowLogger().logOutgoing(subject, packet);
+            }
+
         } catch (Exception exception) {
             LoggerUtil.error("NATS publish failed for subject " + subject + ": " + exception.getMessage());
         }
     }
+
+
 
     public void shutdown() {
         try {

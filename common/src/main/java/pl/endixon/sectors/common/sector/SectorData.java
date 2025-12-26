@@ -19,8 +19,6 @@
 
 package pl.endixon.sectors.common.sector;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,12 +39,7 @@ public class SectorData implements Serializable {
     private volatile int playerCount;
     private volatile int maxPlayers;
 
-    @JsonCreator
-    public SectorData(@JsonProperty("name") String name,
-                      @JsonProperty("firstCorner") Corner firstCorner,
-                      @JsonProperty("secondCorner") Corner secondCorner,
-                      @JsonProperty("world") String world,
-                      @JsonProperty("type") SectorType type) {
+    public SectorData(String name, Corner firstCorner, Corner secondCorner, String world, SectorType type) {
         this.name = name;
         this.firstCorner = firstCorner;
         this.secondCorner = secondCorner;

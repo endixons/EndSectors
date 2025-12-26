@@ -1,39 +1,39 @@
 package pl.endixon.sectors.common;
 
 import lombok.Getter;
+import lombok.Setter;
+import pl.endixon.sectors.common.app.AppHeartbeat;
 import pl.endixon.sectors.common.nats.NatsManager;
+import pl.endixon.sectors.common.packet.PacketFlowLogger;
 import pl.endixon.sectors.common.redis.RedisManager;
-import pl.endixon.sectors.common.util.LoggerUtil;
+import pl.endixon.sectors.common.util.AppLogger;
+import pl.endixon.sectors.common.util.ConsoleAppLogger; // Twoja nowa klasa
 
 @Getter
 public final class Common {
 
-    @Getter
     private static Common instance;
+
     private final RedisManager redisManager;
     private final NatsManager natsManager;
+    private final PacketFlowLogger flowLogger;
+    private final AppHeartbeat heartbeat;
+    private final AppLogger logger;
+
+    @Setter
+    private boolean isAppBootstrap = false;
 
     public Common() {
         if (instance != null) {
-            throw new IllegalStateException("Common already initialized");
+            throw new IllegalStateException("Common already initialized! Enterprise systems hate duplicates.");
         }
         instance = this;
+        this.logger = new ConsoleAppLogger("EndSectors-Common");
         this.redisManager = new RedisManager();
         this.natsManager = new NatsManager();
+        this.flowLogger = new PacketFlowLogger();
+        this.heartbeat = new AppHeartbeat(natsManager);
     }
-
-    public void initializeRedis(String host, int port, String password) {
-        LoggerUtil.info("Initializing Redis at " + host + ":" + port);
-        this.redisManager.initialize(host, port, password);
-        LoggerUtil.info("Redis initialized successfully!");
-    }
-
-    public void initializeNats(String url, String connectionName) {
-        LoggerUtil.info("Initializing NATS connection '" + connectionName + "' at " + url);
-        this.natsManager.initialize(url, connectionName);
-        LoggerUtil.info("NATS initialized successfully!");
-    }
-
 
     public static void initInstance() {
         if (instance == null) {
@@ -41,14 +41,41 @@ public final class Common {
         }
     }
 
-
-    public void shutdown() {
-        LoggerUtil.info("Shutting down NATS...");
-        natsManager.shutdown();
-        LoggerUtil.info("NATS shutdown complete.");
-        LoggerUtil.info("Shutting down Redis...");
-        redisManager.shutdown();
-        LoggerUtil.info("Redis shutdown complete.");
+    public static Common getInstance() {
+        if (instance == null) {
+            initInstance();
+        }
+        return instance;
     }
 
+    public void initializeRedis(String host, int port, String password) {
+        this.logger.info("Initializing Redis at " + host + ":" + port);
+        this.redisManager.initialize(host, port, password);
+        this.logger.info("Redis initialized successfully!");
+    }
+
+    public void initializeNats(String url, String connectionName) {
+        this.logger.info("Initializing NATS connection '" + connectionName + "' at " + url);
+        this.natsManager.initialize(url, connectionName);
+        this.logger.info("NATS initialized successfully!");
+    }
+
+    public void startHeartbeat() {
+        this.heartbeat.start();
+    }
+
+    public void shutdown() {
+        this.logger.warn("Starting graceful shutdown sequence...");
+
+        this.heartbeat.stop();
+        this.logger.info("Heartbeat stopped.");
+
+        this.natsManager.shutdown();
+        this.logger.info("NATS connection closed.");
+
+        this.redisManager.shutdown();
+        this.logger.info("Redis connection closed.");
+
+        this.logger.info("Shutdown complete. System is offline.");
+    }
 }

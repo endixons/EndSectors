@@ -19,18 +19,20 @@
 
 package pl.endixon.sectors.common.util;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 
+@Getter
+@Setter
 public class Corner implements Serializable {
 
     private int posX;
     private int y;
     private int posZ;
 
-    @JsonCreator
-    public Corner(@JsonProperty("posX") int posX, @JsonProperty("y") int y, @JsonProperty("posZ") int posZ) {
+    public Corner(int posX, int y, int posZ) {
         this.posX = posX;
         this.y = y;
         this.posZ = posZ;

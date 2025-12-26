@@ -35,12 +35,15 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
 import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.object.*;
 import pl.endixon.sectors.proxy.command.SectorsCommand;
 import pl.endixon.sectors.proxy.config.ConfigCreator;
+import pl.endixon.sectors.proxy.hook.CommonHeartbeatHook;
 import pl.endixon.sectors.proxy.nats.listener.*;
+import pl.endixon.sectors.proxy.user.listener.InfrastructureIntegrityListener;
 import pl.endixon.sectors.proxy.user.listener.LastSectorConnectListener;
 import pl.endixon.sectors.proxy.manager.SectorManager;
 import pl.endixon.sectors.proxy.manager.QueueManager;
@@ -63,12 +66,15 @@ public class VelocitySectorPlugin {
     private UserProfileCache userProfileCache;
     private QueueManager QueueManager;
     public ConfigCreator configCreator;
+    private CommonHeartbeatHook heartbeatHook;
 
     @Inject
     public VelocitySectorPlugin(ProxyServer server, @DataDirectory Path dataDirectory) {
         this.server = server;
         this.dataDirectory = dataDirectory;
     }
+
+
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
@@ -80,6 +86,8 @@ public class VelocitySectorPlugin {
         Common.initInstance();
         Common.getInstance().initializeRedis("127.0.0.1", 6379, "");
         Common.getInstance().initializeNats("nats://127.0.0.1:4222", "proxy");
+        this.heartbeatHook = new CommonHeartbeatHook(this.server);
+        this.heartbeatHook.checkConnection();
         this.initNatsSubscriptions();
         this.initListeners();
         this.initCommands();
@@ -90,7 +98,11 @@ public class VelocitySectorPlugin {
 
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
+        if (this.heartbeatHook != null) {
+            this.heartbeatHook.shutdown();
+        }
         Common.getInstance().shutdown();
+        LoggerUtil.info("EndSectors-Proxy has been successfully shut down.");
     }
 
     public void loadFiles() {
@@ -160,6 +172,7 @@ public class VelocitySectorPlugin {
     private void initListeners() {
         server.getEventManager().register(this, new LastSectorConnectListener(this));
         server.getEventManager().register(this, new ProxyPingListener());
+        server.getEventManager().register(this, new InfrastructureIntegrityListener());
         server.getEventManager().register(this, new PlayerConnectionListener());
     }
 

@@ -16,6 +16,7 @@ import pl.endixon.sectors.paper.command.ChannelCommand;
 import pl.endixon.sectors.paper.command.SectorCommand;
 import pl.endixon.sectors.paper.config.ConfigLoader;
 import pl.endixon.sectors.paper.config.MessageLoader;
+import pl.endixon.sectors.paper.hook.CommonHeartbeatHook;
 import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.nats.listener.*;
 import pl.endixon.sectors.paper.nats.packet.PacketExecuteCommand;
@@ -36,6 +37,7 @@ public class PaperSector extends JavaPlugin {
     private SectorTeleport sectorTeleport;
     private ConfigLoader configuration;
     private MessageLoader messageLoader;
+    private CommonHeartbeatHook heartbeatHook;
 
     @Override
     public void onEnable() {
@@ -47,6 +49,8 @@ public class PaperSector extends JavaPlugin {
         this.sectorTeleport = new SectorTeleport(this);
         Common.getInstance().initializeRedis("127.0.0.1", 6379, "");
         Common.getInstance().initializeNats("nats://127.0.0.1:4222", configuration.currentSector);
+        this.heartbeatHook = new CommonHeartbeatHook(this);
+        this.heartbeatHook.checkConnection();
         this.initNatsSubscriptions(configuration);
         Common.getInstance().getNatsManager().publish(PacketChannel.PACKET_CONFIGURATION_REQUEST.getSubject(), new PacketConfigurationRequest(sectorManager.getCurrentSectorName()));
         this.initCommands();
@@ -64,6 +68,9 @@ public class PaperSector extends JavaPlugin {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.kickPlayer("§cSektor " + sectorManager.getCurrentSectorName() + " §czostał zamknięty i jest niedostępny!");
+        }
+        if (this.heartbeatHook != null) {
+            this.heartbeatHook.shutdown();
         }
         Common.getInstance().shutdown();
     }

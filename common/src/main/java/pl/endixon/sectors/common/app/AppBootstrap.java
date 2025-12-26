@@ -25,44 +25,30 @@ public final class AppBootstrap {
         try {
             app.setAppBootstrap(true);
 
-            logger.info(">> [1/3] Connecting to NATS Infrastructure...");
+            logger.info(">> [1/4] Connecting to NATS Infrastructure...");
             logger.info("  ");
             app.initializeNats("nats://127.0.0.1:4222", "common-app");
 
             logger.info("  ");
-            logger.info(">> [2/3] Activating Sniffer Responder...");
+            logger.info(">> [2/4] Activating Sniffer Responder...");
             logger.info("  ");
             app.getFlowLogger().enable(true);
 
             logger.info("  ");
-            logger.info(">> [3/3] Activating Heartbeat Responder...");
+            logger.info(">> [3/4] Activating Heartbeat Responder...");
             logger.info("  ");
             app.startHeartbeat();
 
-            new Thread(() -> {
-                OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-                Runtime runtime = Runtime.getRuntime();
+            logger.info("  ");
+            logger.info(">> [4/4] Starting Resource Monitor (RAM & CPU) every 5 minutes...");
+            logger.info("  ");
+            startResourceMonitor(5 * 60 * 1000);
 
-                while (true) {
-                    try {
-                        long usedMemory = (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024;
-                        long maxMemory = runtime.maxMemory() / 1024 / 1024;
-                        double cpuLoad = -1;
-
-                        if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
-                            cpuLoad = ((com.sun.management.OperatingSystemMXBean) osBean).getProcessCpuLoad() * 100;
-                        }
-
-                        logger.info(String.format("SYSTEM STATS | RAM: %d/%d MB | CPU: %.2f%%",
-                                usedMemory, maxMemory, cpuLoad));
-
-                        Thread.sleep(5000);
-                    } catch (InterruptedException ignored) {}
-                }
-            }, "System-Monitor-Thread").start();
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 logger.info("  ");
+                logger.info("  ");
+
                 logger.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 logger.warn("   SHUTDOWN SIGNAL - CLEANING UP...     ");
 
@@ -73,6 +59,7 @@ public final class AppBootstrap {
                 app.shutdown();
                 logger.info("   Safe shutdown complete. Goodbye!     ");
                 logger.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                logger.info("  ");
                 logger.info("  ");
             }, "Common-Shutdown-Thread"));
 
@@ -89,10 +76,12 @@ public final class AppBootstrap {
 
         } catch (Exception exception) {
             logger.info("  ");
+            logger.info("  ");
             logger.error("========================================");
             logger.error(" FATAL ERROR: Initialization failed!    ");
             logger.error(" Message: " + exception.getMessage());
             logger.error("========================================");
+            logger.info("  ");
             logger.info("  ");
 
             if (app.getHeartbeat() != null) {
@@ -106,4 +95,38 @@ public final class AppBootstrap {
             System.exit(1);
         }
     }
+
+    public static void startResourceMonitor(long intervalMillis) {
+        Thread monitorThread = new Thread(() -> {
+            OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+            Runtime runtime = Runtime.getRuntime();
+
+            while (true) {
+                try {
+                    long usedMemory = runtime.totalMemory() - runtime.freeMemory();
+                    long maxMemory = runtime.maxMemory();
+                    double memoryPercent = usedMemory * 100.0 / maxMemory;
+
+                    double cpuLoad = 0;
+                    try {
+                        cpuLoad = ((com.sun.management.OperatingSystemMXBean) osBean).getProcessCpuLoad() * 100.0;
+                    } catch (Exception ignored) {}
+
+                    Common.getInstance().getLogger().info(String.format(
+                            "[RESOURCE MONITOR] RAM: %dMB / %dMB (%.2f%%) | CPU: %.2f%%",
+                            usedMemory / (1024 * 1024),
+                            maxMemory / (1024 * 1024),
+                            memoryPercent,
+                            cpuLoad
+                    ));
+
+                    Thread.sleep(intervalMillis);
+                } catch (InterruptedException ignored) {}
+            }
+        }, "Resource-Monitor-Thread");
+
+        monitorThread.setDaemon(true);
+        monitorThread.start();
+    }
+
 }

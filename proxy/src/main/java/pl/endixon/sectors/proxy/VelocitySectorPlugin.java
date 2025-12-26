@@ -45,6 +45,7 @@ import pl.endixon.sectors.proxy.user.listener.LastSectorConnectListener;
 import pl.endixon.sectors.proxy.manager.SectorManager;
 import pl.endixon.sectors.proxy.manager.QueueManager;
 import pl.endixon.sectors.proxy.runnable.QueueRunnable;
+import pl.endixon.sectors.proxy.user.listener.PlayerConnectionListener;
 import pl.endixon.sectors.proxy.user.listener.ProxyPingListener;
 import pl.endixon.sectors.proxy.user.profile.UserProfileCache;
 import pl.endixon.sectors.proxy.util.LoggerUtil;
@@ -159,18 +160,7 @@ public class VelocitySectorPlugin {
     private void initListeners() {
         server.getEventManager().register(this, new LastSectorConnectListener(this));
         server.getEventManager().register(this, new ProxyPingListener());
-
-        server.getEventManager().register(this, new Object() {
-            @Subscribe
-            public void onPlayerLogin(LoginEvent event) {
-                Common.getInstance().getRedisManager().addOnlinePlayer(event.getPlayer().getUsername());
-            }
-
-            @Subscribe
-            public void onPlayerDisconnect(DisconnectEvent event) {
-                Common.getInstance().getRedisManager().removeOnlinePlayer(event.getPlayer().getUsername());
-            }
-        });
+        server.getEventManager().register(this, new PlayerConnectionListener());
     }
 
     public ProxyServer getServerInstance() {

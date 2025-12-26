@@ -20,6 +20,8 @@ dependencies {
     implementation("io.nats:jnats:2.20.0")
     implementation("org.mongodb:mongo-java-driver:3.12.14")
     implementation("org.slf4j:slf4j-api:2.0.17")
+    implementation("org.fusesource.jansi:jansi:2.4.1")
+    implementation("ch.qos.logback:logback-classic:1.4.12")
     compileOnly("com.mojang:authlib:1.5.21")
 }
 
@@ -28,28 +30,30 @@ tasks.named<ShadowJar>("shadowJar") {
     exclude("META-INF/*.SF")
     exclude("META-INF/*.DSA")
     exclude("META-INF/*.RSA")
-    exclude("META-INF/**")
 
     dependencies {
         exclude(dependency("net.bytebuddy:.*"))
     }
 
     minimize {
-        exclude(dependency("org.slf4j:.*"))
-        exclude(dependency("com.fasterxml.jackson.core:.*"))
-        exclude(dependency("io.lettuce:.*"))
+        exclude(dependency("org.slf4j:slf4j-api:.*"))
+        exclude(dependency("ch.qos.logback:logback-classic:.*"))
+        exclude(dependency("ch.qos.logback:logback-core:.*"))
+        exclude(dependency("org.slf4j:.*:.*"))
+        exclude(dependency("ch.qos.logback:.*:.*"))
+        exclude(dependency("org.fusesource.jansi:jansi:.*"))
     }
 
     manifest {
         attributes["Main-Class"] = "pl.endixon.sectors.common.app.AppBootstrap"
         attributes["Implementation-Title"] = "EndSectors-CommonApp"
-        attributes["Implementation-Version"] = project.version
+        attributes["Implementation-Version"] = project.version.toString()
         attributes["Multi-Release"] = "true"
     }
 }
 
+
 tasks.build { dependsOn("shadowJar") }
-tasks.assemble { dependsOn("shadowJar") }
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"

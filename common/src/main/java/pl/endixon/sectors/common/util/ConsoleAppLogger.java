@@ -14,24 +14,15 @@ public final class ConsoleAppLogger implements AppLogger {
     @Override
     public void info(String message) {
         logger.info(message);
-        logToConsole("INFO", message);
     }
 
     @Override
     public void warn(String message) {
         logger.warn(message);
-        logToConsole("WARN", message);
     }
 
     @Override
     public void error(String message) {
         logger.error(message);
-        logToConsole("ERROR", message);
-    }
-
-    private void logToConsole(String level, String msg) {
-        java.time.format.DateTimeFormatter timeFormat = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss");
-        String timestamp = java.time.LocalTime.now().format(timeFormat);
-        System.out.printf("[%s] [%s] %s - %s%n", timestamp, level, logger.getName(), msg);
     }
 }

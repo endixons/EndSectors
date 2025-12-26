@@ -19,28 +19,24 @@
 
 package pl.endixon.sectors.proxy;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.connection.DisconnectEvent;
-import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
-import net.kyori.adventure.text.Component;
 import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.object.*;
 import pl.endixon.sectors.proxy.command.SectorsCommand;
-import pl.endixon.sectors.proxy.config.ConfigCreator;
+import pl.endixon.sectors.proxy.config.ConfigLoader;
 import pl.endixon.sectors.proxy.hook.CommonHeartbeatHook;
 import pl.endixon.sectors.proxy.nats.listener.*;
 import pl.endixon.sectors.proxy.user.listener.InfrastructureIntegrityListener;
@@ -59,13 +55,12 @@ public class VelocitySectorPlugin {
 
     @Getter
     private static VelocitySectorPlugin instance;
-    private final ObjectMapper mapper = new ObjectMapper();
     private final ProxyServer server;
     private final Path dataDirectory;
     private SectorManager sectorManager;
     private UserProfileCache userProfileCache;
     private QueueManager QueueManager;
-    public ConfigCreator configCreator;
+    public ConfigLoader configLoader;
     private CommonHeartbeatHook heartbeatHook;
 
     @Inject
@@ -80,12 +75,22 @@ public class VelocitySectorPlugin {
     public void onProxyInitialize(ProxyInitializeEvent event) {
         instance = this;
         this.sectorManager = new SectorManager();
-        this.userProfileCache = new UserProfileCache(this);
-        this.QueueManager = new QueueManager();
         this.loadFiles();
+        this.userProfileCache = new UserProfileCache(this);
+        this.QueueManager = new QueueManager();;
         Common.initInstance();
-        Common.getInstance().initializeRedis("127.0.0.1", 6379, "");
-        Common.getInstance().initializeNats("nats://127.0.0.1:4222", "proxy");
+
+        Common.getInstance().initializeRedis(
+                configLoader.redisHost,
+                configLoader.redisPort,
+                configLoader.redisPassword
+        );
+
+        Common.getInstance().initializeNats(
+                configLoader.natsUrl,
+                configLoader.natsConnectionName
+        );
+
         this.heartbeatHook = new CommonHeartbeatHook(this.server);
         this.heartbeatHook.checkConnection();
         this.initNatsSubscriptions();
@@ -106,8 +111,9 @@ public class VelocitySectorPlugin {
     }
 
     public void loadFiles() {
-        this.configCreator = ConfigCreator.load(this);
+        this.configLoader = ConfigLoader.load(this);
     }
+
 
 
         private void initCommands() {

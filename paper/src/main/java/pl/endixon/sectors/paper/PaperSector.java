@@ -1,3 +1,22 @@
+/*
+ *
+ * EndSectors – Non-Commercial License
+ * (c) 2025 Endixon
+ *
+ * Permission is granted to use, copy, and
+ * modify this software **only** for personal
+ * or educational purposes.
+ *
+ * Commercial use, redistribution, claiming
+ * this work as your own, or copying code
+ * without explicit permission is strictly
+ * prohibited.
+ *
+ * Visit https://github.com/Endixon/EndSectors
+ * for more info.
+ *
+ */
+
 package pl.endixon.sectors.paper;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -47,8 +66,18 @@ public class PaperSector extends JavaPlugin {
         this.protocolManager = ProtocolLibrary.getProtocolManager();
         this.sectorManager = new SectorManager(this, configuration.currentSector);
         this.sectorTeleport = new SectorTeleport(this);
-        Common.getInstance().initializeRedis("127.0.0.1", 6379, "");
-        Common.getInstance().initializeNats("nats://127.0.0.1:4222", configuration.currentSector);
+
+        Common.getInstance().initializeRedis(
+                configuration.redisHost,
+                configuration.redisPort,
+                configuration.redisPassword
+        );
+
+        Common.getInstance().initializeNats(
+                configuration.natsUrl,
+                configuration.natsConnectionName
+        );
+
         this.heartbeatHook = new CommonHeartbeatHook(this);
         this.heartbeatHook.checkConnection();
         this.initNatsSubscriptions(configuration);

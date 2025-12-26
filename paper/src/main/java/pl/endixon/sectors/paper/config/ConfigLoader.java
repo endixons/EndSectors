@@ -19,19 +19,27 @@
 
 package pl.endixon.sectors.paper.config;
 
-import com.fasterxml.jackson.core.util.DefaultIndenter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import pl.endixon.sectors.paper.PaperSector;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import pl.endixon.sectors.paper.PaperSector;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ConfigLoader {
 
     public String currentSector = "spawn_1";
     public boolean scoreboardEnabled = true;
+
+    public String redisHost = "127.0.0.1";
+    public int redisPort = 6379;
+    public String redisPassword = "";
+
+    public String natsUrl = "nats://127.0.0.1:4222";
+    public String natsConnectionName = "spawn_1";
 
     public int borderMessageDistance = 15;
     public int breakBorderDistance = 15;
@@ -47,54 +55,52 @@ public class ConfigLoader {
 
     public Map<String, List<String>> scoreboard = new HashMap<>();
     public Map<String, String> sectorTitles = new HashMap<>();
-    private static final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static ConfigLoader load(File dataFolder) {
         try {
             if (!dataFolder.exists() && !dataFolder.mkdirs()) {
-                PaperSector.getInstance().getLogger().warning("Failed to create configuration directory: " + dataFolder.getAbsolutePath()
-                );
+                PaperSector.getInstance().getLogger().warning("Failed to create configuration directory: " + dataFolder.getAbsolutePath());
             }
 
             File file = new File(dataFolder, "config.json");
 
             if (file.exists()) {
                 try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
-                    return mapper.readValue(reader, ConfigLoader.class);
-                } catch (IOException e) {
-                    PaperSector.getInstance().getLogger().warning("Error while parsing config.json, rolling back to defaults: " + e.getMessage()
-                    );
+                    return gson.fromJson(reader, ConfigLoader.class);
+                } catch (Exception e) {
+                    PaperSector.getInstance().getLogger().warning("Error while parsing config.json, rolling back to defaults: " + e.getMessage());
                     return defaultConfig();
                 }
             } else {
                 ConfigLoader defaultConfig = defaultConfig();
                 try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
-
-                    DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
-                    printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
-
-                    mapper.writer(printer).writeValue(writer, defaultConfig);
+                    gson.toJson(defaultConfig, writer);
                     PaperSector.getInstance().getLogger().info("Default config.json has been generated successfully.");
                 } catch (IOException e) {
-                    PaperSector.getInstance().getLogger().warning("Failed to save default config.json: " + e.getMessage()
-                    );
+                    PaperSector.getInstance().getLogger().warning("Failed to save default config.json: " + e.getMessage());
                 }
                 return defaultConfig;
             }
-
         } catch (Exception e) {
-            PaperSector.getInstance().getLogger().severe("Unexpected critical error during configuration load: " + e.getMessage()
-            );
+            PaperSector.getInstance().getLogger().severe("Unexpected critical error during configuration load: " + e.getMessage());
             return defaultConfig();
         }
     }
 
-
     private static ConfigLoader defaultConfig() {
         ConfigLoader config = new ConfigLoader();
+
         config.currentSector = "spawn_1";
         config.scoreboardEnabled = true;
+
+        config.redisHost = "127.0.0.1";
+        config.redisPort = 6379;
+        config.redisPassword = "";
+
+        config.natsUrl = "nats://127.0.0.1:4222";
+        config.natsConnectionName = "spawn_1";
 
         config.borderMessageDistance = 15;
         config.breakBorderDistance = 15;

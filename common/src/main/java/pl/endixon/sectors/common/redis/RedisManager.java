@@ -19,7 +19,6 @@
 
 package pl.endixon.sectors.common.redis;
 
-import com.google.gson.Gson;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;

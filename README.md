@@ -18,6 +18,9 @@
 
 <hr>
 
+
+
+
 **EndSectors** — experimental Minecraft sector framework for **Paper 1.24.1** with **NATS & Redis** 🗄️⚡
 
 EndSectors allows you to run a single **Minecraft world** across multiple **Spigot servers**, each representing a **sector**.  
@@ -37,11 +40,11 @@ All sectors are connected via **Velocity**, giving players the feeling of one se
 
 ## 🔹 Architecture
 
-- **Common service** – central application that coordinates proxy and sector servers, handles core logic, and ensures proper communication
-- **Velocity proxy** – connects all Spigot servers (sectors) together
-- **Spigot sectors** – each run a part of the world
-- **NATS** – handles messaging between sectors (packet system)
-- **Redis** – stores and syncs player data
+- **Common Service (The Brain)** – The core of the system. It processes logic and monitors the network. **If Common stops, all connected servers automatically shut down** to ensure data safety.
+- **Velocity Proxy (The Connector)** – Merges all sectors into one seamless world and handles player switching between servers.
+- **Spigot Sectors (The Game)** – Dedicated servers running specific parts of the world. They detect sector boundaries and sync with the rest of the system.
+- **NATS** – The high-speed transport layer responsible for **all packet communication** between services.
+- **Redis** – Strictly used for **data storage** and synchronizing player state (inventory, enderchest, stats).
 
 ---
 

@@ -1,3 +1,23 @@
+/*
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
+ *   Commercial use, redistribution, claiming
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
+ *  Visit https://github.com/Endixon/EndSectors
+ *  for more info.
+ *
+ */
+
+
 package pl.endixon.sectors.proxy.hook;
 
 import com.velocitypowered.api.proxy.Player;
@@ -6,6 +26,7 @@ import net.kyori.adventure.text.Component;
 import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.object.PacketHeartbeat;
 import pl.endixon.sectors.common.util.LoggerUtil;
+import pl.endixon.sectors.proxy.util.ProxyMessages;
 
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
@@ -91,7 +112,7 @@ public final class CommonHeartbeatHook {
             return;
         }
         LoggerUtil.info("   [ACTION] Initiating mass disconnect sequence...");
-        final Component disconnectMessage = Component.text("§cPołączenie z infrastrukturą zostało przerwane.\n§7Trwa próba przywrócenia usług...");
+        Component disconnectMessage = ProxyMessages.DISCONNECT_MESSAGE.get();
 
         for (final Player player : onlinePlayers) {
             player.disconnect(disconnectMessage);

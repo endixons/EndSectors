@@ -1,12 +1,31 @@
+/*
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
+ *   Commercial use, redistribution, claiming
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
+ *  Visit https://github.com/Endixon/EndSectors
+ *  for more info.
+ *
+ */
+
 package pl.endixon.sectors.proxy.user.listener;
 
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.util.LoggerUtil;
+import pl.endixon.sectors.proxy.util.ProxyMessages;
 
 
 public final class InfrastructureIntegrityListener {
@@ -22,15 +41,8 @@ public final class InfrastructureIntegrityListener {
         }
     }
 
-
     private void handleEmergencyPing(final ServerPreConnectEvent event) {
         event.setResult(ServerPreConnectEvent.ServerResult.denied());
-        final Component kickMessage = MINI_MESSAGE.deserialize(
-                "<bold><gradient:#ff4b2b:#ff416c>ENDSECTORS</gradient></bold><br><br>" +
-                        "<gray>Obecnie trwają <gradient:#ffe259:#ffa751>PRACE KONSERWACYJNE</gradient>.<br>" +
-                        "<gray>Zapraszamy ponownie za kilka minut!<br><br>" +
-                        "<dark_gray>Status: <red>Tryb Optymalizacji"
-        );
-        event.getPlayer().disconnect(kickMessage);
+        event.getPlayer().disconnect(ProxyMessages.EMERGENCY_KICK.get());
     }
 }

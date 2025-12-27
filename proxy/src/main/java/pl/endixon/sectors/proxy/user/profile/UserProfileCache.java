@@ -28,14 +28,30 @@ import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.util.LoggerUtil;
 
+/*
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
+ *   Commercial use, redistribution, claiming
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
+ *  Visit https://github.com/Endixon/EndSectors
+ *  for more info.
+ *
+ */
 
 public class UserProfileCache {
 
     private static final String KEY_PREFIX = "user:";
     private static final String FIELD_SECTOR = "sectorName";
     private static final String VALUE_UNKNOWN = "unknown";
-    private static final Map<String, Map<String, Object>> LOCAL_CACHE = new ConcurrentHashMap<>();
-
     private final VelocitySectorPlugin plugin;
 
     public UserProfileCache(VelocitySectorPlugin plugin) {

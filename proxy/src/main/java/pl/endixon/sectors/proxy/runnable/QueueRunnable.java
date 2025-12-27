@@ -11,6 +11,7 @@ import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.sector.SectorQueue;
 import pl.endixon.sectors.proxy.manager.QueueManager;
 import pl.endixon.sectors.proxy.manager.SectorManager;
+import pl.endixon.sectors.proxy.util.ProxyMessages;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,19 +139,32 @@ public class QueueRunnable implements Runnable {
     private void dispatchTitle(final Player player, final String sector, final boolean online, final int pos, final int total, final boolean full) {
         final String cacheKey = String.format("q_sys_%s_%b_%b_%d_%d", sector, online, full, pos, total);
         final Component subtitle = SUBTITLE_CACHE.computeIfAbsent(cacheKey, k -> this.buildSubtitle(sector, online, pos, total, full));
-        player.showTitle(Title.title(TITLE_CACHE, subtitle));
+        player.showTitle(Title.title(ProxyMessages.QUEUE_TITLE.get(), subtitle));
     }
 
     private Component buildSubtitle(final String sector, final boolean online, final int pos, final int total, final boolean full) {
+
         if (!online) {
-            return MM.deserialize("<gradient:#ff4b2b:#ff416c>Sektor <white>" + sector + "</white> jest obecnie <bold>OFFLINE</bold></gradient> <gray>(" + pos + "/" + total + ")</gray>");
+            return ProxyMessages.QUEUE_OFFLINE.get(
+                    "{SECTOR}", sector,
+                    "{POS}", String.valueOf(pos),
+                    "{TOTAL}", String.valueOf(total)
+            );
         }
 
         if (full) {
-            return MM.deserialize("<gradient:#f8ff00:#f8ff00>Sektor <white>" + sector + "</white> jest <bold>PELNY</bold></gradient> <gray>(" + pos + "/" + total + ")</gray>");
+            return ProxyMessages.QUEUE_FULL.get(
+                    "{SECTOR}", sector,
+                    "{POS}", String.valueOf(pos),
+                    "{TOTAL}", String.valueOf(total)
+            );
         }
 
-        return MM.deserialize("<gradient:#e0e0e0:#ffffff>Twoja pozycja: </gradient><gradient:#00d2ff:#3a7bd5><bold>" + pos + "</bold></gradient><white><bold> / </bold></white><gradient:#3a7bd5:#00d2ff>" + total + "</gradient>");
+        return ProxyMessages.QUEUE_POSITION.get(
+                "{POS}", String.valueOf(pos),
+                "{TOTAL}", String.valueOf(total)
+        );
     }
+
 
 }

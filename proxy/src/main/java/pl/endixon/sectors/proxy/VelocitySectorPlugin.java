@@ -37,6 +37,7 @@ import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.common.packet.object.*;
 import pl.endixon.sectors.proxy.command.SectorsCommand;
 import pl.endixon.sectors.proxy.config.ConfigLoader;
+import pl.endixon.sectors.proxy.config.MessageLoader;
 import pl.endixon.sectors.proxy.hook.CommonHeartbeatHook;
 import pl.endixon.sectors.proxy.nats.listener.*;
 import pl.endixon.sectors.proxy.user.listener.InfrastructureIntegrityListener;
@@ -61,6 +62,8 @@ public class VelocitySectorPlugin {
     private UserProfileCache userProfileCache;
     private QueueManager QueueManager;
     public ConfigLoader configLoader;
+    public MessageLoader messageLoader;
+
     private CommonHeartbeatHook heartbeatHook;
 
     @Inject
@@ -112,9 +115,9 @@ public class VelocitySectorPlugin {
 
     public void loadFiles() {
         this.configLoader = ConfigLoader.load(this);
+        this.messageLoader = MessageLoader.load(this);
+
     }
-
-
 
         private void initCommands() {
         CommandManager commandManager = server.getCommandManager();

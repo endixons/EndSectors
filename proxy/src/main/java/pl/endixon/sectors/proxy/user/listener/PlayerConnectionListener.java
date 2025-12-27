@@ -28,15 +28,11 @@ public final class PlayerConnectionListener {
 
     @Subscribe
     public void onPlayerLogin(LoginEvent event) {
-        Common.getInstance()
-                .getRedisManager()
-                .addOnlinePlayer(event.getPlayer().getUsername());
+        Common.getInstance().getRedisManager().addOnlinePlayer(event.getPlayer().getUsername());
     }
 
     @Subscribe
     public void onPlayerDisconnect(DisconnectEvent event) {
-        Common.getInstance()
-                .getRedisManager()
-                .removeOnlinePlayer(event.getPlayer().getUsername());
+        Common.getInstance().getRedisManager().removeOnlinePlayer(event.getPlayer().getUsername());
     }
 }

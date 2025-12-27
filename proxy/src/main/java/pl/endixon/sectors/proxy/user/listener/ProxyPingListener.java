@@ -1,3 +1,22 @@
+/*
+ *
+ *  EndSectors  Non-Commercial License
+ *  (c) 2025 Endixon
+ *
+ *  Permission is granted to use, copy, and
+ *  modify this software **only** for personal
+ *  or educational purposes.
+ *
+ *   Commercial use, redistribution, claiming
+ *  this work as your own, or copying code
+ *  without explicit permission is strictly
+ *  prohibited.
+ *
+ *  Visit https://github.com/Endixon/EndSectors
+ *  for more info.
+ *
+ */
+
 package pl.endixon.sectors.proxy.user.listener;
 
 import com.velocitypowered.api.event.Subscribe;
@@ -5,22 +24,16 @@ import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import pl.endixon.sectors.common.sector.SectorData;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.manager.SectorManager;
 import pl.endixon.sectors.proxy.util.CpuUtil;
+import pl.endixon.sectors.proxy.util.ProxyMessages;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-//todo w config wszystko
-
 public final class ProxyPingListener {
-
-    private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
-    private static final ServerPing.SamplePlayer[] EMPTY_SAMPLE = new ServerPing.SamplePlayer[0];
 
     private final VelocitySectorPlugin plugin = VelocitySectorPlugin.getInstance();
     private final ProxyServer proxyServer = plugin.getServer();
@@ -33,75 +46,59 @@ public final class ProxyPingListener {
             return;
         }
 
-        final int proxyOnline = this.proxyServer.getPlayerCount();
+        int proxyOnline = this.proxyServer.getPlayerCount();
         int totalMax = 0;
         int activeSectors = 0;
 
-        for (final SectorData sector : this.sectorManager.getSectorsData()) {
+        for (SectorData sector : this.sectorManager.getSectorsData()) {
             if (sector.isOnline()) {
                 totalMax += sector.getMaxPlayers();
                 activeSectors++;
             }
         }
 
-        final Component motd = MINI_MESSAGE.deserialize(
-                "<bold><gradient:#2afcff:#00bfff>ENDSECTORS</gradient></bold> <gray>•</gray> " +
-                        "<gradient:#ffe259:#ffa751>FRAMEWORK</gradient>\n" +
-                        "<gradient:#fffa65:#f79c4c>Support Discord: https://dsc.gg/endsectors</gradient>"
+        double cpuLoad = CpuUtil.getCpuLoad();
+        String formattedCpu = String.format("%.1f%%", cpuLoad);
+        String cpuColor = (cpuLoad >= 70.0) ? "§c" : (cpuLoad >= 40.0) ? "§e" : "§a";
+
+        Component motd = ProxyMessages.PROXY_MOTD.getMotd(
+                "{ACTIVE_SECTORS}", String.valueOf(activeSectors),
+                "{ONLINE_PLAYERS}", String.valueOf(proxyOnline),
+                "{CPU}", cpuColor + formattedCpu
         );
 
+        List<String> hoverLines = ProxyMessages.PROXY_HOVER.getRawLines(
+                "{ACTIVE_SECTORS}", String.valueOf(activeSectors),
+                "{ONLINE_PLAYERS}", String.valueOf(proxyOnline),
+                "{CPU}", cpuColor + formattedCpu
+        );
 
-        final List<ServerPing.SamplePlayer> hover = new ArrayList<>();
-        final double cpuLoad = CpuUtil.getCpuLoad();
-        final String formattedCpu = String.format("%.1f%%", cpuLoad);
-        final String cpuColor = (cpuLoad >= 70.0) ? "§c" : (cpuLoad >= 40.0) ? "§e" : "§a";
+        ServerPing.SamplePlayer[] hover = hoverLines.stream()
+                .map(line -> new ServerPing.SamplePlayer(line, UUID.randomUUID()))
+                .toArray(ServerPing.SamplePlayer[]::new);
 
-        hover.add(this.createSample("§b§lENDSECTORS FRAMEWORK"));
-        hover.add(this.createSample("§7Status systemu: §aONLINE"));
-        hover.add(this.createSample("§7Support Discord: §6https://dsc.gg/endsectors"));
-
-        hover.add(this.createSample(""));
-        hover.add(this.createSample("§7Aktywne sektory: §a" + activeSectors));
-        hover.add(this.createSample("§7Gracze online: §a" + proxyOnline));
-        hover.add(this.createSample("§7Obciążenie CPU: " + cpuColor + formattedCpu));
-        hover.add(this.createSample(""));
-
-        final ServerPing.Builder builder = event.getPing().asBuilder()
+        ServerPing.Builder builder = event.getPing().asBuilder()
                 .description(motd)
                 .onlinePlayers(proxyOnline)
                 .maximumPlayers(totalMax)
-                .samplePlayers(hover.toArray(EMPTY_SAMPLE));
+                .samplePlayers(hover);
 
         event.setPing(builder.build());
     }
 
     private void handleEmergencyPing(final ProxyPingEvent event) {
-        final Component emergencyMotd = MINI_MESSAGE.deserialize(
-                "<bold><gradient:#ff4b2b:#ff416c>ENDSECTORS</gradient></bold> <gray>•</gray> " +
-                        "<gradient:#ffe259:#ffa751>PRACE KONSERWACYJNE</gradient>\n" +
-                        "<gradient:#fffa65:#f79c4c>Discord Support: https://dsc.gg/endsectors</gradient>\n"
-        );
+        Component emergencyMotd = ProxyMessages.EMERGENCY_MOTD.getMotd();
+        List<String> hoverLines = ProxyMessages.EMERGENCY_HOVER.getRawLines();
 
+        ServerPing.SamplePlayer[] hover = hoverLines.stream()
+                .map(line -> new ServerPing.SamplePlayer(line, UUID.randomUUID()))
+                .toArray(ServerPing.SamplePlayer[]::new);
 
-        final List<ServerPing.SamplePlayer> emergencyHover = new ArrayList<>();
-        emergencyHover.add(this.createSample("§6§lDODATKOWE INFORMACJE"));
-        emergencyHover.add(this.createSample("§7Aktualnie przeprowadzamy §eplanowane §7prace"));
-        emergencyHover.add(this.createSample("§7nad wydajnością naszych systemów."));
-        emergencyHover.add(this.createSample(""));
-        emergencyHover.add(this.createSample("§fPrzewidywany czas powrotu: §aKilka minut"));
-        emergencyHover.add(this.createSample("§eDziękujemy za cierpliwość!"));
-        emergencyHover.add(this.createSample("§6§lDiscord Support: §fhttps://dsc.gg/endsectors"));
-
-        final ServerPing.Builder builder = event.getPing().asBuilder()
+        ServerPing.Builder builder = event.getPing().asBuilder()
                 .description(emergencyMotd)
                 .onlinePlayers(0)
                 .maximumPlayers(0)
-                .samplePlayers(emergencyHover.toArray(EMPTY_SAMPLE));
-
+                .samplePlayers(hover);
         event.setPing(builder.build());
-    }
-
-    private ServerPing.SamplePlayer createSample(final String text) {
-        return new ServerPing.SamplePlayer(text, UUID.randomUUID());
     }
 }

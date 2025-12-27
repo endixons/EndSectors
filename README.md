@@ -30,6 +30,13 @@ Check out an **interactive sector map example**: [Sectors Generator](https://osk
 
 ---
 
+## 💬 Discord Support
+
+Need help, want to chat, or follow updates? Join our **official Discord server**: [dsc.gg/endsectors](https://dsc.gg/endsectors)  
+Stay connected with the community and get real-time support.
+
+---
+
 ## ⚙️ Requirements
 
 - **Common service** – must be running before proxy or sectors

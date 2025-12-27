@@ -18,7 +18,7 @@
 
 <hr>
 
-**EndSectors** — experimental Minecraft sector framework for **Paper 1.24.1** with **NATS & Redis** 🗄️⚡
+**EndSectors** — experimental Minecraft sector framework for **Paper 1.21.4** with **NATS & Redis** 🗄️⚡
 
 EndSectors allows you to run a single **Minecraft world** across multiple **Spigot servers**, each representing a **sector**.  
 All sectors are connected via **Velocity**, giving players the feeling of one seamless world.

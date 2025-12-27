@@ -101,12 +101,10 @@ public class MessageLoader {
         m.put("SectorNotFoundMessage", "<#ef4444>Brak dostępnych sektorów");
         m.put("ONLY_IN_SPAWN_MESSAGE", "<#ef4444>Tej komendy możesz użyć tylko na sektorze SPAWN!");
 
-
         m.put("SHOW_GUI_TITLE", "<#ff7f11>Lista sektorów");
         m.put("SHOW_ITEM_NAME", "<#4ade80>Sektor <#facc15>{SECTOR}");
         m.put("SHOW_STATUS_ONLINE", "<#4ade80>Online");
         m.put("SHOW_STATUS_OFFLINE", "<#ef4444>Offline");
-
 
         m.put("CHANNEL_GUI_TITLE", "<#60a5fa>Lista kanałów");
         m.put("CHANNEL_ITEM_NAME", "<gray>Kanal <green>{SECTOR}");

@@ -27,8 +27,7 @@ import pl.endixon.sectors.common.util.AppLogger;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public final class AppBootstrap {
 
@@ -50,6 +49,8 @@ public final class AppBootstrap {
 
         try {
             app.setAppBootstrap(true);
+
+
             logger.info(">> [1/5] Connecting to NATS Infrastructure...");
             logger.info("  ");
             app.initializeNats(

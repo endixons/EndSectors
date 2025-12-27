@@ -22,6 +22,8 @@ java {
 
 dependencies {
     implementation(project(":common"))
+    implementation("io.javalin:javalin:5.6.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.0")
     compileOnly("com.velocitypowered:velocity-api:3.1.1")
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")

@@ -41,13 +41,10 @@ public enum ProxyMessages {
 
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
-
-
     public String getRaw() {
         return VelocitySectorPlugin.getInstance().getMessageLoader().getMessages()
                 .getOrDefault(this.name(), "<red>Missing message: " + this.name() + ">");
     }
-
 
     public Component get(String... replacements) {
         String raw = getRaw();
@@ -56,7 +53,6 @@ public enum ProxyMessages {
         }
         return MM.deserialize(raw);
     }
-
 
     public Component getMotd(String... replacements) {
         List<String> motdLines = VelocitySectorPlugin.getInstance()
@@ -73,7 +69,6 @@ public enum ProxyMessages {
         }
         return MM.deserialize(raw);
     }
-
 
     public List<String> getRawLines(String... replacements) {
         List<String> rawLines = VelocitySectorPlugin.getInstance()

@@ -22,6 +22,9 @@ package pl.endixon.sectors.tools.config;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import pl.endixon.sectors.tools.utils.LoggerUtil;

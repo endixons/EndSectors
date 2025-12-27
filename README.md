@@ -114,7 +114,7 @@ This section explains how to link the physical server map with individual sector
 > If you define `spawn_1 = "127.0.0.1:30001"` in `velocity.toml`, you must ensure:
 > * Proxy Config has: `"sectors": { "SPAWN": { "spawn_1": { ... } } }`
 > * Paper Config has: `"currentSector": "spawn_1"`
-> * 
+
 
 ### 1. Proxy Configuration (The Map Layout)
 Located in: `plugins/EndSectorsProxy/config.json`

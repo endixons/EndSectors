@@ -73,9 +73,9 @@ public class MessageLoader {
         Map<String, List<String>> motd = config.motd;
 
         m.put("QUEUE_TITLE", "<gradient:#00d2ff:#3a7bd5><bold>KOLEJKA</bold></gradient>");
-        m.put("QUEUE_OFFLINE", "<gradient:#ff4b2b:#ff416c>Sektor <white>{sector}</white> jest obecnie <bold>OFFLINE</bold></gradient> <gray>({pos}/{total})</gray>");
-        m.put("QUEUE_FULL", "<gradient:#f8ff00:#f8ff00>Sektor <white>{sector}</white> jest <bold>PELNY</bold></gradient> <gray>({pos}/{total})</gray>");
-        m.put("QUEUE_POSITION", "<gradient:#e0e0e0:#ffffff>Twoja pozycja: </gradient><gradient:#00d2ff:#3a7bd5><bold>{pos}</bold></gradient><white><bold> / </bold></white><gradient:#3a7bd5:#00d2ff>{total}</gradient>");
+        m.put("QUEUE_OFFLINE", "<gradient:#ff4b2b:#ff416c>Sektor <white>{SECTOR}</white> jest obecnie <bold>OFFLINE</bold></gradient> <gray>({POS}/{TOTAL})</gray>");
+        m.put("QUEUE_FULL", "<gradient:#f8ff00:#f8ff00>Sektor <white>{SECTOR}</white> jest <bold>PELNY</bold></gradient> <gray>({POS}/{TOTAL})</gray>");
+        m.put("QUEUE_POSITION", "<gradient:#e0e0e0:#ffffff>Twoja pozycja: </gradient><gradient:#00d2ff:#3a7bd5><bold>{POS}</bold></gradient><white><bold> / </bold></white><gradient:#3a7bd5:#00d2ff>{TOTAL}</gradient>");
 
         m.put("DISCONNECT_MESSAGE",
                 "<red>Połączenie z infrastrukturą zostało przerwane.\n" +

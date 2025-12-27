@@ -102,16 +102,16 @@ public class MessageLoader {
         m.put("ONLY_IN_SPAWN_MESSAGE", "<#ef4444>Tej komendy możesz użyć tylko na sektorze SPAWN!");
 
 
-        m.put("SHOW_GUI_TITLE", "<#fbbf24>Lista sektorów");
+        m.put("SHOW_GUI_TITLE", "<#ff7f11>Lista sektorów");
         m.put("SHOW_ITEM_NAME", "<#4ade80>Sektor <#facc15>{SECTOR}");
-        m.put("SHOW_STATUS_ONLINE", "<#4ade80>ONLINE");
-        m.put("SHOW_STATUS_OFFLINE", "<#ef4444>OFFLINE");
+        m.put("SHOW_STATUS_ONLINE", "<#4ade80>Online");
+        m.put("SHOW_STATUS_OFFLINE", "<#ef4444>Offline");
 
 
         m.put("CHANNEL_GUI_TITLE", "<#60a5fa>Lista kanałów");
-        m.put("CHANNEL_ITEM_NAME", "<#38bdf8>Kanał <#facc15>{CHANNEL}");
-        m.put("CHANNEL_OFFLINE", "<#ef4444>OFFLINE");
-        m.put("CHANNEL_CURRENT", "<#4ade80>AKTUALNY");
+        m.put("CHANNEL_ITEM_NAME", "<gray>Kanal <green>{SECTOR}");
+        m.put("CHANNEL_OFFLINE", "<#ef4444>Kanał jest offline");
+        m.put("CHANNEL_CURRENT", "<#facc15>Znajdujesz się na tym kanale");
         m.put("CHANNEL_CLICK_TO_CONNECT", "<#facc15>Kliknij, aby się połączyć");
 
 
@@ -148,6 +148,7 @@ public class MessageLoader {
         l.put("HELP_MENU", List.of(
                 "<dark_gray>────────── <gold><b>POMOC SEKTORY</b> <dark_gray>──────────",
                 "<gold>/sector reload <dark_gray>- <gray>Przeładowanie konfiguracji",
+                "<gold>/sector border <dark_gray>- <gray>Synchronize sector borders\",",
                 "<gold>/sector where <dark_gray>- <gray>Aktualny sektor",
                 "<gold>/sector show <dark_gray>- <gray>Lista sektorów",
                 "<gold>/sector execute <komenda> <dark_gray>- <gray>Globalna komenda",

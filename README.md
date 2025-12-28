@@ -32,6 +32,7 @@ All sectors are connected via **Velocity**, giving players the feeling of one se
 > [!TIP]
 > **Production Ready Architecture**
 > This framework is designed for horizontal scaling and high-stability environments.
+
 ---
 
 ## 🔹 Architecture

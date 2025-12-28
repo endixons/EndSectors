@@ -394,6 +394,7 @@ Handles entry point interactions. Notice the structured `motd` section allowing 
 Handles in-game feedback, GUIs, and command responses.
 
 
+
 ```json
 {
   "messages": {

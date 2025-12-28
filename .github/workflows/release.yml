@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - uses: actions/checkout@v3
 
       - name: Set up JDK 21
@@ -29,18 +30,14 @@ jobs:
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
-      - name: Build all modules
-        run: ./gradlew clean build --no-daemon
+      - name: Build all modules and collect jars
+        run: ./gradlew clean build collectAllJars --no-daemon
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: all-jars
-          path: |
-            paper/build/libs/*.jar
-            proxy/build/libs/*.jar
-            common/build/libs/*.jar
-            Tools/build/libs/*.jar
+          path: build/all-jars/*.jar
 
   release:
     needs: build
@@ -56,16 +53,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: all-jars
-          path: build/libs
+          path: build/all-jars
 
-      - name: Get version from Gradle
-        run: echo "VERSION=$(./gradlew -q printVersion)" >> $GITHUB_ENV
+      - name: Set version for release
+        run: echo "VERSION=$(./gradlew -q printVersion | sed 's/-SNAPSHOT//')" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
-          files: build/libs/*.jar
+          files: build/all-jars/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

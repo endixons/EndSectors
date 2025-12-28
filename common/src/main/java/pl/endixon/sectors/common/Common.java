@@ -84,16 +84,12 @@ public final class Common {
 
     public void shutdown() {
         this.logger.warn("Starting graceful shutdown sequence...");
-
         this.heartbeat.stop();
         this.logger.info("Heartbeat stopped.");
-
         this.natsManager.shutdown();
         this.logger.info("NATS connection closed.");
-
         this.redisManager.shutdown();
         this.logger.info("Redis connection closed.");
-
         this.logger.info("Shutdown complete. System is offline.");
     }
 }

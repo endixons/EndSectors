@@ -26,7 +26,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     implementation("io.lettuce:lettuce-core:7.2.1.RELEASE")
-    implementation("io.netty:netty-all:4.2.7.Final")
+    implementation("io.netty:netty-all:4.2.9.Final")
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("org.mongodb:mongo-java-driver:3.12.14")
     compileOnly("com.mojang:authlib:1.5.21")

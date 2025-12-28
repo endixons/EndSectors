@@ -18,7 +18,7 @@
 
 <hr>
 
-**EndSectors** — experimental Minecraft sector framework for **Paper 1.21.4** with **NATS & Redis** 🗄️⚡
+**EndSectors** — professional Minecraft sector framework for **Paper 1.21.4** with **NATS & Redis** 🗄️⚡
 
 EndSectors allows you to run a single **Minecraft world** across multiple **Spigot servers**, each representing a **sector**.  
 All sectors are connected via **Velocity**, giving players the feeling of one seamless world.
@@ -29,10 +29,9 @@ All sectors are connected via **Velocity**, giving players the feeling of one se
 - Inter-server messaging and packets are handled by **NATS**
 - **Common service** coordinates proxy and sectors, handles core logic, and ensures proper communication
 
-> [!WARNING]
-> This project is **experimental** and **not intended for production use**.  
-> It is designed for testing and learning sector-based world mechanics.
-
+> [!TIP]
+> **Production Ready Architecture**
+> This framework is designed for horizontal scaling and high-stability environments.
 ---
 
 ## 🔹 Architecture
@@ -390,7 +389,7 @@ Handles entry point interactions. Notice the structured `motd` section allowing 
 }
 ```
 ### 2. Paper Configuration (plugins/EndSectors/message.json)
-   Handles in-game feedback, GUIs, and command responses.
+Handles in-game feedback, GUIs, and command responses.
 
 ```json
 {
@@ -476,5 +475,5 @@ Handles entry point interactions. Notice the structured `motd` section allowing 
 ```
 ---
 ### 🤝 Contributing
-Feel free to open an **Issue** if you find a bug or a **Pull Request** if you want to improve the logic. 
+Feel free to open an **Issue** if you find a bug or a **Pull Request** if you want to improve the logic.
 Special thanks to all testers!

@@ -49,15 +49,12 @@ public final class AppBootstrap {
 
         try {
             app.setAppBootstrap(true);
-
-
             logger.info(">> [1/5] Connecting to NATS Infrastructure...");
             logger.info("  ");
             app.initializeNats(
                     config.getNatsUrl(),
                     config.getNatsClientName()
             );
-
             logger.info("  ");
             logger.info(">> [2/5] Connecting to Redis...");
             logger.info("  ");
@@ -66,27 +63,19 @@ public final class AppBootstrap {
                     config.getRedisPort(),
                     config.getRedisPassword()
             );
-
-
             logger.info("  ");
-
-
             logger.info("  ");
             logger.info(">> [3/5] Activating Sniffer Responder...");
             logger.info("  ");
             app.getFlowLogger().enable(config.isFlowLoggerEnabled());
-
             logger.info("  ");
             logger.info(">> [4/5] Activating Heartbeat Responder...");
             logger.info("  ");
             app.startHeartbeat();
-
             logger.info("  ");
             logger.info(">> [5/5] Starting Resource Monitor (RAM & CPU)");
             logger.info("  ");
             startResourceMonitor(config.getResourceMonitorInterval());
-
-
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 logger.info("  ");
                 logger.info("  ");
@@ -104,7 +93,6 @@ public final class AppBootstrap {
                 logger.info("  ");
                 logger.info("  ");
             }, "Common-Shutdown-Thread"));
-
             logger.info("  ");
             logger.info("  ");
             logger.info("----------------------------------------");
@@ -113,9 +101,7 @@ public final class AppBootstrap {
             logger.info("----------------------------------------");
             logger.info("  ");
             logger.info("  ");
-
             Thread.currentThread().join();
-
         } catch (Exception exception) {
             logger.info("  ");
             logger.info("  ");
@@ -125,7 +111,6 @@ public final class AppBootstrap {
             logger.error("========================================");
             logger.info("  ");
             logger.info("  ");
-
             if (app.getHeartbeat() != null) {
                 app.getHeartbeat().broadcastEmergencyStop(exception.getMessage());
             }
@@ -161,7 +146,6 @@ public final class AppBootstrap {
                             memoryPercent,
                             cpuLoad
                     ));
-
                     Thread.sleep(intervalMillis);
                 } catch (InterruptedException ignored) {}
             }

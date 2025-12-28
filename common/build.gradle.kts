@@ -30,7 +30,6 @@ tasks.named<ShadowJar>("shadowJar") {
     exclude("META-INF/*.SF")
     exclude("META-INF/*.DSA")
     exclude("META-INF/*.RSA")
-
     dependencies {
         exclude(dependency("net.bytebuddy:.*"))
     }

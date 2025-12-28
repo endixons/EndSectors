@@ -28,12 +28,12 @@ import pl.endixon.sectors.common.util.Corner;
 @Setter
 public class SectorData implements Serializable {
 
-    private final String name;
-    private final Corner firstCorner;
-    private final Corner secondCorner;
-    private final String world;
-    private final SectorType type;
-    private final Corner center;
+    private  String name;
+    private  Corner firstCorner;
+    private  Corner secondCorner;
+    private  String world;
+    private  SectorType type;
+    private  Corner center;
     private volatile boolean online;
     private volatile double tps;
     private volatile int playerCount;

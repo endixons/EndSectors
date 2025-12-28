@@ -1,4 +1,4 @@
-name: Auto Sync Dev with Main
+name: Sync Dev with Main
 
 on:
   push:
@@ -6,24 +6,28 @@ on:
       - main
 
 jobs:
-  sync-dev:
+  reset-dev:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup Git
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
 
-      - name: Rebase dev onto main
+      - name: Backup dev branch (opcjonalnie)
+        run: |
+          git fetch origin dev:dev-backup || echo "Backup already exists"
+
+      - name: Reset dev branch to main
         run: |
           git fetch origin
           git checkout dev
-          git rebase origin/main || git rebase --abort
+          git reset --hard origin/main
           git push origin dev --force-with-lease

@@ -26,7 +26,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
     implementation("io.lettuce:lettuce-core:7.1.0.RELEASE")
-    implementation("io.netty:netty-all:4.2.7.Final")
+    implementation("io.netty:netty-all:4.2.9.Final")
     implementation("com.google.code.gson:gson:2.13.2")
     compileOnly("net.kyori:adventure-text-minimessage:4.26.1")
     compileOnly("com.mojang:authlib:1.5.21")

@@ -61,6 +61,7 @@ jobs:
       - name: Get version from Gradle
         run: echo "VERSION=$(./gradlew -q printVersion)" >> $GITHUB_ENV
 
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:

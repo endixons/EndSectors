@@ -32,7 +32,6 @@ import pl.endixon.sectors.common.util.PacketFlowLoggerUtil;
 public final class Common {
 
     private static Common instance;
-
     private final RedisManager redisManager;
     private final NatsManager natsManager;
     private final PacketFlowLoggerUtil flowLogger;

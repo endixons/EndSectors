@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = "pl.endixon.sectors"
-    version = "1.6-BETA"
+    version = "1.7-BETA"
 
     repositories {
         mavenCentral()

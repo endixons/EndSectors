@@ -26,12 +26,9 @@ jobs:
       - name: Set version output
         id: set_version
         run: |
-          # Używamy :printVersion, aby pobrać wersję tylko z root project
-          # xargs usuwa białe znaki i entery
           RAW_VERSION=$(./gradlew -q :printVersion | xargs)
           CLEAN_VERSION=$(echo $RAW_VERSION | sed 's/-SNAPSHOT//')
           echo "VERSION=$CLEAN_VERSION" >> $GITHUB_OUTPUT
-          echo "Detected version: $CLEAN_VERSION"
 
       - name: Build all modules
         run: ./gradlew clean build --no-daemon
@@ -66,7 +63,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.build.outputs.release_version }}
-          name: Release ${{ needs.build.outputs.release_version }}
+          name: v${{ needs.build.outputs.release_version }} - ${{ github.event.head_commit.message }}
+          body: ${{ github.event.head_commit.message }}
           files: "release-artifacts/**/*.jar"
           draft: false
           prerelease: false

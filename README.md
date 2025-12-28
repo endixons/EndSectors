@@ -60,7 +60,6 @@ The project consists of 4 artifacts. You must install and configure them in the 
 
 ### 📦 Module List
 
-
 | Module | Filename | Role |
 | :--- | :--- | :--- |
 | **Common App** | `common-1.6-BETA-all.jar` | **The Brain.** Standalone app. Must run first. |
@@ -482,4 +481,4 @@ Handles in-game feedback, GUIs, and command responses.
 ---
 ### 🤝 Contributing
 Feel free to open an **Issue** if you find a bug or a **Pull Request** if you want to improve the logic.
-Special thanks to all testers!
+Special thanks to all testers!!

@@ -29,6 +29,7 @@ import pl.endixon.sectors.common.util.ConsoleAppLogger;
 import pl.endixon.sectors.common.util.PacketFlowLoggerUtil;
 
 @Getter
+@Setter
 public final class Common {
 
     private static Common instance;
@@ -37,9 +38,7 @@ public final class Common {
     private final PacketFlowLoggerUtil flowLogger;
     private final AppHeartbeat heartbeat;
     private final AppLogger logger;
-
-    @Setter
-    private boolean isAppBootstrap = false;
+    private boolean AppBootstrap = false;
 
     public Common() {
         if (instance != null) {

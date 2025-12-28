@@ -20,7 +20,7 @@ dependencies {
     implementation("io.nats:jnats:2.24.1")
     implementation("org.mongodb:mongo-java-driver:3.12.14")
     implementation("org.slf4j:slf4j-api:2.0.17")
-    implementation("org.fusesource.jansi:jansi:2.4.1")
+    implementation("org.fusesource.jansi:jansi:2.4.2")
     implementation("ch.qos.logback:logback-classic:1.5.23")
     compileOnly("com.mojang:authlib:1.5.21")
 }

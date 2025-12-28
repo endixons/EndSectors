@@ -25,7 +25,7 @@ dependencies {
     compileOnly("com.velocitypowered:velocity-api:3.1.1")
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
-    implementation("io.lettuce:lettuce-core:7.1.0.RELEASE")
+    implementation("io.lettuce:lettuce-core:7.2.1.RELEASE")
     implementation("io.netty:netty-all:4.2.7.Final")
     implementation("com.google.code.gson:gson:2.13.2")
     compileOnly("net.kyori:adventure-text-minimessage:4.26.1")

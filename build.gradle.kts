@@ -35,6 +35,11 @@ allprojects {
         setEnabled(false)
     }
 
+    tasks.register("printVersion") {
+        doLast {
+            println(project.version)
+        }
+    }
 
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"

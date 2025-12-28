@@ -42,9 +42,8 @@ public class Corner implements Serializable {
         this(posX, 0, posZ);
     }
 
-
     @Override
     public String toString() {
-        return "Corner{posX=" + posX + ", y=" + y + ", posZ=" + posZ + '}';
+        return "Corner {posX=" + posX + ", y=" + y + ", posZ=" + posZ + '}';
     }
 }

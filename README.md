@@ -57,6 +57,7 @@ All sectors are connected via **Velocity**, giving players the feeling of one se
 
 The project consists of 4 artifacts. You must install and configure them in the correct order.
 
+
 ### 📦 Module List
 
 | Module | Filename | Role |

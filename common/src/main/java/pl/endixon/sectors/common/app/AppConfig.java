@@ -7,11 +7,9 @@ import lombok.Setter;
 public class AppConfig {
     private String natsUrl = "nats://127.0.0.1:4222";
     private String natsClientName = "common-app";
-
     private String redisHost = "127.0.0.1";
     private int redisPort = 6379;
     private String redisPassword = "";
-
     private boolean flowLoggerEnabled = true;
     private long resourceMonitorInterval = 300000;
 }

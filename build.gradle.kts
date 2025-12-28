@@ -2,7 +2,7 @@ import com.diffplug.gradle.spotless.SpotlessExtension
 
 plugins {
     id("java")
-    id("com.diffplug.spotless") version "6.23.0"
+    id("com.diffplug.spotless") version "8.1.0"
 }
 
 allprojects {

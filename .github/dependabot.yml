@@ -1,12 +1,12 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
-    directory: "/"          # katalog z Twoim build.gradle
+    directory: "/"          
     schedule:
-      interval: "weekly"    # co tydzień sprawdzaj aktualizacje
+      interval: "weekly"   
     commit-message:
-      prefix: "deps"        # PR-y będą miały np. "deps: update xyz"
+      prefix: "deps"       
     open-pull-requests-limit: 5
     ignore:
-      - dependency-name: "org.springframework.boot"  # jeśli chcesz pominąć
+      - dependency-name: "org.springframework.boot"  
         versions: ["<3.0.0"]

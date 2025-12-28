@@ -47,4 +47,9 @@ allprojects {
         options.encoding = "UTF-8"
         options.compilerArgs.addAll(listOf("-Xlint:all", "-parameters"))
     }
+
+    tasks.jar {
+        enabled = false
+    }
+
 }

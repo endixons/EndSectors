@@ -16,7 +16,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     implementation("io.lettuce:lettuce-core:7.1.0.RELEASE")
     implementation("io.netty:netty-all:4.2.7.Final")
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.13.2")
     implementation("io.nats:jnats:2.24.1")
     implementation("org.mongodb:mongo-java-driver:3.12.14")
     implementation("org.slf4j:slf4j-api:2.0.17")

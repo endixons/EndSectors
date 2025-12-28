@@ -13,7 +13,6 @@ java {
 
 dependencies {
     compileOnly("org.projectlombok:lombok:1.18.30")
-
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     implementation("io.lettuce:lettuce-core:7.1.0.RELEASE")
     implementation("io.netty:netty-all:4.2.7.Final")

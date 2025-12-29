@@ -79,7 +79,7 @@ public class VelocitySectorPlugin {
         instance = this;
         this.sectorManager = new SectorManager();
         this.loadFiles();
-        this.userProfileCache = new UserProfileCache(this);
+        this.userProfileCache = new UserProfileCache();
         this.QueueManager = new QueueManager();;
         Common.initInstance();
 

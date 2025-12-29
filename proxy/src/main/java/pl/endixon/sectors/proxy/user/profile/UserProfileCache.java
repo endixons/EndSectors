@@ -53,6 +53,7 @@ public class UserProfileCache {
     private static final String FIELD_SECTOR = "sectorName";
     private static final String VALUE_UNKNOWN = "unknown";
 
+
     public Optional<String> getSectorName(String playerName) {
         if (playerName == null || playerName.isBlank()) {
             return Optional.empty();

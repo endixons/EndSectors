@@ -100,13 +100,13 @@ public final class CommonHeartbeatHook {
         this.awaitingPong.set(false);
 
         final Collection<Player> onlinePlayers = this.server.getAllPlayers();
-
+        LoggerUtil.error("");
         LoggerUtil.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         LoggerUtil.error("   CRITICAL FAILURE: COMMON SYSTEM IS OFFLINE       ");
         LoggerUtil.error("   REASON: " + reason);
         LoggerUtil.error("   CURRENT LOAD: " + onlinePlayers.size() + " active sessions.");
         LoggerUtil.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
+        LoggerUtil.error("");
         if (onlinePlayers.isEmpty()) {
             LoggerUtil.warn("[LUCKY STRIKE] Infrastructure collapsed, but the proxy was empty. No UX impact reported.");
             return;
@@ -120,8 +120,8 @@ public final class CommonHeartbeatHook {
         LoggerUtil.info("   [SUCCESS] Cleaned up " + onlinePlayers.size() + " sessions.");
     }
 
-    public boolean isCommonReady() {
-        return this.commonAlive.get();
+    public boolean isCommonOffline() {
+        return !this.commonAlive.get();
     }
 
     public void shutdown() {

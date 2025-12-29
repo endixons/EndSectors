@@ -30,7 +30,6 @@ public final class PacketFlowLoggerUtil {
     @Getter
     private boolean enabled = false;
 
-
     public void enable(boolean activateSniffer) {
         this.enabled = true;
 
@@ -39,7 +38,6 @@ public final class PacketFlowLoggerUtil {
             Common.getInstance().getLogger().info("PacketFlowLogger sniffer activated.");
         }
     }
-
 
     public void logSniffedPacket(String subject, String rawJson) {
         if (!this.enabled) {

@@ -19,14 +19,14 @@
 
 package pl.endixon.sectors.proxy.sector;
 
+import lombok.Getter;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Getter
 public class SectorQueueRegistry<T, ID> {
 
     private final Map<T, ID> map = new ConcurrentHashMap<>();
 
-    public Map<T, ID> getMap() {
-        return this.map;
-    }
 }

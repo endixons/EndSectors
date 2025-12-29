@@ -38,8 +38,6 @@ public class PacketSendMessageToPlayerPacketListener implements PacketListener<P
         if (playerName == null) {
             return;
         }
-
-        server.getPlayer(playerName).ifPresent(player -> player.sendMessage(Component.text(packet.getMessage()))
-        );
+        server.getPlayer(playerName).ifPresent(player -> player.sendMessage(Component.text(packet.getMessage())));
     }
 }

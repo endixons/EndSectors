@@ -41,7 +41,6 @@ public final class NatsManager {
 
     private final Gson gson = new Gson();
     private final ExecutorService processingExecutor = Executors.newFixedThreadPool(4);
-    private final Map<String, Dispatcher> dispatchers = new ConcurrentHashMap<>();
     private Connection connection;
 
     private static boolean isApp() {
@@ -81,13 +80,12 @@ public final class NatsManager {
                     T packet = this.gson.fromJson(json, packetType);
                     listener.handle(packet);
                 } catch (Exception exception) {
-                    LoggerUtil.error("Error processing packet on subject " + subject + ": " + exception.getMessage());
+                    LoggerUtil.error("Error processing packet on subject " + subject, exception);
                 }
             });
         });
 
         dispatcher.subscribe(subject);
-        dispatchers.put(subject, dispatcher);
     }
 
 

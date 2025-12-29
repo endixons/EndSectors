@@ -35,18 +35,19 @@ public class TeleportToSectorListener implements PacketListener<PacketRequestTel
         String playerName = packet.getPlayerName();
         String sectorName = packet.getSector();
 
-        LoggerUtil.info("Otrzymano request teleportu gracza " + playerName + " do sektora " + sectorName);
+        LoggerUtil.info("Received teleport request for player '" + playerName + "' to sector '" + sectorName + "'");
+
 
         Optional<Player> playerOptional = VelocitySectorPlugin.getInstance().getServer().getPlayer(playerName);
         if (playerOptional.isEmpty()) {
-            LoggerUtil.error("Nie udało się teleportować gracza " + playerName + " (gracz nie istnieje)");
+            LoggerUtil.error("Teleport failed for player '" + playerName + "': player not found");
             return;
         }
 
         Optional<RegisteredServer> serverOptional = VelocitySectorPlugin.getInstance().getServer().getServer(sectorName);
         if (serverOptional.isEmpty()) {
             playerOptional.ifPresent(player -> player.disconnect(Component.text("Brak dostępnych serwerów.")));
-            LoggerUtil.error("Nie udało się teleportować gracza " + playerName + " (serwer " + sectorName + " nie istnieje)");
+            LoggerUtil.error("Teleport failed for player '" + playerName + "': target sector '" + sectorName + "' does not exist");
             return;
         }
 
@@ -54,6 +55,6 @@ public class TeleportToSectorListener implements PacketListener<PacketRequestTel
         RegisteredServer server = serverOptional.get();
 
         player.createConnectionRequest(server).fireAndForget();
-        LoggerUtil.info("Gracz " + playerName + " teleportowany natychmiast do " + sectorName);
+        LoggerUtil.info("Player '" + playerName + "' has been successfully teleported to sector '" + sectorName + "'");
     }
 }

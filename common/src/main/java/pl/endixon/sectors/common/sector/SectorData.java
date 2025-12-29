@@ -46,7 +46,7 @@ public class SectorData implements Serializable {
         this.world = world;
         this.type = type;
         this.center = new Corner(
-                firstCorner.getPosX() + (secondCorner.getPosX() - firstCorner.getPosX()) / 2,
+  firstCorner.getPosX() + (secondCorner.getPosX() - firstCorner.getPosX()) / 2,
                 0,
                 firstCorner.getPosZ() + (secondCorner.getPosZ() - firstCorner.getPosZ()) / 2
         );

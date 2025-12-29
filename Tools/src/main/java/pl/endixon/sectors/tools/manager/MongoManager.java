@@ -46,7 +46,6 @@ public class MongoManager {
         database = client.getDatabase(databaseName).withCodecRegistry(pojoCodecRegistry);
     }
 
-
     public void disconnect() {
         if (client != null) {
             client.close();

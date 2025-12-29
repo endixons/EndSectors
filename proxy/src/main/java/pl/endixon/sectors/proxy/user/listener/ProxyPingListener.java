@@ -41,7 +41,7 @@ public final class ProxyPingListener {
 
     @Subscribe
     public void onProxyPing(final ProxyPingEvent event) {
-        if (this.plugin.getHeartbeatHook() == null || !this.plugin.getHeartbeatHook().isCommonReady()) {
+        if (this.plugin.getHeartbeatHook() == null || this.plugin.getHeartbeatHook().isCommonOffline()) {
             this.handleEmergencyPing(event);
             return;
         }

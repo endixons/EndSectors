@@ -32,19 +32,17 @@ public class ChatUtil {
     private static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
 
     public static String fixColors(String message) {
-        if (message == null)
+        if (message == null) {
             return "";
+        }
         return message.replace("%C", COLOR).replace("%M", COLOR_MARK).replace("&", "§");
     }
 
     public static String fixColorsLogger(String message) {
-        if (message == null)
+        if (message == null) {
             return "";
+        }
         return message.replace("%C", COLOR_LOGGER).replace("%M", COLOR_LOGGER_MARK).replace("&", "§");
-    }
-
-    public static String fixAllColors(String message) {
-        return ChatUtil.fixColors(fixHexColors(message));
     }
 
     public static String fixHexColors(String message) {

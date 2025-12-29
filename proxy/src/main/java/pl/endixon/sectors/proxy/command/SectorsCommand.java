@@ -20,6 +20,7 @@
 package pl.endixon.sectors.proxy.command;
 
 import com.velocitypowered.api.command.SimpleCommand;
+import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import pl.endixon.sectors.proxy.VelocitySectorPlugin;
 import pl.endixon.sectors.proxy.util.LoggerUtil;
@@ -46,13 +47,10 @@ public class SectorsCommand implements SimpleCommand {
             return;
         }
 
-
         this.plugin.getSectorManager().clear();
         this.plugin.loadFiles();
-
         invocation.source().sendMessage(mm.deserialize("<#4ade80><b>SYSTEM</b> <#888888>» <#f2f2f2>Sektory zostały pomyślnie przeładowane z <gold>config.json<#f2f2f2>."));
-
-        String senderName = (invocation.source() instanceof com.velocitypowered.api.proxy.Player player)
+        String senderName = (invocation.source() instanceof Player player)
                 ? player.getUsername()
                 : "Console";
 

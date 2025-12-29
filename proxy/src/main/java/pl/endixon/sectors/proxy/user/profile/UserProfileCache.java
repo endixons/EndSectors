@@ -52,11 +52,6 @@ public class UserProfileCache {
     private static final String KEY_PREFIX = "user:";
     private static final String FIELD_SECTOR = "sectorName";
     private static final String VALUE_UNKNOWN = "unknown";
-    private final VelocitySectorPlugin plugin;
-
-    public UserProfileCache(VelocitySectorPlugin plugin) {
-        this.plugin = plugin;
-    }
 
     public Optional<String> getSectorName(String playerName) {
         if (playerName == null || playerName.isBlank()) {

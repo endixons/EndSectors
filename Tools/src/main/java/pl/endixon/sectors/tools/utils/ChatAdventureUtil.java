@@ -1,4 +1,5 @@
 /*
+ *
  * EndSectors – Non-Commercial License
  * (c) 2025 Endixon
  *
@@ -13,6 +14,7 @@
  *
  * Visit https://github.com/Endixon/EndSectors
  * for more info.
+ *
  */
 
 package pl.endixon.sectors.tools.utils;

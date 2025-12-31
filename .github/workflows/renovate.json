@@ -1,0 +1,23 @@
+{
+  "extends": ["config:base"],
+  "assignees": ["endixons"],
+  "gradle": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["*"],
+      "matchDirectories": ["/", "/common", "/proxy", "/paper", "/tools"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "branch"
+    },
+    {
+      "matchPackagePatterns": ["*"],
+      "matchDirectories": ["/", "/common", "/proxy", "/paper", "/tools"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    }
+  ],
+  "timezone": "Europe/Warsaw"
+}

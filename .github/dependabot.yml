@@ -7,7 +7,6 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "deps"
-    versioning-strategy: "increase"
     assignees:
       - endixons
 
@@ -18,7 +17,6 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "deps-common"
-    versioning-strategy: "increase"
     assignees:
       - endixons
 
@@ -29,7 +27,6 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "deps-proxy"
-    versioning-strategy: "increase"
     assignees:
       - endixons
 
@@ -40,7 +37,6 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "deps-paper"
-    versioning-strategy: "increase"
     assignees:
       - endixons
 
@@ -51,6 +47,5 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "deps-tools"
-    versioning-strategy: "increase"
     assignees:
       - endixons

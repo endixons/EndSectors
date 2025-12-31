@@ -4,23 +4,53 @@ updates:
     directory: "/"     
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    versioning-strategy: "increase"
+    assignees:
+      - endixons
 
   - package-ecosystem: "gradle"
     directory: "/common"   
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps-common"
+    versioning-strategy: "increase"
+    assignees:
+      - endixons
 
   - package-ecosystem: "gradle"
     directory: "/proxy"  
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps-proxy"
+    versioning-strategy: "increase"
+    assignees:
+      - endixons
 
   - package-ecosystem: "gradle"
     directory: "/paper" 
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps-paper"
+    versioning-strategy: "increase"
+    assignees:
+      - endixons
 
   - package-ecosystem: "gradle"
     directory: "/tools" 
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps-tools"
+    versioning-strategy: "increase"
+    assignees:
+      - endixons

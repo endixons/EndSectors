@@ -65,7 +65,6 @@ tasks.named<ShadowJar>("shadowJar") {
         exclude(dependency("net.bytebuddy:.*"))
     }
 
-
     minimize()
 }
 

@@ -69,7 +69,6 @@ tasks.assemble {
     dependsOn(tasks.named("shadowJar"))
 }
 
-
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-Xlint:none")

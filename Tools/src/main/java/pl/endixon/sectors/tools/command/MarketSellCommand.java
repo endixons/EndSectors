@@ -21,7 +21,7 @@ public class MarketSellCommand implements CommandExecutor {
 
     private final EndSectorsToolsPlugin plugin = EndSectorsToolsPlugin.getInstance();
     private static final MiniMessage MM = MiniMessage.miniMessage();
-    private static final String PREFIX_FORMAT = "<newline><dark_gray><bold>» <gradient:#ffaa00:#ffff55>MARKET</gradient> <dark_gray><bold>«";
+    private static final String PREFIX_FORMAT = "<newline><dark_gray><bold>» <gradient:#ffaa00:#ffff55>MARKET</gradient> <dark_gray><bold>« ";
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {

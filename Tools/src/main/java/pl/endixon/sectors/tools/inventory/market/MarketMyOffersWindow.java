@@ -51,19 +51,19 @@ public class MarketMyOffersWindow {
                         Map<Integer, ItemStack> leftOver = player.getInventory().addItem(itemsToReturn[0]);
                         if (!leftOver.isEmpty()) {
                             leftOver.values().forEach(i -> player.getWorld().dropItemNaturally(player.getLocation(), i));
-                            player.sendMessage("§8[§6Rynek§8] §7Brak miejsca, przedmiot wyrzucono pod nogi.");
+                            player.sendMessage("§7Brak miejsca, przedmiot wyrzucono pod nogi.");
                             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
                         }
                     }
 
                     event.getClickedInventory().setItem(event.getSlot(), new ItemStack(Material.AIR));
 
-                    player.sendMessage("§8[§6Rynek§8] §aOferta została pomyślnie wycofana.");
+                    player.sendMessage("§aOferta została pomyślnie wycofana.");
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1f, 1.5f);
                     Bukkit.getScheduler().runTask(plugin, this::open);
 
                 } else {
-                    player.sendMessage("§8[§6Rynek§8] §cNie udało się wycofać oferty (może została sprzedana?).");
+                    player.sendMessage("§cNie udało się wycofać oferty (może została sprzedana?).");
                     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
                     player.closeInventory();
                 }

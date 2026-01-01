@@ -109,7 +109,7 @@ public class MarketWindow {
         window.setSlot(47, new StackBuilder(new ItemStack(Material.DIAMOND_SWORD)).name("§bEkwipunek").build(), event -> new MarketWindow(player, profile, "WEAPONS", 0));
         window.setSlot(48, new StackBuilder(new ItemStack(Material.NETHER_STAR)).name("§fWszystko").build(), event -> new MarketWindow(player, profile, "ALL", 0));
         window.setSlot(49, MarketItemRenderer.prepareMyOffersIcon(myOffers).build(), event -> new MarketMyOffersWindow(player, profile));
-        window.setSlot(50, new StackBuilder(new ItemStack(Material.CHEST)).name("§6Inne").build(), event -> new MarketWindow(player, profile, "OTHER", 0));
+        window.setSlot(50, new StackBuilder(new ItemStack(Material.HEAVY_CORE)).name("§6Inne").build(), event -> new MarketWindow(player, profile, "OTHER", 0));
         window.setSlot(51, new StackBuilder(new ItemStack(Material.BARRIER)).name("§cZamknij").build(), event -> player.closeInventory());
 
         window.setSlot(52, MarketItemRenderer.prepareStorageIcon(expiredCount).build(), event -> {

@@ -20,7 +20,7 @@ commands:
   wystaw:
     description: Wystawianie przedmiotu na rynek.
     aliases: [sell, sprzedaj, wystawprzedmiot]
-    usage: /wystaw <cena>
+    usage: /wystaw <cena> <ilosc>
   balance:
     description: Sprawdz stan konta lub zarzadzaj finansami.
     aliases: [bal, money, eco, portfel]

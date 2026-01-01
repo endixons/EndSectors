@@ -97,9 +97,9 @@ public class ConfigLoader {
 
         config.redisHost = "127.0.0.1";
         config.redisPort = 6379;
-        config.redisPassword = "";
+        config.redisPassword = "password";
 
-        config.natsUrl = "nats://127.0.0.1:4222";
+        config.natsUrl = "nats://user:password@127.0.0.1:4222";
         config.natsConnectionName = "spawn_1";
 
         config.borderMessageDistance = 15;

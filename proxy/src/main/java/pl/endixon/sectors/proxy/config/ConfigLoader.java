@@ -51,8 +51,8 @@ public class ConfigLoader {
             ConfigLoader config = new ConfigLoader();
             config.redisHost = (String) root.getOrDefault("redisHost", "127.0.0.1");
             config.redisPort = ((Number) root.getOrDefault("redisPort", 6379)).intValue();
-            config.redisPassword = (String) root.getOrDefault("redisPassword", "");
-            config.natsUrl = (String) root.getOrDefault("natsUrl", "nats://127.0.0.1:4222");
+            config.redisPassword = (String) root.getOrDefault("redisPassword", "password");
+            config.natsUrl = (String) root.getOrDefault("natsUrl", "nats://user:password@127.0.0.1:4222");
             config.natsConnectionName = (String) root.getOrDefault("natsConnectionName", "proxy");
 
             Map<String, Map<String, Object>> sectorsMap = (Map<String, Map<String, Object>>) root.get("sectors");
@@ -122,8 +122,8 @@ public class ConfigLoader {
         Map<String, Object> root = new LinkedHashMap<>();
         root.put("redisHost", "127.0.0.1");
         root.put("redisPort", 6379);
-        root.put("redisPassword", "");
-        root.put("natsUrl", "nats://127.0.0.1:4222");
+        root.put("redisPassword", "password");
+        root.put("natsUrl", "nats://user:password@127.0.0.1:4222");
         root.put("natsConnectionName", "proxy");
 
         Map<String, Object> sectors = new LinkedHashMap<>();
@@ -176,8 +176,8 @@ public class ConfigLoader {
         ConfigLoader config = new ConfigLoader();
         config.redisHost = "127.0.0.1";
         config.redisPort = 6379;
-        config.redisPassword = "";
-        config.natsUrl = "nats://127.0.0.1:4222";
+        config.redisPassword = "password";
+        config.natsUrl = "nats://user:password@127.0.0.1:4222";
         config.natsConnectionName = "proxy";
         return config;
     }

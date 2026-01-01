@@ -72,7 +72,7 @@ public class ConfigLoader {
 
     private static ConfigLoader defaultConfig() {
         ConfigLoader config = new ConfigLoader();
-        config.mongoUri = "mongodb://localhost:27017";
+        config.mongoUri = "mongodb://user:password@127.0.0.1:27017/admin?authSource=admin";
         config.mongoDatabase  = "endsectors";
         return config;
     }

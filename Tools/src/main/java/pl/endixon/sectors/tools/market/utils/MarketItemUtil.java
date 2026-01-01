@@ -42,11 +42,30 @@ public final class MarketItemUtil {
 
     public static String formatElapsedTime(long timestamp) {
         long diff = System.currentTimeMillis() - timestamp;
-        long minutes = diff / (60 * 1000);
-        if (minutes < 60) return minutes + " min temu";
+
+        if (diff < 0) {
+            return "przed chwilą";
+        }
+
+        long seconds = diff / 1000;
+
+        if (seconds < 60) {
+            return seconds + " s temu";
+        }
+
+        long minutes = seconds / 60;
+
+        if (minutes < 60) {
+            return minutes + " min temu";
+        }
+
         long hours = minutes / 60;
-        if (hours < 24) return hours + " h temu";
-        return (hours / 24) + " dni temu";
+
+        if (hours < 24) {
+            return hours + " h temu";
+        }
+        long days = hours / 24;
+        return days + " dni temu";
     }
 
 }

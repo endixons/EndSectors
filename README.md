@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://i.imgur.com/02HDc8O.jpeg" alt="EndSectors Banner" width="100%" />
+  <img src="https://i.imgur.com/Bafdjs5.jpeg" alt="EndSectors Banner" width="100%" />
 
   <h1>EndSectors</h1>
 

@@ -1,41 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <profiles version="12">
     <profile kind="CodeFormatterProfile" name="EndSectorsFinalStyle" version="12">
-
-        <!-- NIE łam linii w argumentach metod -->
         <setting id="org.eclipse.jdt.core.formatter.align_multiline_parameters_in_calls" value="false"/>
         <setting id="org.eclipse.jdt.core.formatter.align_multiline_parameters" value="false"/>
-
-        <!-- Wcięcia i tabulacja -->
         <setting id="org.eclipse.jdt.core.formatter.indentation.size" value="4"/>
         <setting id="org.eclipse.jdt.core.formatter.tabulation.char" value="space"/>
         <setting id="org.eclipse.jdt.core.formatter.tabulation.size" value="4"/>
         <setting id="org.eclipse.jdt.core.formatter.continuation_indentation" value="4"/>
-
-        <!-- Nawiasy dla metod/klas -->
         <setting id="org.eclipse.jdt.core.formatter.brace_position_for_method_declaration" value="next_line_if_wrapped"/>
         <setting id="org.eclipse.jdt.core.formatter.brace_position_for_type_declaration" value="next_line_if_wrapped"/>
-
-        <!-- Nawiasy w bloku pozostaw w tej samej linii -->
         <setting id="org.eclipse.jdt.core.formatter.brace_position_for_block" value="same_line"/>
         <setting id="org.eclipse.jdt.core.formatter.brace_position_for_if_statement" value="same_line"/>
         <setting id="org.eclipse.jdt.core.formatter.brace_position_for_for_statement" value="same_line"/>
         <setting id="org.eclipse.jdt.core.formatter.brace_position_for_while_statement" value="same_line"/>
-		
         <setting id="org.eclipse.jdt.core.formatter.brace_position_for_switch_statement" value="same_line"/>
-
-        <!-- Wymuszaj nawiasy dla prostych bloków -->
         <setting id="org.eclipse.jdt.core.formatter.always_use_braces" value="true"/>
-
-        <!-- Nie zostawiaj prostych bloków w jednej linii -->
         <setting id="org.eclipse.jdt.core.formatter.keep_simple_if_on_one_line" value="false"/>
         <setting id="org.eclipse.jdt.core.formatter.keep_simple_blocks_in_one_line" value="false"/>
         <setting id="org.eclipse.jdt.core.formatter.keep_simple_methods_in_one_line" value="false"/>
         <setting id="org.eclipse.jdt.core.formatter.keep_simple_lambdas_in_one_line" value="false"/>
-		
         <setting id="org.eclipse.jdt.core.formatter.keep_simple_if_with_instanceof_in_one_line" value="false"/>
-
-        <!-- Linia maksymalnie długa -->
         <setting id="org.eclipse.jdt.core.formatter.comment.format_line_length" value="5500"/>
         <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="5000"/>
     </profile>

@@ -20,17 +20,18 @@ java {
 }
 
 dependencies {
-    implementation(project(":common"))
+    compileOnly(project(":common"))
     compileOnly(project(":paper"))
+    implementation("org.mongodb:mongo-java-driver:3.12.14")
+    compileOnly("io.lettuce:lettuce-core:7.2.1.RELEASE")
+    compileOnly("io.netty:netty-all:4.2.9.Final")
+    compileOnly("com.google.code.gson:gson:2.13.2")
+    compileOnly("fr.mrmicky:fastboard:2.1.5")
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    compileOnly("net.dmulloy2:ProtocolLib:5.4.0")
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
-    implementation("io.lettuce:lettuce-core:7.2.1.RELEASE")
-    implementation("io.netty:netty-all:4.2.9.Final")
-    implementation("com.google.code.gson:gson:2.13.2")
-    implementation("org.mongodb:mongo-java-driver:3.12.14")
-    compileOnly("net.dmulloy2:ProtocolLib:5.4.0")
-    implementation("fr.mrmicky:fastboard:2.1.5")
 }
 
 tasks.jar {
@@ -53,11 +54,13 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveFileName.set("EndSectors-tools.jar")
     exclude("META-INF/**")
 
+    relocate("io.netty", "pl.endixon.sectors.shadow.netty")
+    relocate("org.mongodb", "pl.endixon.sectors.shadow.mongodb")
+
     dependencies {
         exclude(dependency("net.bytebuddy:.*"))
     }
 
-    minimize()
 }
 
 

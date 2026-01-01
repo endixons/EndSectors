@@ -26,7 +26,6 @@ dependencies {
         exclude(group = "org.slf4j")
         exclude(group = "org.fusesource.jansi")
     }
-
     compileOnly("io.lettuce:lettuce-core:7.2.1.RELEASE")
     compileOnly("io.netty:netty-all:4.2.9.Final")
     compileOnly("com.google.code.gson:gson:2.13.2")

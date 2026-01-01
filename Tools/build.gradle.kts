@@ -53,7 +53,6 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
     archiveFileName.set("EndSectors-tools.jar")
     exclude("META-INF/**")
-
     relocate("io.netty", "pl.endixon.sectors.shadow.netty")
     relocate("org.mongodb", "pl.endixon.sectors.shadow.mongodb")
 

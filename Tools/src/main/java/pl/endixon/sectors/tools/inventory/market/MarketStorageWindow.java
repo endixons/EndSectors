@@ -62,11 +62,11 @@ public class MarketStorageWindow {
                     }
 
                     event.getClickedInventory().setItem(event.getSlot(), new ItemStack(Material.AIR));
-                    player.sendMessage("§8[§6Rynek§8] §aOdebrano przedmiot z magazynu!");
+                    player.sendMessage("§aOdebrano przedmiot z magazynu!");
                     player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                     Bukkit.getScheduler().runTask(plugin, this::open);
                 } else {
-                    player.sendMessage("§8[§6Rynek§8] §cBłąd! Nie udało się odebrać przedmiotu.");
+                    player.sendMessage("§cBłąd! Nie udało się odebrać przedmiotu.");
                     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
                     player.closeInventory();
                 }
@@ -74,7 +74,7 @@ public class MarketStorageWindow {
             slot++;
         }
 
-        window.setSlot(26, new StackBuilder(new ItemStack(Material.ARROW)).name("§e« Wróć na Rynek").build(), event -> new MarketWindow(player, profile, "ALL", 0));
+        window.setSlot(26, new StackBuilder(new ItemStack(Material.ARROW)).name("§e« Wróć na Market").build(), event -> new MarketWindow(player, profile, "ALL", 0));
         player.openInventory(window.getInventory());
     }
 }

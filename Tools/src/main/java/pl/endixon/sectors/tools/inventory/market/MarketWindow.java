@@ -73,28 +73,28 @@ public class MarketWindow {
                             Map<Integer, ItemStack> leftOver = player.getInventory().addItem(boughtItems[0]);
                             if (!leftOver.isEmpty()) {
                                 leftOver.values().forEach(item -> player.getWorld().dropItemNaturally(player.getLocation(), item));
-                                player.sendMessage("§8[§6Rynek§8] §7Ekwipunek pełny! Przedmiot wyrzucono pod nogi.");
+                                player.sendMessage("§7Ekwipunek pełny! Przedmiot wyrzucono pod nogi.");
                             }
                         }
-                        player.sendMessage("§8[§6Rynek§8] §aZakupiono pomyślnie: §f" + offer.getItemName());
+                        player.sendMessage("§aZakupiono pomyślnie: §f" + offer.getItemName());
                         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.5f);
                         player.closeInventory();
                     }
                     case NOT_ENOUGH_MONEY -> {
-                        player.sendMessage("§8[§6Rynek§8] §cNie masz wystarczających środków!");
+                        player.sendMessage("§cNie masz wystarczających środków!");
                         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
                     }
                     case ALREADY_SOLD -> {
-                        player.sendMessage("§8[§6Rynek§8] §cPrzedmiot został już sprzedany!");
+                        player.sendMessage("§cPrzedmiot został już sprzedany!");
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1f, 1f);
                         open();
                     }
                     case NOT_FOUND -> {
-                        player.sendMessage("§8[§6Rynek§8] §cOferta nie istnieje.");
+                        player.sendMessage("§cOferta nie istnieje.");
                         open();
                     }
                     case SELF_PURCHASE -> {
-                        player.sendMessage("§8[§6Rynek§8] §cNie możesz kupić własnego przedmiotu!");
+                        player.sendMessage("§cNie możesz kupić własnego przedmiotu!");
                         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 0.5f);
                     }
                 }
@@ -116,7 +116,7 @@ public class MarketWindow {
             if (expiredCount > 0) {
                 new MarketStorageWindow(player, profile);
             } else {
-                player.sendMessage("§8[§6Rynek§8] §aNie masz żadnych przedmiotów do odebrania.");
+                player.sendMessage("§aNie masz żadnych przedmiotów do odebrania.");
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
             }
         });

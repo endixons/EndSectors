@@ -1,5 +1,6 @@
 package pl.endixon.sectors.tools.command;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,71 +20,108 @@ import java.util.List;
 public class MarketSellCommand implements CommandExecutor {
 
     private final EndSectorsToolsPlugin plugin = EndSectorsToolsPlugin.getInstance();
-    private static final String MARKET_PREFIX = "§8[§6Market§8] ";
+    private static final MiniMessage MM = MiniMessage.miniMessage();
+    private static final String PREFIX_FORMAT = "<newline><dark_gray><bold>» <gradient:#ffaa00:#ffff55>MARKET</gradient> <dark_gray><bold>«";
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Komenda tylko dla graczy.");
+            sender.sendMessage("Komenda tylko dla graczy");
             return true;
         }
 
         if (args.length < 1) {
-            player.sendMessage(MARKET_PREFIX + "§7Poprawne użycie: §e/wystaw <cena>");
+            sendMarketMessage(player, "<gray>Poprawne użycie: <yellow>/wystaw <cena> [ilość]");
             return true;
         }
 
         final PlayerProfile profile = ProfileCache.get(player.getUniqueId());
         if (profile == null) {
-            player.sendMessage("§cTwój profil nie został jeszcze załadowany.");
+            sendMarketMessage(player, "<red>Twój profil nie został jeszcze załadowany");
             return true;
         }
 
-        this.handleSellAction(player, profile, args[0]);
+        String amountArg = (args.length > 1) ? args[1] : null;
+        this.handleSellAction(player, profile, args[0], amountArg);
         return true;
     }
 
-    private void handleSellAction(Player player, PlayerProfile profile, String priceRaw) {
-        final ItemStack itemInHand = player.getInventory().getItemInMainHand();
+    private void handleSellAction(Player player, PlayerProfile profile, String priceRaw, String amountRaw) {
+        ItemStack itemInHand = player.getInventory().getItemInMainHand();
 
         if (itemInHand.getType() == Material.AIR) {
-            player.sendMessage(MARKET_PREFIX + "§cMusisz trzymać przedmiot w ręce!");
+            sendMarketMessage(player, "<red>Musisz trzymać przedmiot w ręce!");
             return;
         }
+
 
         double price;
         try {
             price = Double.parseDouble(priceRaw);
             if (price <= 0) {
-                player.sendMessage(MARKET_PREFIX + "§cCena musi być większa niż 0!");
+                sendMarketMessage(player, "<red>Cena musi być większa niż 0!");
                 return;
             }
             if (price > 1_000_000_000) {
-                player.sendMessage(MARKET_PREFIX + "§cCena jest zbyt wysoka!");
+                sendMarketMessage(player, "<red>Cena jest zbyt wysoka! Zejdź na ziemię, to nie Dubaj.");
                 return;
             }
         } catch (NumberFormatException e) {
-            player.sendMessage(MARKET_PREFIX + "§cPodana cena nie jest poprawną liczbą!");
+            sendMarketMessage(player, "<red>Podana cena nie jest poprawną liczbą!");
             return;
         }
 
+
+        int actualAmount = itemInHand.getAmount();
+        int amountToSell = actualAmount;
+
+        if (amountRaw != null) {
+            try {
+                int parsedAmount = Integer.parseInt(amountRaw);
+                if (parsedAmount <= 0) {
+                    sendMarketMessage(player, "<red>Ilość musi być większa niż 0.");
+                    return;
+                }
+                if (parsedAmount > actualAmount) {
+                    sendMarketMessage(player, "<red>Nie masz tylu przedmiotów! Posiadasz tylko: <yellow>" + actualAmount);
+                    return;
+                }
+                amountToSell = parsedAmount;
+            } catch (NumberFormatException e) {
+                sendMarketMessage(player, "<red>Podana ilość nie jest liczbą całkowitą!");
+                return;
+            }
+        }
 
         final List<PlayerMarketProfile> activeOffers = plugin.getMarketRepository().findBySeller(player.getUniqueId());
         final int limit = plugin.getMarketService().getMarketLimit(player);
 
         if (activeOffers.size() >= limit) {
-            player.sendMessage(MARKET_PREFIX + "§cOsiągnąłeś limit ofert (§e" + activeOffers.size() + "§8/§e" + limit + "§c)!");
+            sendMarketMessage(player, "<red>Osiągnąłeś limit ofert (<yellow>" + activeOffers.size() + "<gray>/<yellow>" + limit + "<red>)!");
             return;
         }
 
-        final String resolvedName = MarketItemUtil.resolveItemName(itemInHand);
-        final String category = MarketItemUtil.determineCategory(itemInHand.getType());
-        final String itemData = PlayerDataSerializerUtil.serializeItemStacksToBase64(new ItemStack[]{itemInHand});
+        ItemStack itemToSerialize = itemInHand.clone();
+        itemToSerialize.setAmount(amountToSell);
+
+        final String resolvedName = MarketItemUtil.resolveItemName(itemToSerialize);
+        final String category = MarketItemUtil.determineCategory(itemToSerialize.getType());
+        final String itemData = PlayerDataSerializerUtil.serializeItemStacksToBase64(new ItemStack[]{itemToSerialize});
+
+
+        if (amountToSell == actualAmount) {
+            player.getInventory().setItemInMainHand(null);
+        } else {
+            itemInHand.setAmount(actualAmount - amountToSell);
+        }
 
         plugin.getMarketService().listOffer(profile, itemData, resolvedName, category, price);
-        player.getInventory().setItemInMainHand(null);
+        sendMarketMessage(player, "<green>Pomyślnie wystawiono przedmiot: <white>" + resolvedName + " <gray>(x" + amountToSell + ")");
+        sendMarketMessage(player, "<gray>Cena: <gradient:#55ff55:#00aa00><bold>" + price + "$</bold></gradient> <dark_gray>| <gray>Kategoria: <aqua>" + category);
+    }
 
-        player.sendMessage(MARKET_PREFIX + "§aPomyślnie wystawiono przedmiot: §f" + resolvedName);
-        player.sendMessage(MARKET_PREFIX + "§7Cena: §e" + price + "$ §8| §7Kategoria: §b" + category);
+
+    private void sendMarketMessage(Player player, String message) {
+        player.sendMessage(MM.deserialize(PREFIX_FORMAT + message));
     }
 }

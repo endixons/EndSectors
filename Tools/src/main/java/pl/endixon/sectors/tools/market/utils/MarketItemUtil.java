@@ -62,21 +62,20 @@ public final class MarketItemUtil {
     public static String formatTimeLeft(long createdAt) {
         long endTimestamp = createdAt + EXPIRATION_MILLIS;
         long diff = endTimestamp - System.currentTimeMillis();
-        if (diff <= 0) return "§4Wygasa...";
+
+        if (diff <= 0) return "Wygasa...";
+
         long totalSeconds = diff / 1000;
         long hours = totalSeconds / 3600;
         long minutes = (totalSeconds % 3600) / 60;
         long seconds = totalSeconds % 60;
-        String color = "§a";
-        if (hours < 12) color = "§e";
-        if (hours < 1) color = "§c";
-        if (hours == 0 && minutes < 1) color = "§4§l";
+
         if (hours > 0) {
-            return color + hours + "h " + minutes + "m";
+            return hours + "h " + minutes + "m";
         }
         if (minutes > 0) {
-            return color + minutes + "m " + seconds + "s";
+            return minutes + "m " + seconds + "s";
         }
-        return color + seconds + "s";
+        return seconds + "s";
     }
 }

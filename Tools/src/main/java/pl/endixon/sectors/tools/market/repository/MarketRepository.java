@@ -10,9 +10,7 @@ import org.bson.conversions.Bson;
 import pl.endixon.sectors.tools.market.type.MarketOfferStatus;
 import pl.endixon.sectors.tools.user.profile.PlayerMarketProfile;
 import pl.endixon.sectors.tools.user.profile.ProfileMarketCache;
-
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Filters.eq;
 

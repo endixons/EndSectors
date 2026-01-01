@@ -10,7 +10,7 @@ public class AppConfig {
     private String natsClientName = "common-app";
     private String redisHost = "127.0.0.1";
     private int redisPort = 6379;
-    private String redisPassword = "";
+    private String redisPassword = "password";
     private boolean flowLoggerEnabled = true;
     private long resourceMonitorInterval = 300000;
 }

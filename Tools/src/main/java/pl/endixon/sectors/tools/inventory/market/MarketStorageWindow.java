@@ -31,7 +31,7 @@ public class MarketStorageWindow {
     }
 
     public void open() {
-        WindowUI window = new WindowUI("Magazyn (Wygasłe)", 3);
+        WindowUI window = new WindowUI("Market", 3);
         List<PlayerMarketProfile> expiredOffers = new ArrayList<>(plugin.getMarketRepository().findExpiredBySeller(player.getUniqueId()));
         expiredOffers.sort((a, b) -> Long.compare(b.getCreatedAt(), a.getCreatedAt()));
 

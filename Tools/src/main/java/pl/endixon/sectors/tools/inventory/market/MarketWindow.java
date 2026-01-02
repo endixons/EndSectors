@@ -36,7 +36,7 @@ public class MarketWindow {
     }
 
     public void open() {
-        WindowUI window = new WindowUI("Rynek: " + category + " (" + (page + 1) + ")", 6);
+        WindowUI window = new WindowUI("Market: " + category + " (" + (page + 1) + ")", 6);
 
         int expiredCount = plugin.getMarketRepository().findExpiredBySeller(player.getUniqueId()).size();
         int claimableCount = plugin.getMarketRepository().findClaimableBySeller(player.getUniqueId()).size();
@@ -87,7 +87,7 @@ public class MarketWindow {
                         open();
                     }
                     case NOT_FOUND -> {
-                        player.sendMessage("§cOferta nie istnieje.");
+                        player.sendMessage("§cPrzedmiot nie istnieje.");
                         open();
                     }
                     case SELF_PURCHASE -> {
@@ -117,7 +117,7 @@ public class MarketWindow {
             window.setSlot(49, new StackBuilder(new ItemStack(Material.BARRIER)).name("§cZamknij").build(),
                     event -> player.closeInventory());
         } else {
-            window.setSlot(49, new StackBuilder(new ItemStack(Material.NETHER_STAR)).name("§fWszystkie oferty (Reset)").build(),
+            window.setSlot(49, new StackBuilder(new ItemStack(Material.NETHER_STAR)).name("§fWszystko (Reset)").build(),
                     event -> new MarketWindow(player, profile, "ALL", 0));
         }
 
@@ -128,7 +128,7 @@ public class MarketWindow {
             if (claimableCount > 0) {
                 new MarketClaimableWindow(player, profile);
             } else {
-                player.sendMessage("§aSkrzynka odbiorcza jest pusta.");
+                player.sendMessage("§aDepozyt jest pusty.");
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
             }
         });
@@ -137,7 +137,7 @@ public class MarketWindow {
             if (expiredCount > 0) {
                 new MarketStorageWindow(player, profile);
             } else {
-                player.sendMessage("§aMagazyn wygasłych ofert jest pusty.");
+                player.sendMessage("§aMagazyn wygasłych przedmiotow jest pusty.");
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
             }
         });
@@ -163,7 +163,7 @@ public class MarketWindow {
                 );
             });
 
-            this.player.sendMessage("§cEkwipunek pełny! §ePrzedmiot trafił do Skrzynki Odbiorczej.");
+            this.player.sendMessage("§cEkwipunek pełny! §ePrzedmiot trafił do depozytu");
             this.player.playSound(this.player.getLocation(), Sound.ENTITY_IRON_GOLEM_REPAIR, 1f, 1f);
         }
     }

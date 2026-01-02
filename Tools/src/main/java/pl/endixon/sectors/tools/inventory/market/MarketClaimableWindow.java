@@ -30,14 +30,14 @@ public class MarketClaimableWindow {
     }
 
     public void open() {
-        WindowUI window = new WindowUI("Skrzynka Odbiorcza", 3);
+        WindowUI window = new WindowUI("Market", 3);
         List<PlayerMarketProfile> items = new ArrayList<>(plugin.getMarketRepository().findClaimableBySeller(player.getUniqueId()));
         items.sort((a, b) -> Long.compare(b.getCreatedAt(), a.getCreatedAt()));
 
         if (items.isEmpty()) {
             window.setSlot(13, new StackBuilder(new ItemStack(Material.BARRIER))
                     .name("§bPusto")
-                    .lore("§7Brak przedmiotów w skrzynce.")
+                    .lore("§7Brak przedmiotów w depozycie.")
                     .build(), null);
         }
 
@@ -64,7 +64,7 @@ public class MarketClaimableWindow {
                 if (success) {
                     MarketItemUtil.giveItemToPlayer(player, offer.getItemData());
                     event.getClickedInventory().setItem(event.getSlot(), new ItemStack(Material.AIR));
-                    player.sendMessage("§bPomyślnie odebrano przedmiot ze skrzynki!");
+                    player.sendMessage("§bPomyślnie odebrano przedmiot ze depozytu!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.5f);
                     Bukkit.getScheduler().runTask(plugin, this::open);
                 } else {

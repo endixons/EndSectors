@@ -31,7 +31,7 @@ public class MarketMyOffersWindow {
     }
 
     public void open() {
-        WindowUI window = new WindowUI("Twoje aukcje (Zarządzanie)", 3);
+        WindowUI window = new WindowUI("Market", 3);
         List<PlayerMarketProfile> myOffers = new ArrayList<>(plugin.getMarketRepository().findBySeller(player.getUniqueId()));
         myOffers.sort((a, b) -> Long.compare(b.getCreatedAt(), a.getCreatedAt()));
 

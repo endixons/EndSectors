@@ -5,6 +5,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import pl.endixon.sectors.tools.EndSectorsToolsPlugin;
 import pl.endixon.sectors.tools.inventory.api.WindowUI;
@@ -113,7 +114,7 @@ public class MarketWindow {
         window.setSlot(46, new StackBuilder(new ItemStack(Material.GRASS_BLOCK)).name(hex("<gradient:#55ff55:#00aa00>Kategoria: Bloki</gradient>")).build(),
                 event -> new MarketWindow(player, profile, "BLOCKS", 0));
 
-        window.setSlot(47, new StackBuilder(new ItemStack(Material.DIAMOND_SWORD)).name(hex("<gradient:#55ffff:#00aaaa>Kategoria: Ekwipunek</gradient>")).build(),
+        window.setSlot(47, new StackBuilder(new ItemStack(Material.DIAMOND_SWORD)).name(hex("<gradient:#55ffff:#00aaaa>Kategoria: Ekwipunek</gradient>")).addFlag(ItemFlag.HIDE_ATTRIBUTES).build(),
                 event -> new MarketWindow(player, profile, "WEAPONS", 0));
 
         window.setSlot(48, new StackBuilder(new ItemStack(Material.HEAVY_CORE)).name(hex("<gradient:#ffaa00:#ffff55>Kategoria: Inne</gradient>")).build(),
@@ -132,8 +133,13 @@ public class MarketWindow {
                 event -> new MarketProfileWindow(player, profile)
         );
 
+        window.setSlot(52,
+                MarketItemRenderer.prepareInformationIcon().build(),
+                event -> player.closeInventory()
+        );
+
         if (offers.size() > end) {
-            window.setSlot(53, new StackBuilder(new ItemStack(Material.ARROW)).name(hex("<gradient:#ffcc00:#ffaa00>Następna strona »</gradient>")).build(),
+            window.setSlot(53, new StackBuilder(new ItemStack(Material.ARROW)).name(hex("<gradient:#ffcc00:#ffaa00>Następna strona »</gradient>")).build() ,
                     event -> new MarketWindow(player, profile, category, page + 1));
         }
 

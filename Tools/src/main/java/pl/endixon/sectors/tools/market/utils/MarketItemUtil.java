@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import pl.endixon.sectors.tools.inventory.api.builder.StackBuilder;
 import pl.endixon.sectors.tools.utils.PlayerDataSerializerUtil;
 
 import java.util.Map;
@@ -15,6 +17,15 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public final class MarketItemUtil {
 
+    private static final ItemFlag[] HIDE_FLAGS = {
+            ItemFlag.HIDE_ATTRIBUTES,
+            ItemFlag.HIDE_ENCHANTS,
+            ItemFlag.HIDE_ADDITIONAL_TOOLTIP,
+            ItemFlag.HIDE_UNBREAKABLE,
+            ItemFlag.HIDE_DESTROYS,
+            ItemFlag.HIDE_PLACED_ON,
+            ItemFlag.HIDE_DYE
+    };
 
     private static final long EXPIRATION_MILLIS = TimeUnit.MINUTES.toMillis(1);
 
@@ -115,4 +126,12 @@ public final class MarketItemUtil {
         }
         return seconds + "s";
     }
+
+    public static void applyFlags(StackBuilder builder) {
+        for (ItemFlag flag : HIDE_FLAGS) {
+            builder.addFlag(flag);
+        }
+    }
+
+
 }

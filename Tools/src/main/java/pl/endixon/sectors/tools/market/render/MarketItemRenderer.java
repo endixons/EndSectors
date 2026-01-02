@@ -3,19 +3,19 @@ package pl.endixon.sectors.tools.market.render;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import pl.endixon.sectors.tools.inventory.api.builder.StackBuilder;
 import pl.endixon.sectors.tools.market.utils.MarketItemUtil;
 import pl.endixon.sectors.tools.user.profile.PlayerMarketProfile;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 @RequiredArgsConstructor
 public final class MarketItemRenderer {
 
     private static final MiniMessage MM = MiniMessage.miniMessage();
     private static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.legacySection();
-
 
     private static String hex(String text) {
         return SERIALIZER.serialize(MM.deserialize(text));
@@ -32,6 +32,7 @@ public final class MarketItemRenderer {
         builder.lore(hex("<gradient:#ffff55:#ffaa00><bold>KLIKNIJ, ABY ZAKUPIĆ</bold></gradient>"));
         builder.lore(" ");
 
+        MarketItemUtil.applyFlags(builder);
         return builder;
     }
 
@@ -46,6 +47,7 @@ public final class MarketItemRenderer {
         builder.lore(hex("<gradient:#ff5555:#aa0000><bold>KLIKNIJ, ABY WYCOFAĆ</bold></gradient>"));
         builder.lore(" ");
 
+        MarketItemUtil.applyFlags(builder);
         return builder;
     }
 
@@ -59,6 +61,7 @@ public final class MarketItemRenderer {
         builder.lore(hex("<gradient:#ff5555:#aa0000><bold>KLIKNIJ, ABY ODEBRAĆ</bold></gradient>"));
         builder.lore(" ");
 
+        MarketItemUtil.applyFlags(builder);
         return builder;
     }
 
@@ -73,12 +76,14 @@ public final class MarketItemRenderer {
         builder.lore(hex("<gradient:#55ffff:#00aaaa><bold>KLIKNIJ, ABY ODEBRAĆ</bold></gradient>"));
         builder.lore(" ");
 
+        MarketItemUtil.applyFlags(builder);
         return builder;
     }
 
     public static StackBuilder prepareMyOffersIcon(int activeOffersCount) {
         String countColor = activeOffersCount > 0 ? "<#ffff55>" : "<#aaaaaa>";
-        return new StackBuilder(new ItemStack(Material.BOOK))
+
+        StackBuilder builder = new StackBuilder(new ItemStack(Material.BOOK))
                 .name(hex("<gradient:#ffcc00:#ffaa00><bold>Twoje aktywne przedmioty</bold></gradient>"))
                 .lore(hex("<#aaaaaa>Zarządzaj przedmiotami,"))
                 .lore(hex("<#aaaaaa>które wystawiłeś na sprzedaż."))
@@ -86,13 +91,16 @@ public final class MarketItemRenderer {
                 .lore(hex("<#555555>• <#aaaaaa>Wystawione: " + countColor + activeOffersCount))
                 .lore(" ")
                 .lore(hex("<#ffff55>Kliknij, aby zarządzać!"));
+
+        MarketItemUtil.applyFlags(builder);
+        return builder;
     }
 
     public static StackBuilder prepareClaimableIcon(int claimableCount) {
         String countColor = claimableCount > 0 ? "<#55ffff>" : "<#aaaaaa>";
         String titleColor = claimableCount > 0 ? "<gradient:#55ffff:#00aaaa>" : "<#aaaaaa>";
 
-        return new StackBuilder(new ItemStack(Material.ENDER_CHEST))
+        StackBuilder builder = new StackBuilder(new ItemStack(Material.ENDER_CHEST))
                 .name(hex(titleColor + "<bold>Depozyt</bold> <#aaaaaa>(Zakupione przedmioty)"))
                 .lore(hex("<#aaaaaa>Przedmioty, które kupiłeś,"))
                 .lore(hex("<#aaaaaa>ale nie miałeś miejsca w ekwipunku."))
@@ -100,13 +108,16 @@ public final class MarketItemRenderer {
                 .lore(hex("<#555555>• <#aaaaaa>Do odebrania: " + countColor + claimableCount))
                 .lore(" ")
                 .lore(hex("<#55ffff>Kliknij, aby odebrać!"));
+
+        MarketItemUtil.applyFlags(builder);
+        return builder;
     }
 
     public static StackBuilder prepareStorageIcon(int expiredCount) {
         String countColor = expiredCount > 0 ? "<#ff5555>" : "<#aaaaaa>";
         String titleColor = expiredCount > 0 ? "<gradient:#ff5555:#aa0000>" : "<#aaaaaa>";
 
-        return new StackBuilder(new ItemStack(Material.CHEST))
+        StackBuilder builder = new StackBuilder(new ItemStack(Material.CHEST))
                 .name(hex(titleColor + "<bold>Magazyn</bold> <#aaaaaa>(Wygasłe przedmioty)"))
                 .lore(hex("<#aaaaaa>Twoje przedmioty, które wygasły"))
                 .lore(hex("<#aaaaaa>i czekają na odbiór."))
@@ -114,8 +125,30 @@ public final class MarketItemRenderer {
                 .lore(hex("<#555555>• <#aaaaaa>Do odebrania: " + countColor + expiredCount))
                 .lore(" ")
                 .lore(hex("<#ff5555>Kliknij, aby odebrać!"));
+
+        MarketItemUtil.applyFlags(builder);
+        return builder;
     }
 
+    public static StackBuilder prepareInformationIcon() {
+        StackBuilder builder = new StackBuilder(new ItemStack(Material.KNOWLEDGE_BOOK))
+                .name(hex("<gradient:#55ffff:#00aaaa><bold>JAK WYSTAWIĆ PRZEDMIOT?</bold></gradient>"))
+                .lore(" ")
+                .lore(hex("<#aaaaaa>Chcesz sprzedać swoje przedmioty?"))
+                .lore(hex("<#aaaaaa>To proste! Postępuj zgodnie z instrukcją:"))
+                .lore(" ")
+                .lore(hex("<#ffff55>1. <#aaaaaa>Weź przedmiot do ręki."))
+                .lore(hex("<#ffff55>2. <#aaaaaa>Wpisz komendę:"))
+                .lore(hex("   <gradient:#ffff55:#ffaa00>/sell <ilość> <cena></gradient>"))
+                .lore(" ")
+                .lore(hex("<#aaaaaa>Przykład: <#ffffff>/sell 64 1000"))
+                .lore(" ")
+                .lore(hex("<#555555><italic>(Kliknij, aby zamknąć to okno i spróbować)</italic>"))
+                .glow(true);
+
+        MarketItemUtil.applyFlags(builder);
+        return builder;
+    }
 
     public static StackBuilder prepareProfileIcon(String playerName, int active, int claimable, int expired) {
         String activeColor = active > 0 ? "<#55ff55>" : "<#aaaaaa>";
@@ -127,7 +160,7 @@ public final class MarketItemRenderer {
                 ? "<gradient:#ffaa00:#ffff55><bold>TWÓJ PROFIL</bold></gradient> <#ff5555>(akcja wymagana)"
                 : "<gradient:#aaaaaa:#ffffff><bold>TWÓJ PROFIL</bold></gradient>";
 
-        return new StackBuilder(new ItemStack(Material.PLAYER_HEAD))
+        StackBuilder builder = new StackBuilder(new ItemStack(Material.PLAYER_HEAD))
                 .name(hex(iconName))
                 .lore(hex("<#aaaaaa>Centrum zarządzania twoimi"))
                 .lore(hex("<#aaaaaa>wygasłymi przedmiotami oraz"))
@@ -138,6 +171,8 @@ public final class MarketItemRenderer {
                 .lore(hex("<#555555>• <#aaaaaa>Magazyn: " + expiredColor + expired))
                 .lore(" ")
                 .lore(hex("<#ffff55>Kliknij, aby otworzyć!"));
-    }
 
+        MarketItemUtil.applyFlags(builder);
+        return builder;
+    }
 }

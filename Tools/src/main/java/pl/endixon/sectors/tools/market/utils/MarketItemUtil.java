@@ -27,7 +27,7 @@ public final class MarketItemUtil {
             ItemFlag.HIDE_DYE
     };
 
-    private static final long EXPIRATION_MILLIS = TimeUnit.MINUTES.toMillis(1);
+    private static final long EXPIRATION_MILLIS = TimeUnit.HOURS.toMillis(24);
 
     public static String resolveItemName(@NotNull ItemStack item) {
         final ItemMeta meta = item.getItemMeta();

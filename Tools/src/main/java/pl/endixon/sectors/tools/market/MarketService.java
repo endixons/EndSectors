@@ -8,7 +8,7 @@ import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.tools.market.repository.MarketRepository;
 import pl.endixon.sectors.tools.market.type.MarketOfferStatus;
 import pl.endixon.sectors.tools.market.type.PurchaseResult;
-import pl.endixon.sectors.tools.nats.packet.PacketMarketExpirationNotify; // <--- NOWY PAKIET
+import pl.endixon.sectors.tools.nats.packet.PacketMarketExpirationNotify;
 import pl.endixon.sectors.tools.nats.packet.PacketMarketJanitor;
 import pl.endixon.sectors.tools.nats.packet.PacketMarketNotify;
 import pl.endixon.sectors.tools.nats.packet.PacketMarketUpdate;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class MarketService {
 
     private final MarketRepository marketRepository;
-    private static final long EXPIRATION_TIME_MS = TimeUnit.MINUTES.toMillis(1);
+    private static final long EXPIRATION_TIME_MS = TimeUnit.HOURS.toMillis(24);
 
     public void listOffer(PlayerProfile seller, String itemData, String itemName, String category, double price) {
         UUID offerId = UUID.randomUUID();

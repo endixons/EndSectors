@@ -13,7 +13,6 @@ public class PacketMarketUpdate implements Packet {
 
     private UUID id;
     private String action;
-
     private UUID sellerUuid;
     private String sellerName;
     private String itemData;

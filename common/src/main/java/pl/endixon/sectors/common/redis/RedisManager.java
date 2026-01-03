@@ -33,24 +33,14 @@ public class RedisManager {
                     .withDatabase(0)
                     .build();
 
-            DefaultClientResources resources = DefaultClientResources.builder()
-                    .ioThreadPoolSize(4)
-                    .build();
-
+            DefaultClientResources resources = DefaultClientResources.builder().ioThreadPoolSize(4).build();
             this.redisClient = RedisClient.create(resources, uri);
-
-            ClientOptions options = ClientOptions.builder()
-                    .autoReconnect(true)
-                    .publishOnScheduler(true)
-                    .build();
-
+            ClientOptions options = ClientOptions.builder().autoReconnect(true).publishOnScheduler(true).build();
             this.redisClient.setOptions(options);
-            this.connection = this.redisClient.connect();
-            this.syncCommands = this.connection.sync();
-            this.asyncCommands = this.connection.async();
-            this.pubSubConnection = this.redisClient.connectPubSub();
-
-            LoggerUtil.info("Redis initialized. Ready for duty.");
+            this.connection = redisClient.connect();
+            this.syncCommands = connection.sync();
+            this.asyncCommands = connection.async();
+            this.pubSubConnection = redisClient.connectPubSub();
         } catch (Exception e) {
             LoggerUtil.error("Redis initialization failed: " + e.getMessage());
         }

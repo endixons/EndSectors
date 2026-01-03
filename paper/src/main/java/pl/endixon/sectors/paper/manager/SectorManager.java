@@ -132,7 +132,7 @@ public class SectorManager {
                 })).toList();
 
         if (healthySpawns.isEmpty()) {
-            LoggerUtil.info(String.format("Balance error! All spawns (%utils) are either offline or lagging!", allSpawns.size()));
+            LoggerUtil.info(String.format("Balance error! All spawns (%d) are either offline or lagging!", allSpawns.size()));
             return null;
         }
 

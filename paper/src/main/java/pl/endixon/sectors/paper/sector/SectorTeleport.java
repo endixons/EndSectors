@@ -72,7 +72,7 @@ public class SectorTeleport {
             PacketRequestTeleportSector packet = new PacketRequestTeleportSector(player.getName(), sector.getName());
             Common.getInstance().getNatsManager().publish(PacketChannel.PACKET_TELEPORT_TO_SECTOR.getSubject(), packet);
             long duration = System.currentTimeMillis() - startTime;
-            LoggerUtil.info(() -> String.format("[Transfer] Teleport process finished for %s (ms: %utils)", player.getName(), duration));
+            LoggerUtil.info(() -> String.format("[Transfer] Teleport process finished for %s (ms: %d)", player.getName(), duration));
         });
     }
 }

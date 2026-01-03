@@ -29,6 +29,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
@@ -56,7 +57,7 @@ public class CombatListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerDeath(org.bukkit.event.entity.PlayerDeathEvent event) {
+    public void onPlayerDeath(PlayerDeathEvent event) {
         Player victim = event.getEntity();
         if (combatManager.isInCombat(victim)) {
             combatManager.endCombat(victim);

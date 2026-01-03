@@ -23,10 +23,9 @@ public class EconomyCommand implements CommandExecutor, TabCompleter {
     private final Economy economy = EndSectorsToolsPlugin.getInstance().getEconomy();
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
-    // Nowoczesny prefix z gradientem
-    private static final String ECO_PREFIX = "<dark_gray>[<gradient:#55ff55:#00aa00>Ekonomia</gradient><dark_gray>] ";
     private static final String TEXT = "<#a8a8a8>";
     private static final String ERROR = "<#ff4b2b>";
+    private static final String ACCENT = "<#ff5f6d>";
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
@@ -43,22 +42,32 @@ public class EconomyCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (args.length == 1) {
+        if (args.length == 1 && sender.hasPermission("economy.admin")) {
             OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
             this.sendBalance(sender, target);
             return true;
         }
 
-        if (sender.hasPermission("economy.admin")) {
-            return this.handleAdminActions(sender, args);
+        if (args.length == 3 && sender.hasPermission("economy.admin")) {
+            this.handleAdminActions(sender, args);
+            return true;
         }
 
+        this.sendUsage(sender);
         return true;
+    }
+
+    private void sendUsage(CommandSender sender) {
+        String usage = sender.hasPermission("economy.admin")
+                ? TEXT + "Użycie: " + ACCENT + "/eco <nick> | /eco <set/add/take> <nick> <kwota> | /eco pay <nick> <kwota>"
+                : TEXT + "Użycie: " + ACCENT + "/eco | /eco pay <nick> <kwota>";
+
+        sender.sendMessage(MM.deserialize(usage));
     }
 
     private void sendBalance(CommandSender viewer, OfflinePlayer target) {
         double bal = economy.getBalance(target);
-        String msg = ECO_PREFIX + TEXT + "Stan konta <white>" + target.getName() + TEXT + ": <#fbff00>" + economy.format(bal);
+        String msg = TEXT + "Stan konta <white>" + target.getName() + TEXT + ": <#fbff00>" + economy.format(bal);
         viewer.sendMessage(MM.deserialize(msg));
     }
 
@@ -68,46 +77,48 @@ public class EconomyCommand implements CommandExecutor, TabCompleter {
             amount = Double.parseDouble(amountRaw);
             if (amount < 0.01) throw new NumberFormatException();
         } catch (NumberFormatException e) {
-            sender.sendMessage(MM.deserialize(ECO_PREFIX + ERROR + "Podaj poprawną kwotę (min. 0.01)!"));
+            sender.sendMessage(MM.deserialize(ERROR + "Podaj poprawną kwotę (min. 0.01)!"));
             return;
         }
 
         OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
 
-
         if (target.getUniqueId().equals(sender.getUniqueId())) {
-            sender.sendMessage(MM.deserialize(ECO_PREFIX + ERROR + "Nie możesz przelać pieniędzy samemu sobie!"));
+            sender.sendMessage(MM.deserialize(ERROR + "Nie możesz przelać pieniędzy samemu sobie!"));
             return;
         }
 
         if (!economy.has(sender, amount)) {
-            sender.sendMessage(MM.deserialize(ECO_PREFIX + ERROR + "Nie masz wystarczających środków!"));
+            sender.sendMessage(MM.deserialize(ERROR + "Nie masz wystarczających środków!"));
             return;
         }
 
         economy.withdrawPlayer(sender, amount);
         economy.depositPlayer(target, amount);
 
-        sender.sendMessage(MM.deserialize(ECO_PREFIX + "<#00ff87>Przelałeś <#fbff00>" + economy.format(amount) + TEXT + " do <white>" + target.getName()));
+        sender.sendMessage(MM.deserialize("<#00ff87>Przelałeś <#fbff00>" + economy.format(amount) + TEXT + " do <white>" + target.getName()));
 
         if (target.isOnline() && target.getPlayer() != null) {
-            target.getPlayer().sendMessage(MM.deserialize(ECO_PREFIX + "<#00ff87>Otrzymałeś <#fbff00>" + economy.format(amount) + TEXT + " od <white>" + sender.getName()));
+            target.getPlayer().sendMessage(MM.deserialize("<#00ff87>Otrzymałeś <#fbff00>" + economy.format(amount) + TEXT + " od <white>" + sender.getName()));
         }
     }
 
-    private boolean handleAdminActions(CommandSender sender, String[] args) {
-        if (args.length < 3) return false;
-
+    private void handleAdminActions(CommandSender sender, String[] args) {
         String action = args[0].toLowerCase();
         OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
 
         if (!economy.hasAccount(target)) {
-            sender.sendMessage(MM.deserialize(ECO_PREFIX + ERROR + "Gracz nie istnieje w bazie danych!"));
-            return true;
+            sender.sendMessage(MM.deserialize("<#ef4444>Profil użytkownika nie został znaleziony!"));
+            return;
         }
 
         double value;
-        try { value = Double.parseDouble(args[2]); } catch (Exception e) { return false; }
+        try {
+            value = Double.parseDouble(args[2]);
+        } catch (Exception e) {
+            this.sendUsage(sender);
+            return;
+        }
 
         switch (action) {
             case "set" -> {
@@ -117,11 +128,13 @@ public class EconomyCommand implements CommandExecutor, TabCompleter {
             }
             case "add" -> economy.depositPlayer(target, value);
             case "take" -> economy.withdrawPlayer(target, value);
-            default -> { return false; }
+            default -> {
+                this.sendUsage(sender);
+                return;
+            }
         }
 
-        sender.sendMessage(MM.deserialize(ECO_PREFIX + TEXT + "Zaktualizowano balans <white>" + target.getName() + TEXT + ": <#fbff00>" + economy.format(economy.getBalance(target))));
-        return true;
+        sender.sendMessage(MM.deserialize(TEXT + "Zaktualizowano balans <white>" + target.getName() + TEXT + ": <#fbff00>" + economy.format(economy.getBalance(target))));
     }
 
     @Override

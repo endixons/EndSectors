@@ -70,6 +70,17 @@ public class RedisManager {
         }
     }
 
+    public List<String> getKeys(String pattern) {
+        if (syncCommands == null) return Collections.emptyList();
+        try {
+            return syncCommands.keys(pattern);
+        } catch (Exception e) {
+            LoggerUtil.info("Redis getKeys failed for pattern " + pattern + ": " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+
     public String hget(String key, String field) {
 
         if (key == null || field == null || this.syncCommands == null) {
@@ -215,5 +226,6 @@ public class RedisManager {
             LoggerUtil.error("[RedisManager] Shutdown failed: " + e.getMessage());
         }
     }
+
 
 }

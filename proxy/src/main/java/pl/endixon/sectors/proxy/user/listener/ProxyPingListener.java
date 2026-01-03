@@ -82,9 +82,7 @@ public final class ProxyPingListener {
         ServerPing.Builder builder = event.getPing().asBuilder()
                 .description(motd)
                 .onlinePlayers(globalOnline)
-                .maximumPlayers(totalMax)
                 .samplePlayers(hover);
-
         event.setPing(builder.build());
     }
 

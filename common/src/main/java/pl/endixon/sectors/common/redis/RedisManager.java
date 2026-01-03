@@ -11,6 +11,8 @@ import io.lettuce.core.resource.DefaultClientResources;
 import java.nio.CharBuffer;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+
 import pl.endixon.sectors.common.util.LoggerUtil;
 
 public class RedisManager {
@@ -142,6 +144,18 @@ public class RedisManager {
         this.asyncCommands.srem("online_players", name);
     }
 
+
+    public void getOnlinePlayers(Consumer<List<String>> callback) {
+        if (asyncCommands == null) return;
+        asyncCommands.smembers("online_players").thenAccept(players -> callback.accept(new ArrayList<>(players)));
+    }
+
+    public void isPlayerOnline(String name, Consumer<Boolean> callback) {
+        if (asyncCommands == null) return;
+        asyncCommands.sismember("online_players", name).thenAccept(callback);
+    }
+
+
     public void updateProxyCountAsync(String proxyId, int count) {
         this.hsetAsync("proxy_online", proxyId, String.valueOf(count));
     }
@@ -201,4 +215,5 @@ public class RedisManager {
             LoggerUtil.error("[RedisManager] Shutdown failed: " + e.getMessage());
         }
     }
+
 }

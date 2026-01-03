@@ -25,6 +25,7 @@ import pl.endixon.sectors.tools.user.profile.cache.ProfileBackpackCache;
 import pl.endixon.sectors.tools.user.profile.cache.ProfileCache;
 import pl.endixon.sectors.tools.user.profile.player.PlayerBackpackProfile;
 import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
+import pl.endixon.sectors.tools.utils.MessagesUtil;
 
 import java.util.UUID;
 
@@ -40,7 +41,12 @@ public class BackpackAdminCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
-        if (!(sender instanceof Player admin)) return true;
+
+        if (!(sender instanceof Player admin)) {
+            sender.sendMessage(MessagesUtil.CONSOLE_BLOCK.get());
+            return true;
+        }
+
 
         if (!admin.hasPermission("endsectors.backpack.admin")) {
             admin.sendMessage(MM.deserialize("<#ff4b2b>Brak uprawnień administracyjnych."));

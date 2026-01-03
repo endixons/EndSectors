@@ -5,6 +5,5 @@ public enum BackpackUpgradeResult {
     INSUFFICIENT_FUNDS,
     MAX_PAGES_REACHED,
     DATABASE_ERROR,
-    EXPIRED,
     FAILURE
 }

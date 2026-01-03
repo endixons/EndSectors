@@ -2,7 +2,7 @@ package pl.endixon.sectors.tools.backpack;
 
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.title.Title;
+
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -14,9 +14,7 @@ import pl.endixon.sectors.tools.user.profile.cache.ProfileBackpackCache;
 import pl.endixon.sectors.tools.user.profile.player.PlayerBackpackProfile;
 import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
 import pl.endixon.sectors.tools.utils.PlayerDataSerializerUtil;
-
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class BackpackService {
@@ -56,14 +54,10 @@ public class BackpackService {
 
 
     public BackpackUpgradeResult processBulkSubscription(Player player, PlayerProfile profile, PlayerBackpackProfile backpack, double unitCost) {
-        // 1. Pobieramy REALNĄ liczbę odblokowanych stron (zamiast zawodnego size())
         final int maxPages = this.getMaxPages(player, backpack);
-
-        // 2. Szukamy stron, które faktycznie wygasły
         int expiredCount = 0;
-        java.util.List<Integer> pagesToRenew = new java.util.ArrayList<>();
+        List<Integer> pagesToRenew = new ArrayList<>();
 
-        // Iterujemy od 2, bo strona 1 jest zawsze aktywna/darmowa
         for (int i = 2; i <= maxPages; i++) {
             if (!this.isPageActive(backpack, i)) {
                 expiredCount++;
@@ -71,23 +65,18 @@ public class BackpackService {
             }
         }
 
-        // Jeśli wszystko jest opłacone, nie ma co robić (Enterprise Safety)
         if (expiredCount == 0 || pagesToRenew.isEmpty()) {
             return BackpackUpgradeResult.FAILURE;
         }
 
-        // 3. Obliczamy totalny koszt transakcji
         final double totalCost = expiredCount * unitCost;
 
-        // 4. Walidacja portfela
         if (profile.getBalance() < totalCost) {
             return BackpackUpgradeResult.FAILURE;
         }
 
-        // 5. TRANSAKCJA: Zabieramy środki
         profile.setBalance(profile.getBalance() - totalCost);
 
-        // 6. AKTUALIZACJA: Przedłużamy ważność o 7 dni od teraz
         final long now = System.currentTimeMillis();
         final long sevenDaysInMs = 7L * 24 * 60 * 60 * 1000;
 
@@ -95,9 +84,7 @@ public class BackpackService {
             backpack.getPageExpirations().put(String.valueOf(pageNum), now + sevenDaysInMs);
         }
 
-        // 7. ZAPIS: Synchronizacja z repozytorium
         this.backpackRepository.save(backpack);
-
         return BackpackUpgradeResult.SUCCESS;
     }
 

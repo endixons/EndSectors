@@ -17,7 +17,7 @@
  *
  */
 
-package pl.endixon.sectors.tools.user.profile;
+package pl.endixon.sectors.tools.user.profile.cache;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

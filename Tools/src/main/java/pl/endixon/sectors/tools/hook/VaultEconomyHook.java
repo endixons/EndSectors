@@ -5,8 +5,8 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import pl.endixon.sectors.tools.EndSectorsToolsPlugin;
-import pl.endixon.sectors.tools.user.profile.PlayerProfile;
-import pl.endixon.sectors.tools.user.profile.ProfileCache;
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
+import pl.endixon.sectors.tools.user.profile.cache.ProfileCache;
 
 import java.util.Collections;
 import java.util.List;

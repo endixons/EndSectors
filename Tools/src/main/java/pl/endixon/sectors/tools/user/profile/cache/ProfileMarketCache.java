@@ -1,4 +1,6 @@
-package pl.endixon.sectors.tools.user.profile;
+package pl.endixon.sectors.tools.user.profile.cache;
+
+import pl.endixon.sectors.tools.user.profile.player.PlayerMarketProfile;
 
 import java.util.Collection;
 import java.util.Map;

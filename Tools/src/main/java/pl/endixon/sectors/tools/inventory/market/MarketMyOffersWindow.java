@@ -12,8 +12,8 @@ import pl.endixon.sectors.tools.inventory.api.WindowUI;
 import pl.endixon.sectors.tools.inventory.api.builder.StackBuilder;
 import pl.endixon.sectors.tools.market.render.MarketItemRenderer;
 import pl.endixon.sectors.tools.market.utils.MarketItemUtil;
-import pl.endixon.sectors.tools.user.profile.PlayerMarketProfile;
-import pl.endixon.sectors.tools.user.profile.PlayerProfile;
+import pl.endixon.sectors.tools.user.profile.player.PlayerMarketProfile;
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
 import pl.endixon.sectors.tools.utils.PlayerDataSerializerUtil;
 
 import java.util.ArrayList;
@@ -39,6 +39,7 @@ public class MarketMyOffersWindow {
 
     public void open() {
         WindowUI window = new WindowUI("Market", 3);
+        window.setInteractionAllowed(false);
 
         List<PlayerMarketProfile> myOffers = new ArrayList<>(plugin.getMarketRepository().findBySeller(player.getUniqueId()));
         myOffers.sort((a, b) -> Long.compare(b.getCreatedAt(), a.getCreatedAt()));

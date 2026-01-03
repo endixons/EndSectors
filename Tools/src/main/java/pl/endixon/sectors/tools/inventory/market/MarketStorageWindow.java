@@ -12,8 +12,8 @@ import pl.endixon.sectors.tools.inventory.api.WindowUI;
 import pl.endixon.sectors.tools.inventory.api.builder.StackBuilder;
 import pl.endixon.sectors.tools.market.render.MarketItemRenderer;
 import pl.endixon.sectors.tools.market.utils.MarketItemUtil;
-import pl.endixon.sectors.tools.user.profile.PlayerMarketProfile;
-import pl.endixon.sectors.tools.user.profile.PlayerProfile;
+import pl.endixon.sectors.tools.user.profile.player.PlayerMarketProfile;
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
 import pl.endixon.sectors.tools.utils.PlayerDataSerializerUtil;
 
 import java.util.ArrayList;
@@ -24,8 +24,6 @@ public class MarketStorageWindow {
     private final Player player;
     private final PlayerProfile profile;
     private final EndSectorsToolsPlugin plugin = EndSectorsToolsPlugin.getInstance();
-
-    // Narzędzia do kolorowania - standard w tym module
     private static final MiniMessage MM = MiniMessage.miniMessage();
     private static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.legacySection();
 
@@ -41,6 +39,7 @@ public class MarketStorageWindow {
 
     public void open() {
         WindowUI window = new WindowUI("Market", 3);
+        window.setInteractionAllowed(false);
 
         List<PlayerMarketProfile> expiredOffers = new ArrayList<>(plugin.getMarketRepository().findExpiredBySeller(player.getUniqueId()));
         expiredOffers.sort((a, b) -> Long.compare(b.getCreatedAt(), a.getCreatedAt()));

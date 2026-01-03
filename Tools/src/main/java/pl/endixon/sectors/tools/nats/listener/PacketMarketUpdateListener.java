@@ -3,8 +3,8 @@ package pl.endixon.sectors.tools.nats.listener;
 import pl.endixon.sectors.common.packet.PacketListener;
 import pl.endixon.sectors.tools.market.type.MarketOfferStatus; // <--- Import Enuma
 import pl.endixon.sectors.tools.nats.packet.PacketMarketUpdate;
-import pl.endixon.sectors.tools.user.profile.PlayerMarketProfile;
-import pl.endixon.sectors.tools.user.profile.ProfileMarketCache;
+import pl.endixon.sectors.tools.user.profile.player.PlayerMarketProfile;
+import pl.endixon.sectors.tools.user.profile.cache.ProfileMarketCache;
 
 public class PacketMarketUpdateListener implements PacketListener<PacketMarketUpdate> {
 

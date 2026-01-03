@@ -17,7 +17,7 @@
  *
  */
 
-package pl.endixon.sectors.tools.user.Repository;
+package pl.endixon.sectors.tools.user.repository;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -26,7 +26,8 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import pl.endixon.sectors.tools.user.profile.PlayerProfile;
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
+
 
 @RequiredArgsConstructor
 public class PlayerRepository {
@@ -38,10 +39,20 @@ public class PlayerRepository {
     }
 
     public PlayerProfile create(UUID uuid, String name) {
-        PlayerProfile profile = new PlayerProfile(uuid, name, 0, 0, new HashMap<>(), 0L, 0.0);
+        PlayerProfile profile = new PlayerProfile(
+                uuid,
+                name,
+                0,
+                0,
+                new HashMap<>(),
+                0L,
+                0.0
+        );
+
         collection.insertOne(profile);
         return profile;
     }
+
 
     public void save(PlayerProfile profile) {
         collection.replaceOne(eq("_id", profile.getUuid()), profile);

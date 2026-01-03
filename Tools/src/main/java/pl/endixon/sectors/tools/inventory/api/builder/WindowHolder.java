@@ -1,22 +1,3 @@
-/*
- *
- *  EndSectors  Non-Commercial License
- *  (c) 2025 Endixon
- *
- *  Permission is granted to use, copy, and
- *  modify this software **only** for personal
- *  or educational purposes.
- *
- *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code
- *  without explicit permission is strictly
- *  prohibited.
- *
- *  Visit https://github.com/Endixon/EndSectors
- *  for more info.
- *
- */
-
 package pl.endixon.sectors.tools.inventory.api.builder;
 
 import java.util.Map;
@@ -33,8 +14,8 @@ import org.bukkit.inventory.InventoryHolder;
 public class WindowHolder implements InventoryHolder {
 
     private final Map<Integer, Consumer<InventoryClickEvent>> slotActions = new ConcurrentHashMap<>();
-
     private Inventory inventory;
+    private boolean interactionAllowed = false;
 
     @Override
     public Inventory getInventory() {
@@ -42,10 +23,29 @@ public class WindowHolder implements InventoryHolder {
     }
 
     public void assignAction(int slot, Consumer<InventoryClickEvent> action) {
-        slotActions.put(slot, action != null ? action : event -> event.setCancelled(true));
+        if (action == null) {
+            slotActions.put(slot, event -> event.setCancelled(true));
+            return;
+        }
+        slotActions.put(slot, event -> {
+            event.setCancelled(true);
+            action.accept(event);
+        });
     }
 
     public void processClick(InventoryClickEvent event) {
-        slotActions.getOrDefault(event.getRawSlot(), e -> e.setCancelled(true)).accept(event);
+        int slot = event.getRawSlot();
+        if (slot < 0) return;
+
+        if (slot < inventory.getSize()) {
+            Consumer<InventoryClickEvent> action = slotActions.get(slot);
+            if (action != null) {
+                action.accept(event);
+                return;
+            }
+            if (!interactionAllowed) {
+                event.setCancelled(true);
+            }
+        }
     }
 }

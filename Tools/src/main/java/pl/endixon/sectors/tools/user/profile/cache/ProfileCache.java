@@ -17,7 +17,9 @@
  *
  */
 
-package pl.endixon.sectors.tools.user.profile;
+package pl.endixon.sectors.tools.user.profile.cache;
+
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
 
 import java.util.Map;
 import java.util.UUID;

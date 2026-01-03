@@ -27,8 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.paper.user.profile.UserProfile;
 import pl.endixon.sectors.tools.inventory.home.HomeWindow;
-import pl.endixon.sectors.tools.user.profile.PlayerProfile;
-import pl.endixon.sectors.tools.user.profile.ProfileCache;
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
+import pl.endixon.sectors.tools.user.profile.cache.ProfileCache;
 import pl.endixon.sectors.tools.utils.MessagesUtil;
 
 public class HomeCommand implements CommandExecutor {

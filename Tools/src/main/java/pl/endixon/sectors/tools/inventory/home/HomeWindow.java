@@ -33,8 +33,8 @@ import pl.endixon.sectors.paper.user.profile.UserProfile;
 import pl.endixon.sectors.tools.EndSectorsToolsPlugin;
 import pl.endixon.sectors.tools.inventory.api.WindowUI;
 import pl.endixon.sectors.tools.inventory.api.builder.StackBuilder;
-import pl.endixon.sectors.tools.user.profile.PlayerProfile;
-import pl.endixon.sectors.tools.user.profile.ProfileHome;
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
+import pl.endixon.sectors.tools.user.profile.cache.ProfileHome;
 import pl.endixon.sectors.tools.utils.MessagesUtil;
 
 public class HomeWindow {

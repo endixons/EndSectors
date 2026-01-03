@@ -52,7 +52,7 @@ package pl.endixon.sectors.paper.user.profile;
             }
 
             if (remoteVersion > cached.getDataVersion()) {
-                LoggerUtil.info(String.format("[ProfileRepo] Version mismatch for '%s' (v%d -> v%d). Synchronizing...", key, cached.getDataVersion(), remoteVersion));
+                LoggerUtil.info(String.format("[ProfileRepo] Version mismatch for '%s' (v%utils -> v%utils). Synchronizing...", key, cached.getDataVersion(), remoteVersion));
                 return reloadFromRedis(key);
             }
 

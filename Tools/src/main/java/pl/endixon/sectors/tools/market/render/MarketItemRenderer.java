@@ -4,12 +4,11 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import pl.endixon.sectors.tools.inventory.api.builder.StackBuilder;
 import pl.endixon.sectors.tools.market.utils.MarketItemUtil;
-import pl.endixon.sectors.tools.user.profile.PlayerMarketProfile;
+import pl.endixon.sectors.tools.user.profile.player.PlayerMarketProfile;
 
 @RequiredArgsConstructor
 public final class MarketItemRenderer {

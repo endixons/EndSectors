@@ -25,3 +25,12 @@ commands:
     description: Sprawdz stan konta lub zarzadzaj finansami.
     aliases: [bal, money, eco, portfel]
     usage: /balance [gracz|pay|set|add|take]
+  plecak:
+    description: Otwiera wirtualny plecak gracza (synchronizacja miedzy sektorami).
+    aliases: [backpack, bp, sakwa]
+    usage: /plecak
+  bpadmin:
+    description: Administracyjne zarzadzanie plecakami graczy (online/offline).
+    aliases: [backpackadmin, adminplecak, bpview]
+    permission: endsectors.backpack.admin
+    usage: /bpadmin <nick/uuid>

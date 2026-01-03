@@ -33,6 +33,8 @@ import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
 import pl.endixon.sectors.paper.SectorsAPI;
 import pl.endixon.sectors.paper.hook.CommonHeartbeatHook;
+import pl.endixon.sectors.tools.backpack.BackpackService;
+import pl.endixon.sectors.tools.backpack.repository.BackpackRepository;
 import pl.endixon.sectors.tools.command.*;
 import pl.endixon.sectors.tools.config.ConfigLoader;
 import pl.endixon.sectors.tools.config.MessageLoader;
@@ -41,7 +43,7 @@ import pl.endixon.sectors.tools.manager.CombatManager;
 import pl.endixon.sectors.tools.manager.MongoManager;
 import pl.endixon.sectors.tools.market.MarketService;
 import pl.endixon.sectors.tools.market.listener.ProfileMarketJoinListener;
-import pl.endixon.sectors.tools.market.repository.MarketRepository;
+import pl.endixon.sectors.tools.market.Repository.MarketRepository;
 import pl.endixon.sectors.tools.nats.listener.PacketMarketExpirationNotifyListener;
 import pl.endixon.sectors.tools.nats.listener.PacketMarketJanitorListener;
 import pl.endixon.sectors.tools.nats.listener.PacketMarketNotifyListener;
@@ -50,18 +52,19 @@ import pl.endixon.sectors.tools.nats.packet.PacketMarketExpirationNotify;
 import pl.endixon.sectors.tools.nats.packet.PacketMarketJanitor;
 import pl.endixon.sectors.tools.nats.packet.PacketMarketNotify;
 import pl.endixon.sectors.tools.nats.packet.PacketMarketUpdate;
+import pl.endixon.sectors.tools.task.BackpackAutoSaveTask;
 import pl.endixon.sectors.tools.task.MarketBossBarTask;
 import pl.endixon.sectors.tools.task.MarketExpirationTask;
-import pl.endixon.sectors.tools.user.Repository.PlayerRepository;
+import pl.endixon.sectors.tools.user.listeners.ProfileBackpackListener;
+import pl.endixon.sectors.tools.user.profile.player.PlayerBackpackProfile;
+import pl.endixon.sectors.tools.user.repository.PlayerRepository;
 import pl.endixon.sectors.tools.user.listeners.CombatListener;
 import pl.endixon.sectors.tools.user.listeners.InventoryInternactListener;
 import pl.endixon.sectors.tools.user.listeners.ProfileListener;
-import pl.endixon.sectors.tools.user.profile.PlayerMarketProfile;
-import pl.endixon.sectors.tools.user.profile.PlayerProfile;
+import pl.endixon.sectors.tools.user.profile.player.PlayerMarketProfile;
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
 import pl.endixon.sectors.tools.utils.LoggerUtil;
-
 import java.io.File;
-import java.util.logging.Level;
 
 @Getter
 public class EndSectorsToolsPlugin extends JavaPlugin {
@@ -75,7 +78,9 @@ public class EndSectorsToolsPlugin extends JavaPlugin {
     private MessageLoader messageLoader;
     private PlayerRepository repository;
     private MarketRepository marketRepository;
+    private BackpackRepository backpackRepository;
     private MarketService marketService;
+    private BackpackService backpackService;
     private CombatManager combatManager;
     private Economy economy;
 
@@ -148,9 +153,10 @@ public class EndSectorsToolsPlugin extends JavaPlugin {
 
     private void initScheduledTasks() {
         LoggerUtil.info("Scheduling background maintenance tasks...");
-     //   new MarketExpirationTask(this.marketService).runTaskTimerAsynchronously(this, 1200L, 12000L);
-        new MarketExpirationTask(this.marketService).runTaskTimerAsynchronously(this, 100L, 200L);
+        new MarketExpirationTask(this.marketService).runTaskTimerAsynchronously(this, 1200L, 12000L);
+        //new MarketExpirationTask(this.marketService).runTaskTimerAsynchronously(this, 100L, 200L);
         new MarketBossBarTask(this).runTaskTimer(this, 100L, 40L);
+        new BackpackAutoSaveTask(this.backpackService).runTaskTimerAsynchronously(this, 12000L, 12000L);
         LoggerUtil.info("Market Expiration Task registered (Async).");
     }
 
@@ -163,10 +169,13 @@ public class EndSectorsToolsPlugin extends JavaPlugin {
             this.marketRepository = new MarketRepository(marketCollection);
             this.marketRepository.warmup();
             this.marketService = new MarketService(this.marketRepository);
-            LoggerUtil.info("Services active. Market cache warmed up.");
+            MongoCollection<PlayerBackpackProfile> backpackCollection = this.mongoService.getDatabase().getCollection("backpacks", PlayerBackpackProfile.class);
+            this.backpackRepository = new BackpackRepository(backpackCollection);
+            this.backpackRepository.warmup();
+            this.backpackService = new BackpackService(this.backpackRepository);
+            LoggerUtil.info("Services active. Data layers (Market & Backpack) warmed up.");
         } catch (Exception e) {
-            LoggerUtil.error("Critical dependency injection failure!");
-            this.getLogger().log(Level.SEVERE, "Stacktrace:", e);
+            LoggerUtil.error("Critical dependency injection failure in Persistence Layer!", e);
             this.shutdown("Persistence layer failure.");
         }
     }
@@ -198,21 +207,29 @@ public class EndSectorsToolsPlugin extends JavaPlugin {
         pm.registerEvents(new CombatListener(this.combatManager, this.sectorsAPI), this);
         pm.registerEvents(new InventoryInternactListener(), this);
         pm.registerEvents(new ProfileMarketJoinListener(this), this);
-
+        pm.registerEvents(new ProfileBackpackListener(this.backpackRepository),this);
     }
 
     private void registerCommands() {
         this.setupCommand("randomtp", new RandomTPCommand(this.sectorsAPI));
         this.setupCommand("spawn", new SpawnCommand(this.sectorsAPI));
         this.setupCommand("home", new HomeCommand(this.sectorsAPI));
+        this.setupCommand("plecak", new BackpackCommand(this.combatManager,backpackService));
+        this.setupCommand("bpadmin", new BackpackAdminCommand(this,backpackService));
+
         MarketCommand marketCommand = new MarketCommand();
         this.setupCommand("market", marketCommand);
+
         MarketSellCommand marketSellCommand = new MarketSellCommand();
         this.setupCommand("wystaw", marketSellCommand);
+
         EconomyCommand balanceCommand = new EconomyCommand();
         this.setupCommand("balance", balanceCommand);
-        LoggerUtil.info("Command Executors registered.");
+
+        LoggerUtil.info("Command Executors registered. Backpack & Admin systems online.");
     }
+
+
 
     private void setupCommand(String name, Object executor) {
         PluginCommand command = this.getCommand(name);

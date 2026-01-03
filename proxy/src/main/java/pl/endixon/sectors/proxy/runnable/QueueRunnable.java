@@ -137,7 +137,7 @@ public class QueueRunnable implements Runnable {
     }
 
     private void dispatchTitle(final Player player, final String sector, final boolean online, final int pos, final int total, final boolean full) {
-        final String cacheKey = String.format("q_sys_%s_%b_%b_%d_%d", sector, online, full, pos, total);
+        final String cacheKey = String.format("q_sys_%s_%b_%b_%d_%utils", sector, online, full, pos, total);
         final Component subtitle = SUBTITLE_CACHE.computeIfAbsent(cacheKey, k -> this.buildSubtitle(sector, online, pos, total, full));
         player.showTitle(Title.title(ProxyMessages.QUEUE_TITLE.get(), subtitle));
     }

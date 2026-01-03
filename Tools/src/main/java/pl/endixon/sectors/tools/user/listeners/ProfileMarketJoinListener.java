@@ -18,8 +18,6 @@ import java.time.Duration;
 public class ProfileMarketJoinListener implements Listener {
 
     private final EndSectorsToolsPlugin plugin;
-
-    // Instancja parsera - w Enterprise trzymamy to w stałej lub serwisie, żeby nie tworzyć co chwilę
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
     @EventHandler

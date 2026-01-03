@@ -1,4 +1,4 @@
-package pl.endixon.sectors.tools.market.repository;
+package pl.endixon.sectors.tools.market.Repository;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -10,8 +10,8 @@ import org.bson.conversions.Bson;
 import org.bukkit.inventory.ItemStack;
 import pl.endixon.sectors.tools.market.type.MarketOfferStatus;
 import pl.endixon.sectors.tools.market.utils.MarketItemUtil;
-import pl.endixon.sectors.tools.user.profile.PlayerMarketProfile;
-import pl.endixon.sectors.tools.user.profile.ProfileMarketCache;
+import pl.endixon.sectors.tools.user.profile.player.PlayerMarketProfile;
+import pl.endixon.sectors.tools.user.profile.cache.ProfileMarketCache;
 import pl.endixon.sectors.tools.utils.PlayerDataSerializerUtil;
 
 import java.util.*;

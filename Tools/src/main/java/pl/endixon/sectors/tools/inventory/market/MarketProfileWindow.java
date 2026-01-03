@@ -10,7 +10,7 @@ import pl.endixon.sectors.tools.EndSectorsToolsPlugin;
 import pl.endixon.sectors.tools.inventory.api.WindowUI;
 import pl.endixon.sectors.tools.inventory.api.builder.StackBuilder;
 import pl.endixon.sectors.tools.market.render.MarketItemRenderer;
-import pl.endixon.sectors.tools.user.profile.PlayerProfile;
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
 
 public class MarketProfileWindow {
 
@@ -33,6 +33,8 @@ public class MarketProfileWindow {
 
     public void open() {
         WindowUI window = new WindowUI(hex("Twoj profil"), 1);
+        window.setInteractionAllowed(false);
+
         int myOffersCount = plugin.getMarketRepository().findBySeller(player.getUniqueId()).size();
         int claimableCount = plugin.getMarketRepository().findClaimableBySeller(player.getUniqueId()).size();
         int expiredCount = plugin.getMarketRepository().findExpiredBySeller(player.getUniqueId()).size();

@@ -10,9 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import pl.endixon.sectors.tools.EndSectorsToolsPlugin;
 import pl.endixon.sectors.tools.market.utils.MarketItemUtil;
-import pl.endixon.sectors.tools.user.profile.PlayerMarketProfile;
-import pl.endixon.sectors.tools.user.profile.PlayerProfile;
-import pl.endixon.sectors.tools.user.profile.ProfileCache;
+import pl.endixon.sectors.tools.user.profile.player.PlayerMarketProfile;
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
+import pl.endixon.sectors.tools.user.profile.cache.ProfileCache;
 import pl.endixon.sectors.tools.utils.PlayerDataSerializerUtil;
 
 import java.util.List;

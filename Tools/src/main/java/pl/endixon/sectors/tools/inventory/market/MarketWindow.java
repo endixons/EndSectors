@@ -13,9 +13,9 @@ import pl.endixon.sectors.tools.inventory.api.builder.StackBuilder;
 import pl.endixon.sectors.tools.market.render.MarketItemRenderer;
 import pl.endixon.sectors.tools.market.type.PurchaseResult;
 import pl.endixon.sectors.tools.market.utils.MarketItemUtil;
-import pl.endixon.sectors.tools.user.profile.PlayerProfile;
-import pl.endixon.sectors.tools.user.profile.PlayerMarketProfile;
-import pl.endixon.sectors.tools.user.profile.ProfileMarketCache;
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
+import pl.endixon.sectors.tools.user.profile.player.PlayerMarketProfile;
+import pl.endixon.sectors.tools.user.profile.cache.ProfileMarketCache;
 import pl.endixon.sectors.tools.utils.PlayerDataSerializerUtil;
 
 import java.util.ArrayList;
@@ -46,6 +46,7 @@ public class MarketWindow {
 
     public void open() {
         WindowUI window = new WindowUI("Market: " + category + " (" + (page + 1) + ")", 6);
+        window.setInteractionAllowed(false);
 
         int expiredCount = plugin.getMarketRepository().findExpiredBySeller(player.getUniqueId()).size();
         int claimableCount = plugin.getMarketRepository().findClaimableBySeller(player.getUniqueId()).size();

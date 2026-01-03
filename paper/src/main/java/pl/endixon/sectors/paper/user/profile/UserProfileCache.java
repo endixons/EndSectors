@@ -96,7 +96,7 @@ public final class UserProfileCache {
                 load(name).ifPresent(data -> addToCache(new UserProfile(data)));
             });
 
-            LoggerUtil.info(String.format("[ProfileCache] Warmup completed. Loaded %d profiles in %dms.", LOCAL_CACHE.size(), (System.currentTimeMillis() - start)));
+            LoggerUtil.info(String.format("[ProfileCache] Warmup completed. Loaded %utils profiles in %dms.", LOCAL_CACHE.size(), (System.currentTimeMillis() - start)));
         } catch (Exception e) {
             LoggerUtil.error("[ProfileCache] Critical failure during database warmup: " + e.getMessage());
         }

@@ -5,16 +5,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import pl.endixon.sectors.common.Common;
 import pl.endixon.sectors.common.packet.PacketChannel;
-import pl.endixon.sectors.tools.market.repository.MarketRepository;
+import pl.endixon.sectors.tools.market.Repository.MarketRepository;
 import pl.endixon.sectors.tools.market.type.MarketOfferStatus;
 import pl.endixon.sectors.tools.market.type.PurchaseResult;
 import pl.endixon.sectors.tools.nats.packet.PacketMarketExpirationNotify;
 import pl.endixon.sectors.tools.nats.packet.PacketMarketJanitor;
 import pl.endixon.sectors.tools.nats.packet.PacketMarketNotify;
 import pl.endixon.sectors.tools.nats.packet.PacketMarketUpdate;
-import pl.endixon.sectors.tools.user.Repository.PlayerRepository;
-import pl.endixon.sectors.tools.user.profile.PlayerMarketProfile;
-import pl.endixon.sectors.tools.user.profile.PlayerProfile;
+import pl.endixon.sectors.tools.user.repository.PlayerRepository;
+import pl.endixon.sectors.tools.user.profile.player.PlayerMarketProfile;
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
 import pl.endixon.sectors.tools.utils.LoggerUtil;
 
 import java.util.Map;
@@ -134,9 +134,9 @@ public class MarketService {
     }
 
     public int getMarketLimit(@NotNull Player player) {
-        if (player.hasPermission("market.limit.unlimited")) return 1000;
-        if (player.hasPermission("market.limit.vip")) return 15;
-        if (player.hasPermission("market.limit.player")) return 5;
+        if (player.hasPermission("endsectors.market.limit.unlimited")) return 1000;
+        if (player.hasPermission("endsectors.market.limit.vip")) return 15;
+        if (player.hasPermission("endsectors.market.limit.player")) return 5;
         return 3;
     }
 }

@@ -27,9 +27,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import pl.endixon.sectors.tools.user.profile.PlayerProfile;
-import pl.endixon.sectors.tools.user.Repository.PlayerRepository;
-import pl.endixon.sectors.tools.user.profile.ProfileCache;
+import pl.endixon.sectors.tools.user.profile.player.PlayerProfile;
+import pl.endixon.sectors.tools.user.repository.PlayerRepository;
+import pl.endixon.sectors.tools.user.profile.cache.ProfileCache;
 
 @RequiredArgsConstructor
 public class ProfileListener implements Listener {

@@ -17,19 +17,20 @@
  *
  */
 
-package pl.endixon.sectors.tools.user.profile;
+package pl.endixon.sectors.tools.user.profile.player;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonId;
+import pl.endixon.sectors.tools.user.profile.cache.ProfileHome;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class    PlayerProfile {
+public class PlayerProfile {
     @BsonId
     private UUID uuid;
     private String name;

@@ -47,13 +47,8 @@ public class PlayerLocallyJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         event.joinMessage(Component.empty());
-        player.setCollidable(false);
-
-
         UserProfile user = UserProfileRepository.getUser(player).orElseGet(() -> new UserProfile(player));
-
         Sector currentSector = paperSector.getSectorManager().getCurrentSector();
-
 
             if (currentSector == null)
                 return;

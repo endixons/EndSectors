@@ -84,7 +84,7 @@ public class PaperSector extends JavaPlugin {
         this.initNatsSubscriptions(configuration);
         Common.getInstance().getNatsManager().publish(PacketChannel.PACKET_CONFIGURATION_REQUEST.getSubject(), new PacketConfigurationRequest(sectorManager.getCurrentSectorName()));
         this.initCommands();
-        this.initListeners();
+       this.initListeners();
         this.scheduleTasks(configuration);
         this.loadAllPlayers();
         new SectorsAPI(this);

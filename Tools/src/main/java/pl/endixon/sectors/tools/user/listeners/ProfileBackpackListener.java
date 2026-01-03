@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import pl.endixon.sectors.tools.backpack.BackpackService;
 import pl.endixon.sectors.tools.backpack.repository.BackpackRepository;
 import pl.endixon.sectors.tools.user.profile.cache.ProfileBackpackCache;
 import pl.endixon.sectors.tools.user.profile.player.PlayerBackpackProfile;
@@ -16,6 +18,7 @@ import java.util.UUID;
 public class ProfileBackpackListener implements Listener {
 
     private final BackpackRepository repository;
+    private final BackpackService backpackService;
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
@@ -23,6 +26,14 @@ public class ProfileBackpackListener implements Listener {
         PlayerBackpackProfile backpack = repository.find(player.getUniqueId()).orElseGet(() -> repository.create(player.getUniqueId(), player.getName()));
         ProfileBackpackCache.put(backpack);
     }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        Player victim = event.getEntity();
+
+        this.backpackService.handleDeathBreach(victim);
+    }
+
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {

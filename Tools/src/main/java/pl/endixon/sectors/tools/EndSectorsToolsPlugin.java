@@ -207,7 +207,7 @@ public class EndSectorsToolsPlugin extends JavaPlugin {
         pm.registerEvents(new CombatListener(this.combatManager, this.sectorsAPI), this);
         pm.registerEvents(new InventoryInternactListener(), this);
         pm.registerEvents(new ProfileMarketJoinListener(this), this);
-        pm.registerEvents(new ProfileBackpackListener(this.backpackRepository),this);
+        pm.registerEvents(new ProfileBackpackListener(this.backpackRepository,backpackService),this);
     }
 
     private void registerCommands() {

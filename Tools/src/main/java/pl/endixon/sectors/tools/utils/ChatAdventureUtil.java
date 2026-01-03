@@ -42,7 +42,7 @@ public class ChatAdventureUtil {
         return component.decoration(TextDecoration.ITALIC, false);
     }
 
-    private Component parseMessage(String message) {
+    public Component parseMessage(String message) {
 
         if (message.contains("§")) {
             return LEGACY_SERIALIZER.deserialize(message);

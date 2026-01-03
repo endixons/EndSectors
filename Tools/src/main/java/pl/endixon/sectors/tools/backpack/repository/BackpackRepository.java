@@ -1,7 +1,6 @@
 package pl.endixon.sectors.tools.backpack.repository;
 
 import static com.mongodb.client.model.Filters.eq;
-
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import java.util.Optional;
@@ -27,16 +26,13 @@ public class BackpackRepository {
 
     public PlayerBackpackProfile create(UUID uuid, String name) {
         PlayerBackpackProfile backpack = new PlayerBackpackProfile(uuid, name);
-        collection.insertOne(backpack);
+        this.save(backpack);
         return backpack;
     }
 
     public void save(PlayerBackpackProfile backpack) {
-        collection.replaceOne(
-                eq("_id", backpack.getUuid()),
-                backpack,
-                new ReplaceOptions().upsert(true)
-        );
+        collection.replaceOne(eq("_id", backpack.getUuid()), backpack, new ReplaceOptions().upsert(true));
+        ProfileBackpackCache.put(backpack);
     }
 
     public void refreshCache(UUID uuid) {

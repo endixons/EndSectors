@@ -1,22 +1,3 @@
-/*
- *
- *  EndSectors  Non-Commercial License
- *  (c) 2025 Endixon
- *
- *  Permission is granted to use, copy, and
- *  modify this software **only** for personal
- *  or educational purposes.
- *
- *   Commercial use, redistribution, claiming
- *  this work as your own, or copying code
- *  without explicit permission is strictly
- *  prohibited.
- *
- *  Visit https://github.com/Endixon/EndSectors
- *  for more info.
- *
- */
-
 package pl.endixon.sectors.tools.manager;
 
 import java.util.ArrayList;
@@ -35,6 +16,7 @@ public class CombatManager {
 
     private final EndSectorsToolsPlugin plugin;
     private final Map<Player, Player> inCombat = new HashMap<>();
+    private final Map<Player, CombatTask> activeTasks = new HashMap<>();
     private final List<CombatValidator> validators = new ArrayList<>();
 
     public CombatManager(EndSectorsToolsPlugin plugin) {
@@ -56,15 +38,26 @@ public class CombatManager {
     public void startCombat(Player attacker, Player victim) {
         inCombat.put(attacker, victim);
         inCombat.put(victim, attacker);
+        handlePlayerTask(attacker);
+        handlePlayerTask(victim);
+    }
 
-        new CombatTask(plugin, this, attacker).start();
-        new CombatTask(plugin, this, victim).start();
+    private void handlePlayerTask(Player player) {
+        if (activeTasks.containsKey(player)) {
+            activeTasks.get(player).resetTime();
+        } else {
+            CombatTask task = new CombatTask(plugin, this, player);
+            activeTasks.put(player, task);
+            task.start();
+        }
     }
 
     public void endCombat(Player player) {
-        Player other = inCombat.remove(player);
-        if (other != null)
-        inCombat.remove(other);
+        inCombat.remove(player);
+        CombatTask task = activeTasks.remove(player);
+        if (task != null) {
+            task.stop();
+        }
     }
 
     public boolean isInCombat(Player player) {

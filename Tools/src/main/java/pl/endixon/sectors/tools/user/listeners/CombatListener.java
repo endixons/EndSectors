@@ -56,11 +56,21 @@ public class CombatListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerDeath(org.bukkit.event.entity.PlayerDeathEvent event) {
+        Player victim = event.getEntity();
+        if (combatManager.isInCombat(victim)) {
+            combatManager.endCombat(victim);
+        }
+    }
+
+
+    @EventHandler
     public void onSectorChange(SectorChangeEvent event) {
         Player player = event.getPlayer();
         boolean inCombat = combatManager.isInCombat(player);
         event.setCancelled(inCombat);
     }
+
 
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
@@ -79,19 +89,9 @@ public class CombatListener implements Listener {
     }
 
     private void processCombat(Player attacker, Player victim) {
-
         if (!combatManager.canStartCombat(attacker, victim)) {
             return;
         }
-
-        if (combatManager.isInCombat(attacker)) {
-            combatManager.endCombat(attacker);
-        }
-
-        if (combatManager.isInCombat(victim)) {
-            combatManager.endCombat(victim);
-        }
-
         combatManager.startCombat(attacker, victim);
     }
 

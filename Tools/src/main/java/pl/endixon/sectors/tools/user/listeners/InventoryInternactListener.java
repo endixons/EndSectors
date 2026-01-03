@@ -26,18 +26,21 @@ public class InventoryInternactListener implements Listener {
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
         InventoryHolder holder = event.getInventory().getHolder();
+        if (!(holder instanceof WindowHolder windowHolder)) return;
 
-        if (!(holder instanceof WindowHolder windowHolder)) {
+        if (!windowHolder.isInteractionAllowed()) {
+            event.setCancelled(true);
             return;
         }
 
-        if (!windowHolder.isInteractionAllowed()) {
-            for (int rawSlot : event.getRawSlots()) {
-                if (rawSlot < event.getInventory().getSize()) {
+        for (int rawSlot : event.getRawSlots()) {
+            if (rawSlot < event.getInventory().getSize()) {
+                if (windowHolder.getSlotActions().containsKey(rawSlot)) {
                     event.setCancelled(true);
                     return;
                 }
             }
         }
+
     }
 }

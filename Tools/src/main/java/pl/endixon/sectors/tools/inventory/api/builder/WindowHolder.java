@@ -46,6 +46,10 @@ public class WindowHolder implements InventoryHolder {
             if (!interactionAllowed) {
                 event.setCancelled(true);
             }
+            return;
+        }
+        if (!interactionAllowed) {
+            event.setCancelled(true);
         }
     }
 }

@@ -99,7 +99,7 @@ public class MessageLoader {
         m.put("RANDOM_SECTOR_NOTFOUND", "<#ff5555>Nie udało się znaleźć losowego sektora!");
         m.put("RANDOM_SECTORSPAWN_NOTFOUND", "<#ef4444>Nie odnaleziono dostepnego sektora spawn");
         m.put("RANDOM_SECTORAFK_NOTFOUND", "<#ef4444>Nie odnaleziono dostepnego sektora afk");
-
+        m.put("TELEPORT_SUCCESS", "<#00ffaa>Pomyślnie przeteleportowano!");
         m.put("TELEPORT_COUNTDOWN_TITLE", "<#FFD700>Teleportacja za...");
         m.put("TELEPORT_COUNTDOWN_SUBTITLE", "<#FFA500>{TIME} <#FFD700>sekund");
         m.put("TELEPORT_CANCELLED_TITLE", "<#FF5555>Teleportacja przerwana!");
@@ -109,10 +109,15 @@ public class MessageLoader {
         m.put("HOME_NAME_FORMAT", "<#4ade80>{NAME}");
         m.put("HOME_CREATED_SUCCESS", "<#00ffaa>Pomyślnie utworzono Domek");
         m.put("HOME_DELETED_SUCCESS", "<#ff5555>Usunięto Domek");
-        m.put("HOME_TELEPORT_SUCCESS", "<#00ffaa>Pomyślnie przeteleportowano!");
         m.put("HOME_CANT_CREATE_SPAWN", "<#ff5555>Nie możesz tworzyć domków na sektorze SPAWN!");
         m.put("HOME_SECTOR_NOT_FOUND", "<#ff5555>Nie udało się znaleźć sektora dla twojego domku!");
         m.put("HOME_WORLD_NOT_LOADED", "<#ff5555>Świat dla tego sektora nie jest załadowany!");
+
+        m.put("BACKPACK_ADMIN_NO_PERMISSION", "<#ff4b2b>Brak uprawnień administracyjnych.");
+        m.put("BACKPACK_ADMIN_USAGE", "<gradient:#ed213a:#93291e><bold>ADMIN:</bold></gradient> <#aaaaaa>Poprawne użycie: <#ff5f6d>/bpadmin <nick/uuid>");
+        m.put("BACKPACK_ADMIN_PLAYER_NOT_FOUND", "<gradient:#ed213a:#93291e><bold>ADMIN:</bold></gradient> <#ff4b2b>Nie znaleziono profilu gracza: <#ff5f6d>{PLAYER}");
+        m.put("BACKPACK_ADMIN_OPENING_FOR_PLAYER", "<gradient:#ed213a:#93291e><bold>ADMIN:</bold></gradient> <#aaaaaa>Otwierasz plecak gracza: <#ff5f6d>{PLAYER}");
+
 
         l.put("HOME_SET_LORE", Arrays.asList(
                 "",

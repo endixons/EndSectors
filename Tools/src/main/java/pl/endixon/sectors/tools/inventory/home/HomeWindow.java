@@ -149,6 +149,5 @@ public class HomeWindow {
             sectorsAPI.getPaperSector().getSectorTeleport().teleportToSector(player, user, homeSector, false, true);
             });
         }
-        player.sendMessage(MessagesUtil.HOME_TELEPORT_SUCCESS.get());
     }
 }

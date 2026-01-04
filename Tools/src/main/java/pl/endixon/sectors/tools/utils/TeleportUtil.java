@@ -63,13 +63,13 @@ public class TeleportUtil {
                             new ChatAdventureUtil().toComponent(subtitleRaw),
                             Title.Times.times(Duration.ofMillis(100), Duration.ofMillis(800), Duration.ofMillis(100))
                     ));
-
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.5f);
                     countdown--;
                     return;
                 }
 
                 onFinish.run();
+                player.sendMessage(MessagesUtil.TELEPORT_SUCCESS.get());
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.2f);
                 cancel();
             }
         }.runTaskTimer(EndSectorsToolsPlugin.getInstance(), 0L, 20L);

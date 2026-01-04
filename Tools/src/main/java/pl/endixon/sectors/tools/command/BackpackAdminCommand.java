@@ -47,14 +47,13 @@ public class BackpackAdminCommand implements CommandExecutor {
             return true;
         }
 
-
         if (!admin.hasPermission("endsectors.backpack.admin")) {
-            admin.sendMessage(MM.deserialize("<#ff4b2b>Brak uprawnień administracyjnych."));
+            admin.sendMessage(MessagesUtil.BACKPACK_ADMIN_NO_PERMISSION.get());
             return true;
         }
 
         if (args.length < 1) {
-            admin.sendMessage(MM.deserialize(ADMIN_PREFIX + TEXT + "Poprawne użycie: <#ff5f6d>/bpadmin <nick/uuid>"));
+            admin.sendMessage(MessagesUtil.BACKPACK_ADMIN_USAGE.get());
             return true;
         }
 
@@ -64,19 +63,22 @@ public class BackpackAdminCommand implements CommandExecutor {
             PlayerProfile profile = this.findProfile(targetName);
 
             if (profile == null) {
-                admin.sendMessage(MM.deserialize(ADMIN_PREFIX + "<#ff4b2b>Nie znaleziono profilu gracza: " + targetName));
+                admin.sendMessage(MessagesUtil.BACKPACK_ADMIN_PLAYER_NOT_FOUND.getText("{PLAYER}", targetName));
                 return;
             }
 
             PlayerBackpackProfile backpack = this.findBackpack(profile.getUuid(), profile.getName());
+
             plugin.getServer().getScheduler().runTask(plugin, () -> {
                 new BackpackAdminWindow(admin, profile, backpack, 1, backpackService);
-                admin.sendMessage(MM.deserialize(ADMIN_PREFIX + TEXT + "Otwierasz plecak gracza: <#ff5f6d>" + profile.getName()));
+
+                admin.sendMessage(MessagesUtil.BACKPACK_ADMIN_OPENING_FOR_PLAYER.getText("{PLAYER}", profile.getName()));
             });
         });
 
         return true;
     }
+
 
     private PlayerProfile findProfile(String target) {
         Player online = plugin.getServer().getPlayer(target);

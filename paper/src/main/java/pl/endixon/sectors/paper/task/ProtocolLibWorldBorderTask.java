@@ -30,6 +30,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import pl.endixon.sectors.common.sector.SectorType;
 import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.util.LoggerUtil;

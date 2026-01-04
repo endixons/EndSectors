@@ -98,6 +98,7 @@ public class PaperSector extends JavaPlugin {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.kick(Component.text("§cSektor " + sectorManager.getCurrentSectorName() + " §czostał zamknięty i jest niedostępny!"));
+
         }
         if (this.heartbeatHook != null) {
             this.heartbeatHook.shutdown();

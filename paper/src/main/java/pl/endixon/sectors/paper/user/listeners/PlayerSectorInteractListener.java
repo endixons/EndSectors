@@ -41,7 +41,6 @@ import pl.endixon.sectors.paper.manager.SectorManager;
 import pl.endixon.sectors.paper.sector.Sector;
 import pl.endixon.sectors.paper.user.profile.UserProfile;
 import pl.endixon.sectors.paper.user.profile.UserProfileRepository;
-import pl.endixon.sectors.paper.util.ChatAdventureUtil;
 import pl.endixon.sectors.paper.util.MessagesUtil;
 import pl.endixon.sectors.paper.util.LoggerUtil;
 
@@ -54,12 +53,35 @@ public class PlayerSectorInteractListener implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        Sector queue = PaperSector.getSectorManager().getCurrentSector();
+        Sector current = PaperSector.getSectorManager().getCurrentSector();
 
-        if (queue != null && queue.getType() == SectorType.QUEUE && !player.hasPermission("endsectors.admin")) {
-            event.setCancelled(true);
+        if (current != null) {
+            if (current.getType() == SectorType.AFK) {
+                if (!player.hasPermission("endsectors.admin") && !event.getMessage().toLowerCase().startsWith("/spawn")) {
+                    event.setCancelled(true);
+                }
+                return;
+            }
+
+            if (current.getType() == SectorType.QUEUE && !player.hasPermission("endsectors.admin")) {
+                event.setCancelled(true);
+            }
         }
     }
+
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        Sector current = PaperSector.getSectorManager().getCurrentSector();
+
+        if (current != null && current.getType() == SectorType.AFK) {
+            if (!player.hasPermission("endsectors.admin")) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
 
 
     @EventHandler

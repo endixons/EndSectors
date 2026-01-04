@@ -230,6 +230,9 @@ public class EndSectorsToolsPlugin extends JavaPlugin {
         EconomyCommand balanceCommand = new EconomyCommand();
         this.setupCommand("balance", balanceCommand);
 
+        AfkCommand afkCommand = new AfkCommand(this.sectorsAPI);
+        this.setupCommand("afk", afkCommand);
+
         LoggerUtil.info("Command Executors registered. Backpack & Admin systems online.");
     }
 

@@ -76,7 +76,7 @@ public class SectorManager {
     public Sector getSector(Location location) {
         for (Sector sector : sectors.values()) {
             if (sector.isInSector(location)) {
-                if (sector.getType() == SectorType.QUEUE) continue;
+                if (sector.getType() == SectorType.QUEUE || sector.getType() == SectorType.AFK) continue;
                 Sector current = getCurrentSector();
                 if (current == null || current.getType() != SectorType.SPAWN) {
                     return sector;
@@ -138,6 +138,30 @@ public class SectorManager {
 
         int poolSize = Math.max(1, (int) Math.ceil(healthySpawns.size() * 0.3));
         return healthySpawns.get(ThreadLocalRandom.current().nextInt(poolSize));
+    }
+
+
+
+    public Sector getBalancedRandomAfkSector() {
+        List<Sector> allAfk = sectors.values().stream()
+                .filter(s -> s.getType() == SectorType.AFK)
+                .toList();
+
+        List<Sector> healthyAfks = allAfk.stream()
+                .filter(Sector::isOnline)
+                .filter(s -> s.getTPS() > 15.0)
+                .sorted(Comparator.comparingDouble(s -> {
+                    double occupancy = (double) s.getPlayerCount() / Math.max(s.getMaxPlayers(), 1);
+                    return occupancy / s.getTPS();
+                })).toList();
+
+        if (healthyAfks.isEmpty()) {
+            LoggerUtil.info(String.format("Balance error! All afks (%d) are either offline or lagging!", allAfk.size()));
+            return null;
+        }
+
+        int poolSize = Math.max(1, (int) Math.ceil(healthyAfks.size() * 0.3));
+        return healthyAfks.get(ThreadLocalRandom.current().nextInt(poolSize));
     }
 
     public Location randomLocation(@NonNull Player player, @NonNull UserProfile user) {

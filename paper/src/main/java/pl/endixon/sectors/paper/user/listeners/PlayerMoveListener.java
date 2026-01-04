@@ -59,7 +59,7 @@ public class PlayerMoveListener implements Listener {
         SectorManager sectorManager = paperSector.getSectorManager();
         Sector current = sectorManager.getCurrentSector();
 
-        if (current == null || current.getType() == SectorType.QUEUE || current.getType() == SectorType.NETHER) {
+        if (current == null || current.getType() == SectorType.QUEUE || current.getType() == SectorType.NETHER || current.getType() == SectorType.AFK) {
             return;
         }
 
@@ -91,7 +91,7 @@ public class PlayerMoveListener implements Listener {
         SectorManager sectorManager = paperSector.getSectorManager();
         Sector current = sectorManager.getCurrentSector();
 
-        if (current == null || current.getType() == SectorType.QUEUE || current.getType() == SectorType.NETHER) {
+        if (current == null || current.getType() == SectorType.QUEUE || current.getType() == SectorType.NETHER || current.getType() == SectorType.AFK) {
             return;
         }
 

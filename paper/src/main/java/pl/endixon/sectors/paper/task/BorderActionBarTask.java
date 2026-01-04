@@ -52,6 +52,10 @@ public class BorderActionBarTask extends BukkitRunnable {
             return;
         }
 
+        if (currentSector.getType() == SectorType.AFK) {
+            return;
+        }
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             int borderDistance = currentSector.getBorderDistance(player.getLocation());
             Sector nearestSector = currentSector.getNearestSector(player.getLocation());

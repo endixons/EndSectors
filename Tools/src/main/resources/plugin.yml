@@ -10,7 +10,9 @@ commands:
     description: Teleportuje gracza w losowe koordynaty.
     aliases: [rtp]
   spawn:
-    description: Teleportuje gracza na spawn sektora.
+    description: Teleportuje gracza na spawn sektor.
+  afk:
+    description: Teleportuje gracza na afk sektor.
   home:
     description: Zarzadzanie domami gracza.
   market:

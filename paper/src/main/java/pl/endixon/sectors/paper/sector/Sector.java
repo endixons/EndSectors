@@ -24,7 +24,6 @@ import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -166,8 +165,10 @@ public class Sector {
     }
 
 
+
     public void knockBorder(Player player, double power) {
         Location loc = player.getLocation();
+
         Corner c1 = getFirstCorner();
         Corner c2 = getSecondCorner();
 

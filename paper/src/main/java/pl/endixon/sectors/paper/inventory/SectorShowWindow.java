@@ -68,6 +68,7 @@ public class SectorShowWindow {
             case NETHER -> 2;
             case END -> 3;
             case QUEUE -> 4;
+            case AFK -> 5;
         };
     }
 

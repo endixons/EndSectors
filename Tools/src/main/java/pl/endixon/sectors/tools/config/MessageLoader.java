@@ -86,12 +86,19 @@ public class MessageLoader {
         m.put("SPAWN_TITLE", "<#ff5555>Błąd");
         m.put("SPAWN_OFFLINE", "<#ef4444>Ten sektor jest aktualnie wyłączony");
         m.put("SPAWN_ALREADY", "<#ef4444>Już jesteś juz na spawnie");
+
+        m.put("AFK_TITLE", "<#ff5555>Błąd");
+        m.put("AFK_OFFLINE", "<#ef4444>Ten sektor jest aktualnie wyłączony");
+        m.put("AFK_ALREADY", "<#ef4444>Już jesteś juz na AFK");
+
+
         m.put("PLAYERDATANOT_FOUND_MESSAGE", "<#ef4444>Profil użytkownika nie został znaleziony!");
 
         m.put("RANDOM_TITLE", "<#4ade80>RandomTP");
         m.put("RANDOM_START", "<#9ca3af>Losowanie sektora... <#4ade80>proszę czekać");
         m.put("RANDOM_SECTOR_NOTFOUND", "<#ff5555>Nie udało się znaleźć losowego sektora!");
         m.put("RANDOM_SECTORSPAWN_NOTFOUND", "<#ef4444>Nie odnaleziono dostepnego sektora spawn");
+        m.put("RANDOM_SECTORAFK_NOTFOUND", "<#ef4444>Nie odnaleziono dostepnego sektora afk");
 
         m.put("TELEPORT_COUNTDOWN_TITLE", "<#FFD700>Teleportacja za...");
         m.put("TELEPORT_COUNTDOWN_SUBTITLE", "<#FFA500>{TIME} <#FFD700>sekund");

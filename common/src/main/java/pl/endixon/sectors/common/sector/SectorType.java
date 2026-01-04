@@ -27,7 +27,10 @@ public enum SectorType {
     SECTOR,
     NETHER,
     END,
-    QUEUE;
+    QUEUE,
+    AFK;
+
+
 
     public static boolean isQueueSector(String sectorName) {
         return sectorName != null && sectorName.equalsIgnoreCase(QUEUE.toString().toLowerCase());

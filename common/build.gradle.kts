@@ -25,7 +25,7 @@ dependencies {
     implementation("io.lettuce:lettuce-core:7.2.1.RELEASE")
     implementation("io.netty:netty-all:4.2.9.Final")
     implementation("com.google.code.gson:gson:2.13.2")
-    implementation("io.nats:jnats:2.24.1")
+    implementation("io.nats:jnats:2.25.1")
     implementation("org.slf4j:slf4j-api:2.0.17")
     implementation("org.fusesource.jansi:jansi:2.4.2")
     implementation("ch.qos.logback:logback-classic:1.5.23")

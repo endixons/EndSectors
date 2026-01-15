@@ -28,7 +28,7 @@ dependencies {
     implementation("io.netty:netty-all:4.2.9.Final")
     implementation("com.google.code.gson:gson:2.13.2")
     compileOnly("net.kyori:adventure-text-minimessage:4.26.1")
-    implementation("io.nats:jnats:2.24.1")
+    implementation("io.nats:jnats:2.25.1")
 }
 
 tasks.jar {

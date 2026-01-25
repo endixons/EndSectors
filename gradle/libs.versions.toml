@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-com-velocitypowered-velocity-api = "3.1.1"
+com-velocitypowered-velocity-api = "3.4.0"
 io-papermc-paper-paper-api = "1.21.4-R0.1"
 
 [libraries]
